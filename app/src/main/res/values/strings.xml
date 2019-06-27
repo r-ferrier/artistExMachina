@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Work in Progress</string>
+    <string name="location">location</string>
+    <string name="temperature">temperature</string>
+    <string name="lightLevels">light levels</string>
+    <string name="lightVariable"></string>
+    <string name="tempVariable"></string>
+    <string name="loactionVariable"></string>
+    <string name="buttonTitle">view image</string>
+</resources>
