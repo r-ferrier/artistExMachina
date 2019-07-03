@@ -10,6 +10,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.icu.text.TimeZoneFormat;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -18,6 +19,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,8 +29,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -41,21 +42,18 @@ import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
-import com.google.android.gms.fitness.data.Subscription;
 import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.result.DataReadResult;
-import com.google.android.gms.fitness.result.ListSubscriptionsResult;
-import com.google.android.gms.tasks.Task;
 
 import java.text.DateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+
+import static com.google.android.gms.fitness.data.DataType.*;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener, LocationListener,
         GoogleApiClient.ConnectionCallbacks,
@@ -77,13 +75,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private static final int REQUEST_OAUTH = 1;
     private static final String AUTH_PENDING = "auth_state_pending";
     private boolean authInProgress = false;
-    private GoogleApiClient mApiClient;
-    private final long[] timeBounds = new long[]{0, 20};
-    private GoogleSignInClient googleSignInClient;
-    private GoogleSignInOptions googleSignInOptions;
     private ResultCallback<Status> mSubscribeResultCallback;
-    private ResultCallback<Status> mCancelSubscriptionResultCallback;
-    private ResultCallback<ListSubscriptionsResult> mListSubscriptionsResultCallback;
+    private ResultCallback<Status> distanceSubscribeResultCallback;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -91,14 +84,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
+//        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
         setContentView(R.layout.activity_main);
 
         initCallbacks();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Fitness.HISTORY_API).addApi(Fitness.RECORDING_API)
-                .addScope(new Scope(Scopes.FITNESS_ACTIVITY_READ_WRITE)).addScope(new Scope(Scopes.FITNESS_ACTIVITY_READ))
+                .addScope(new Scope(Scopes.FITNESS_ACTIVITY_READ))
+                .addScope(new Scope(Scopes.FITNESS_LOCATION_READ))
                 .addConnectionCallbacks(this)
                 .enableAutoManage(this, 0, this)
                 .build();
@@ -145,97 +143,56 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             return null;
         }
 
+        private void displayYesterdaysData() {
 
-        private void displayYesterdaysData(){
 
-
-            Calendar date = Calendar.getInstance();
+            Calendar date = new GregorianCalendar();
 // reset hour, minutes, seconds and millis
             date.set(Calendar.HOUR_OF_DAY, 0);
             date.set(Calendar.MINUTE, 0);
             date.set(Calendar.SECOND, 0);
             date.set(Calendar.MILLISECOND, 0);
 
-            Calendar day = Calendar.getInstance();
-            day.setTime(new Date());
+
             long endTime = date.getTimeInMillis();
-            date.add(Calendar.DAY_OF_WEEK,-1);
+            date.add(Calendar.DAY_OF_YEAR, -1);
             long startTime = date.getTimeInMillis();
 
-            DataReadRequest readRequest = new DataReadRequest.Builder()
-                    .aggregate(DataType.TYPE_STEP_COUNT_DELTA, DataType.AGGREGATE_STEP_COUNT_DELTA)
+            Log.e("time", "\tStart: " + DateFormat.getDateInstance().format(startTime)+" "+ DateFormat.getTimeInstance().format(startTime));
+            Log.e("time", "\tEnd: " + DateFormat.getDateInstance().format(endTime)+" "+ DateFormat.getTimeInstance().format(endTime));
+
+            DataReadRequest steps = new DataReadRequest.Builder()
+                    .aggregate(TYPE_STEP_COUNT_DELTA, AGGREGATE_STEP_COUNT_DELTA)
+                    .aggregate(TYPE_DISTANCE_DELTA, AGGREGATE_DISTANCE_DELTA)
                     .bucketByTime(1, TimeUnit.DAYS)
                     .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
                     .build();
 
 
-            DataReadResult dataReadResult = Fitness.HistoryApi.readData(mGoogleApiClient, readRequest).await(1, TimeUnit.MINUTES);
+            DataReadResult stepsResult = Fitness.HistoryApi.readData(mGoogleApiClient, steps).await(1, TimeUnit.MINUTES);
 
 
-            if (dataReadResult.getBuckets().size() > 0) {
-                Log.e("History", "Number of buckets: " + dataReadResult.getBuckets().size());
-                for (Bucket bucket : dataReadResult.getBuckets()) {
-                    List<DataSet> dataSets = bucket.getDataSets();
-                    for (DataSet dataSet : dataSets) {
-                        showDataSet(dataSet);
-                    }
-                }
-            }
-//Used for non-aggregated data
-            else if (dataReadResult.getDataSets().size() > 0) {
-                Log.e("History", "Number of returned DataSets: " + dataReadResult.getDataSets().size());
-                for (DataSet dataSet : dataReadResult.getDataSets()) {
+            if (stepsResult.getBuckets().size() > 0) {
+
+                Log.e("History", "Number of steps buckets: " + stepsResult.getBuckets().size());
+                List<DataSet> dataSets = stepsResult.getBuckets().get(0).getDataSets();
+
+                int i = 0;
+
+                for (DataSet dataSet : dataSets) {
                     showDataSet(dataSet);
+                    Log.i("dataset",i+"");
+                    i++;
                 }
+
             }
 
         }
 
-
-
-
-        private void displayLastWeeksData() {
-            Calendar cal = Calendar.getInstance();
-            Date now = new Date();
-            cal.setTime(now);
-            long endTime = cal.getTimeInMillis();
-            cal.add(Calendar.WEEK_OF_YEAR, -1);
-            long startTime = cal.getTimeInMillis();
-
-            java.text.DateFormat dateFormat = DateFormat.getDateInstance();
-            Log.e("History", "Range Start: " + dateFormat.format(startTime));
-            Log.e("History", "Range End: " + dateFormat.format(endTime));
-
-//Check how many steps were walked and recorded in the last 7 days
-            DataReadRequest readRequest = new DataReadRequest.Builder()
-                    .aggregate(DataType.TYPE_STEP_COUNT_DELTA, DataType.AGGREGATE_STEP_COUNT_DELTA)
-                    .bucketByTime(1, TimeUnit.DAYS)
-                    .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
-                    .build();
-
-            DataReadResult dataReadResult = Fitness.HistoryApi.readData(mGoogleApiClient, readRequest).await(1, TimeUnit.MINUTES);
-
-            if (dataReadResult.getBuckets().size() > 0) {
-                Log.e("History", "Number of buckets: " + dataReadResult.getBuckets().size());
-                for (Bucket bucket : dataReadResult.getBuckets()) {
-                    List<DataSet> dataSets = bucket.getDataSets();
-                    for (DataSet dataSet : dataSets) {
-                        showDataSet(dataSet);
-                    }
-                }
-            }
-//Used for non-aggregated data
-            else if (dataReadResult.getDataSets().size() > 0) {
-                Log.e("History", "Number of returned DataSets: " + dataReadResult.getDataSets().size());
-                for (DataSet dataSet : dataReadResult.getDataSets()) {
-                    showDataSet(dataSet);
-                }
-            }
-
-        }
 
         private void showDataSet(DataSet dataSet) {
             Log.e("History", "Data returned for Data type: " + dataSet.getDataType().getName());
+
             DateFormat dateFormat = DateFormat.getDateInstance();
             DateFormat timeFormat = DateFormat.getTimeInstance();
 
@@ -243,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 Log.e("History", "Data point:");
                 Log.e("History", "\tType: " + dp.getDataType().getName());
                 Log.e("History", "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
-                Log.e("History", "\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
+                Log.e("History", "\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)));
                 for (Field field : dp.getDataType().getFields()) {
                     Log.e("History", "\tField: " + field.getName() +
                             " Value: " + dp.getValue(field));
@@ -359,11 +316,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onConnected(Bundle bundle) {
-        Fitness.RecordingApi.subscribe(mGoogleApiClient, DataType.TYPE_STEP_COUNT_DELTA)
+        Fitness.RecordingApi.subscribe(mGoogleApiClient, TYPE_STEP_COUNT_DELTA)
                 .setResultCallback(mSubscribeResultCallback);
-//
-//        Fitness.RecordingApi.listSubscriptions(mGoogleApiClient)
-//                .setResultCallback(mListSubscriptionsResultCallback);
+
+        Fitness.RecordingApi.subscribe(mGoogleApiClient, TYPE_DISTANCE_DELTA)
+                .setResultCallback(distanceSubscribeResultCallback);
+
     }
 
     @Override
@@ -405,6 +363,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     private void initCallbacks() {
+
         mSubscribeResultCallback = new ResultCallback<Status>() {
             @Override
             public void onResult(@NonNull Status status) {
@@ -417,6 +376,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
             }
         };
+
+        distanceSubscribeResultCallback = new ResultCallback<Status>() {
+            @Override
+            public void onResult(@NonNull Status status) {
+                if (status.isSuccess()) {
+                    if (status.getStatusCode() == FitnessStatusCodes.SUCCESS_ALREADY_SUBSCRIBED) {
+                        Log.e("RecordingAPI", "Already subscribed to the distance API");
+                    } else {
+                        Log.e("RecordingAPI", "Subscribed to the distance API");
+                    }
+                }
+            }
+        };
+
+    }
+
+    public void sitForPortrait(View view){
+
+        Intent intent = new Intent(this, ShortPortrait.class);
+        startActivity(intent);
 
     }
 
