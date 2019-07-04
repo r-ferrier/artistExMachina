@@ -10,7 +10,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.icu.text.TimeZoneFormat;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -19,8 +18,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -37,41 +34,25 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.fitness.FitnessStatusCodes;
-import com.google.android.gms.fitness.data.Bucket;
 import com.google.android.gms.fitness.data.DataPoint;
 import com.google.android.gms.fitness.data.DataSet;
-import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.result.DataReadResult;
 
 import java.text.DateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.android.gms.fitness.data.DataType.*;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener, LocationListener,
+public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
-    private SensorManager sensorManager;
-    private LocationManager locationManager;
-    public TextView lightText;
-    public TextView tempText;
-    public TextView locationText;
-    //    private List<Sensor> deviceSensors;
-    private Sensor light;
-    private Sensor temp;
-    private Location location;
-    private boolean GPS;
-    private boolean networkEnabled;
-    private double latitude;
-    private double longitude;
+
     private static final int REQUEST_OAUTH = 1;
     private static final String AUTH_PENDING = "auth_state_pending";
     private boolean authInProgress = false;
@@ -103,36 +84,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         new ViewWeekStepCountTask().execute();
 
-
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        }
-
-        lightText = findViewById(R.id.lightText);
-        tempText = findViewById(R.id.temperatureText);
-        locationText = findViewById(R.id.locationText);
-        light = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-        temp = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
-
         if (savedInstanceState != null) {
             authInProgress = savedInstanceState.getBoolean(AUTH_PENDING);
         }
 
+
+
     }
 
-    protected void onResume() {
-        super.onResume();
-        sensorManager.registerListener(this, light, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, temp, SensorManager.SENSOR_DELAY_NORMAL);
-        getLocation();
-    }
-
-    protected void onStart() {
-        super.onStart();
-    }
 
     private class ViewWeekStepCountTask extends AsyncTask<Void, Void, Void> {
 
@@ -210,109 +169,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
 
-    public void viewImage(View view) {
-
-        String location = ((TextView) findViewById(R.id.locationText)).getText().toString();
-        String light = ((TextView) findViewById(R.id.lightText)).getText().toString();
-        String temp = ((TextView) findViewById(R.id.temperatureText)).getText().toString();
-
-        Intent intent = new Intent(this, DisplayImage.class);
-        intent.putExtra("temp", temp);
-        intent.putExtra("light", light);
-        intent.putExtra("location", location);
-        startActivity(intent);
-
-
-    }
-
-    @SuppressLint("MissingPermission")
-    public Location getLocation() {
-        try {
-            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-            networkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER); // check if it is network enabled
-            GPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER); //check if it is GPS enabled
-
-            if (!GPS && !networkEnabled) {
-                // can't connect, need to think about what to do here
-            } else {
-
-            }
-            if (!GPS) {
-                location = null;
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, this);
-
-                if (locationManager != null) {
-                    location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                    if (location != null) {
-                        latitude = location.getLatitude();
-                        longitude = location.getLongitude();
-                    }
-                }
-            }
-
-            if (GPS) {
-                location = null;
-
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1, this);
-                if (locationManager != null) {
-                    location = locationManager
-                            .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    if (location != null) {
-                        latitude = location.getLatitude();
-                        longitude = location.getLongitude();
-                    }
-                }
-            }
+//    public void viewImage(View view) {
+//
+//        String location = ((TextView) findViewById(R.id.locationText)).getText().toString();
+//        String light = ((TextView) findViewById(R.id.lightText)).getText().toString();
+//        String temp = ((TextView) findViewById(R.id.temperatureValues)).getText().toString();
+//
+//        Intent intent = new Intent(this, DisplayImage.class);
+//        intent.putExtra("temp", temp);
+//        intent.putExtra("light", light);
+//        intent.putExtra("location", location);
+//        startActivity(intent);
+//
+//
+//    }
 
 
-        } catch (
-                Exception e) {
-            e.printStackTrace();
-        }
-
-        String locationTextString = "latitude: " + latitude + "\nLongitude: " + longitude;
-        locationText.setText(locationTextString);
-
-        return location;
-    }
-
-
-    @Override
-    public void onSensorChanged(SensorEvent sensorEvent) {
-
-        if (sensorEvent.sensor == light) {
-            lightText.setText(String.valueOf(sensorEvent.values[0]));
-        } else if (sensorEvent.sensor == temp) {
-            tempText.setText(String.valueOf(sensorEvent.values[0]));
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {
-
-
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        getLocation();
-    }
-
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String s) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String s) {
-
-    }
 
     @Override
     public void onConnected(Bundle bundle) {
