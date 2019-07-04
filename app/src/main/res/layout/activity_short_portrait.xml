@@ -9,7 +9,7 @@
     tools:context=".ShortPortrait" >
 
     <Button
-        android:id="@+id/startButton"
+        android:id="@+id/startStopButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -18,29 +18,13 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="8dp"
-        android:onClick="start"
+        android:clickable="false"
+        android:onClick="startStopButtonPressed"
         android:text="Start"
-        app:layout_constraintBottom_toTopOf="@+id/stopButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/temperatureValues" />
-
-    <Button
-        android:id="@+id/stopButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        android:onClick="stop"
-        android:text="Stop"
         app:layout_constraintBottom_toTopOf="@+id/lightValues"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/startButton" />
+        app:layout_constraintTop_toBottomOf="@+id/temperatureValues" />
 
     <TextView
         android:id="@+id/temperatureValues"

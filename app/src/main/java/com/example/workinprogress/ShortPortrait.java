@@ -9,54 +9,72 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+
+import java.util.ArrayList;
 
 public class ShortPortrait extends AppCompatActivity implements SensorEventListener, LocationListener {
 
     private SensorManager sensorManager;
-    private LocationManager locationManager;
 
     private Sensor light;
     private Sensor temp;
     private Sensor accelerometer;
-    private Location location;
-
-    private boolean GPS;
-    private boolean networkEnabled;
-    private double latitude;
-    private double longitude;
-
+    private boolean recordingData = false;
 
     public TextView lightText;
-    public TextView tempText;
+    //    public TextView tempText;
     public TextView locationText;
     private TextView accelerometerText;
 
+    private ArrayList<Float> lightLevels;
+    private ArrayList<double[]> locations;
+    private ArrayList<Position> positions;
+
+    private LocationManager locationManager;
+    private android.location.Location location;
+    private LocationListener locationListener;
+
+    private boolean GPSExists;
+    private boolean networkIsEnabled;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_short_portrait);
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        assignSensorTextAndManagers();
+
+        lightLevels = new ArrayList<>();
+        locations = new ArrayList<>();
+        positions = new ArrayList<>();
+    }
+
+    @SuppressLint("MissingPermission")
+    protected void onResume() {
+        super.onResume();
+        sensorManager.registerListener(this, light, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, temp, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                2000,
+                10, this);
+    }
 
+    public void assignSensorTextAndManagers() {
         lightText = findViewById(R.id.lightValues);
-        tempText = findViewById(R.id.temperatureValues);
+//        tempText = findViewById(R.id.temperatureValues);
         locationText = findViewById(R.id.locationValues);
         accelerometerText = findViewById(R.id.accelerometerValues);
 
@@ -64,88 +82,29 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         temp = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-
-
-    }
-
-    protected void onResume() {
-        super.onResume();
-        sensorManager.registerListener(this, light, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, temp, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this,accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        getLocation();
     }
 
 
-    public void start(View view){
-        view.setPressed(true);
+    public void startStopButtonPressed(View view) {
+
+        if(((Button)view).getText().equals("start")){
+            recordingData = false;
+            ((Button)view).setText(R.string.stop);
+        }else{
+            stop(view);
+        }
+
     }
 
 
     public void stop(View view) {
 
-        String location = ((TextView) findViewById(R.id.locationValues)).getText().toString();
-        String light = ((TextView) findViewById(R.id.lightValues)).getText().toString();
-        String temp = ((TextView) findViewById(R.id.temperatureValues)).getText().toString();
-
         Intent intent = new Intent(this, DisplayImage.class);
-        intent.putExtra("temp", temp);
-        intent.putExtra("light", light);
-        intent.putExtra("location", location);
+        intent.putExtra("lightLevels",lightLevels);
+        intent.putExtra("locations",locations);
+        intent.putExtra("positions",positions);
         startActivity(intent);
 
-    }
-
-    @SuppressLint("MissingPermission")
-    public Location getLocation() {
-        try {
-            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-            networkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER); // check if it is network enabled
-            GPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER); //check if it is GPS enabled
-
-            if (!GPS && !networkEnabled) {
-                // can't connect, need to think about what to do here
-            } else {
-
-            }
-            if (!GPS) {
-                location = null;
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, this);
-
-                if (locationManager != null) {
-                    location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                    if (location != null) {
-                        latitude = location.getLatitude();
-                        longitude = location.getLongitude();
-                    }
-                }
-            }
-
-            if (GPS) {
-                location = null;
-
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1, this);
-                if (locationManager != null) {
-                    location = locationManager
-                            .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    if (location != null) {
-                        latitude = location.getLatitude();
-                        longitude = location.getLongitude();
-                    }
-                }
-            }
-
-
-        } catch (
-                Exception e) {
-            e.printStackTrace();
-        }
-
-        String locationTextString = "latitude: " + latitude + " Longitude: " + longitude;
-        locationText.setText(locationTextString);
-
-        return location;
     }
 
 
@@ -154,18 +113,26 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
         if (sensorEvent.sensor == light) {
             lightText.setText(String.valueOf(sensorEvent.values[0]));
-        } else if (sensorEvent.sensor == temp) {
-            tempText.setText(String.valueOf(sensorEvent.values[0]));
-        } else if (sensorEvent.sensor == accelerometer){
-            String accelerometerTextStringX = " x: "+sensorEvent.values[0];
-            String accelerometerTextStringY = " y: "+sensorEvent.values[1];
-            String accelerometerTextStringZ = " z: "+sensorEvent.values[2];
+            if(recordingData){
+                lightLevels.add(sensorEvent.values[0]);
+            }
+//        } else if (sensorEvent.sensor == temp) {
+//            tempText.setText(String.valueOf(sensorEvent.values[0]));
+        } else if (sensorEvent.sensor == accelerometer) {
 
-            String accelerometerTextString = accelerometerTextStringX+accelerometerTextStringY+accelerometerTextStringZ;
+            Position position = new Position(sensorEvent.values[0],sensorEvent.values[1],sensorEvent.values[2]);
+            String accelerometerTextString = " x: "+position.getxAxisString()+" y: "+position.getyAxisString()+" z: "+position.getzAxisString();
             accelerometerText.setText(accelerometerTextString);
-            Log.i("accelerometer",accelerometerTextString);
+
+            if(recordingData){
+                positions.add(position);
+            }
+
         }
+
     }
+
+
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
@@ -173,11 +140,17 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
     }
 
+    // is this necessary? MAY JUST BE ABLE TO USE LOCATION INFO SENT TO LISTENER ONLOCATIONCHANGE
     @Override
-    public void onLocationChanged(Location location) {
-        getLocation();
+    public void onLocationChanged(android.location.Location location) {
+//        double[] locationCoordinates = getLocation();
+        String locationTextString = "lat: "+location.getLatitude()+" long: "+location.getLongitude();
+        Log.i("location",locationTextString);
+        locationText.setText(locationTextString);
+        if(recordingData){
+            locations.add(new double[]{location.getLatitude(), location.getLongitude()});
+        }
     }
-
 
 
     @Override
@@ -194,4 +167,48 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
     public void onProviderDisabled(String s) {
 
     }
+
+    @SuppressLint("MissingPermission")
+    public android.location.Location getLocation() {
+
+        try {
+            networkIsEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER); // check if it is network enabled
+            GPSExists = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER); //check if it is GPS enabled
+
+            if (!GPSExists && !networkIsEnabled) {
+                return null;
+            } else if (!GPSExists) {
+                location = null;
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, this);
+
+                if (locationManager != null) {
+                    location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    if (location != null) {
+                        return location;
+                    }
+                }
+            } else {
+                location = null;
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1, this);
+
+                if (locationManager != null) {
+                    location = locationManager
+                            .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    if (location != null) {
+                        return location;
+                    }
+                }
+            }
+
+
+        } catch (
+                Exception e) {
+            e.printStackTrace();
+        }
+
+        return location;
+
+    }
+
+
 }

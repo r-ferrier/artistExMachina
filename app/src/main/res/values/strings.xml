@@ -7,6 +7,6 @@
     <string name="tempVariable"></string>
     <string name="loactionVariable"></string>
     <string name="buttonTitle">view image</string>
-    <string name="start">hello</string>
-    <string name="stop">hello</string>
+    <string name="start">start</string>
+    <string name="stop">stop</string>
 </resources>
