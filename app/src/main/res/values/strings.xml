@@ -9,4 +9,8 @@
     <string name="buttonTitle">view image</string>
     <string name="start">start</string>
     <string name="stop">stop</string>
+    <string name="artistBusy1">Please hold still while I finish painting      </string>
+    <string name="artistBusy2">Please hold still while I finish painting .    </string>
+    <string name="artistBusy3">Please hold still while I finish painting . .  </string>
+    <string name="artistBusy4">Please hold still while I finish painting . . .</string>
 </resources>

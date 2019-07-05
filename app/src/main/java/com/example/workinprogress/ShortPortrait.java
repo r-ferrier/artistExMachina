@@ -1,10 +1,8 @@
 package com.example.workinprogress;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -87,10 +85,11 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
     public void startStopButtonPressed(View view) {
 
-        if(((Button)view).getText().equals("start")){
-            recordingData = false;
-            ((Button)view).setText(R.string.stop);
-        }else{
+        if (!recordingData) {
+            recordingData = true;
+            ((Button) view).setText(R.string.stop);
+            locations.add(new double[]{getLocation().getLatitude(), getLocation().getLongitude()});
+        } else {
             stop(view);
         }
 
@@ -99,10 +98,20 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
     public void stop(View view) {
 
+        // instead of doing this need to create a new view in the display image activity and refer to this instead 
+//        setContentView(R.layout.activity_artist_is_working);
+
+
         Intent intent = new Intent(this, DisplayImage.class);
-        intent.putExtra("lightLevels",lightLevels);
-        intent.putExtra("locations",locations);
-        intent.putExtra("positions",positions);
+
+        Bundle bundle = new Bundle();
+
+        bundle.putSerializable("lightLevels", lightLevels);
+        bundle.putSerializable("locations", locations);
+        bundle.putSerializable("positions", positions);
+        intent.putExtra("createImage",true);
+
+        intent.putExtras(bundle);
         startActivity(intent);
 
     }
@@ -113,25 +122,24 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
         if (sensorEvent.sensor == light) {
             lightText.setText(String.valueOf(sensorEvent.values[0]));
-            if(recordingData){
+            if (recordingData) {
                 lightLevels.add(sensorEvent.values[0]);
             }
 //        } else if (sensorEvent.sensor == temp) {
 //            tempText.setText(String.valueOf(sensorEvent.values[0]));
         } else if (sensorEvent.sensor == accelerometer) {
 
-            Position position = new Position(sensorEvent.values[0],sensorEvent.values[1],sensorEvent.values[2]);
-            String accelerometerTextString = " x: "+position.getxAxisString()+" y: "+position.getyAxisString()+" z: "+position.getzAxisString();
+            Position position = new Position(sensorEvent.values[0], sensorEvent.values[1], sensorEvent.values[2]);
+            String accelerometerTextString = " x: " + position.getxAxisString() + " y: " + position.getyAxisString() + " z: " + position.getzAxisString();
             accelerometerText.setText(accelerometerTextString);
 
-            if(recordingData){
+            if (recordingData) {
                 positions.add(position);
             }
 
         }
 
     }
-
 
 
     @Override
@@ -144,10 +152,10 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
     @Override
     public void onLocationChanged(android.location.Location location) {
 //        double[] locationCoordinates = getLocation();
-        String locationTextString = "lat: "+location.getLatitude()+" long: "+location.getLongitude();
-        Log.i("location",locationTextString);
+        String locationTextString = "lat: " + location.getLatitude() + " long: " + location.getLongitude();
+        Log.i("location", locationTextString);
         locationText.setText(locationTextString);
-        if(recordingData){
+        if (recordingData) {
             locations.add(new double[]{location.getLatitude(), location.getLongitude()});
         }
     }
