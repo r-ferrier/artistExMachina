@@ -6,62 +6,14 @@
     android:layout_height="match_parent"
     tools:context=".DisplayImage">
 
-    <LinearLayout
-        android:id="@+id/buttonsLayout"
-        android:layout_width="214dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/createdImage">
-
-        <Button
-            android:id="@+id/returnButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="10dp"
-            android:onClick="returnToHome"
-            android:padding="10dp"
-            android:text="return" />
-
-        <Button
-            android:id="@+id/saveButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="10dp"
-            android:onClick="save"
-            android:padding="10dp"
-            android:text="refresh" />
-    </LinearLayout>
-
-    <ImageView
-        android:id="@+id/createdImage"
-        android:layout_width="453dp"
-        android:layout_height="489dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/buttonsLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.372"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/colouredpatterntest" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/artistBusyView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/elipse"
-        android:visibility="visible">
+        android:visibility="visible"
+        tools:layout_editor_absoluteX="101dp"
+        tools:layout_editor_absoluteY="655dp">
 
         <TextView
             android:id="@+id/artistBusyText"
@@ -84,5 +36,75 @@
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="210dp"
+        android:layout_height="107dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/createdImage">
+
+        <LinearLayout
+            android:id="@+id/buttonsLayout"
+            android:layout_width="193dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/discardButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:onClick="discard"
+                android:padding="10dp"
+                android:text="discard" />
+
+            <Button
+                android:id="@+id/keepButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:onClick="save"
+                android:text="keep" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/shareButton"
+            android:layout_width="108dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center|center_horizontal"
+            android:onClick="share"
+            android:text="share" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/createdImage"
+        android:layout_width="453dp"
+        android:layout_height="489dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.372"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/colouredpatterntest" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

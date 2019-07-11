@@ -3,6 +3,7 @@ package com.example.workinprogress;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -89,6 +90,10 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
             recordingData = true;
             ((Button) view).setText(R.string.stop);
             locations.add(new double[]{getLocation().getLatitude(), getLocation().getLongitude()});
+            ((TextView)findViewById(R.id.lightValues)).setTextColor(Color.CYAN);
+            ((TextView)findViewById(R.id.temperatureValues)).setTextColor(Color.CYAN);
+            ((TextView)findViewById(R.id.locationValues)).setTextColor(Color.CYAN);
+            ((TextView)findViewById(R.id.accelerometerValues)).setTextColor(Color.CYAN);
         } else {
             stop(view);
         }
@@ -98,14 +103,9 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
     public void stop(View view) {
 
-        // instead of doing this need to create a new view in the display image activity and refer to this instead 
-//        setContentView(R.layout.activity_artist_is_working);
-
-
         Intent intent = new Intent(this, DisplayImage.class);
 
         Bundle bundle = new Bundle();
-
         bundle.putSerializable("lightLevels", lightLevels);
         bundle.putSerializable("locations", locations);
         bundle.putSerializable("positions", positions);
@@ -113,7 +113,6 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
         intent.putExtras(bundle);
         startActivity(intent);
-
     }
 
 
@@ -136,16 +135,12 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
             if (recordingData) {
                 positions.add(position);
             }
-
         }
-
     }
 
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
-
-
     }
 
     // is this necessary? MAY JUST BE ABLE TO USE LOCATION INFO SENT TO LISTENER ONLOCATIONCHANGE

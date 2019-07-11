@@ -2,6 +2,9 @@ package com.example.workinprogress;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.util.Log;
@@ -13,9 +16,13 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.RequiresApi;
 
+import java.io.File;
 import java.util.ArrayList;
 
-public class CreateImage extends Drawable {
+public class CreateImage extends BitmapDrawable {
+
+    private int width;
+    private int height;
 
     private final Paint redPaint;
     private final Paint bluePaint;
@@ -30,6 +37,8 @@ public class CreateImage extends Drawable {
     private Canvas canvas;
     private final int lightRange = 40000;
     private int textSize = 25;
+
+    private Bitmap bitmap;
 
     private ArrayList<Float> lightLevels;
     private ArrayList<double[]> locations;
@@ -67,6 +76,11 @@ public class CreateImage extends Drawable {
 
         this.canvas = canvas;
 
+        this.width = getBounds().width();
+        this.height = getBounds().height();
+
+        canvas.drawColor(Color.WHITE);
+
         int x = 60;
         int y = 30;
 
@@ -102,6 +116,9 @@ public class CreateImage extends Drawable {
             y+=textSize+1;
             Log.i("position",positionString);
         }
+
+
+
 
 
 
@@ -196,4 +213,22 @@ public class CreateImage extends Drawable {
         // Must be PixelFormat.UNKNOWN, TRANSLUCENT, TRANSPARENT, or OPAQUE
         return PixelFormat.OPAQUE;
     }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public Bitmap createBitmap(){
+
+        Bitmap  bitmap = Bitmap.createBitmap(this.getWidth(), this.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        this.draw(canvas);
+
+        return bitmap;
+    }
+
 }

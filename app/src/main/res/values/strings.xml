@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">Work in Progress</string>
+    <string name="app_name">Artist ex Machina</string>
+    <string name="title">Artist\nex Machina</string>
     <string name="location">location</string>
     <string name="temperature">temperature</string>
     <string name="lightLevels">light levels</string>
@@ -13,4 +14,7 @@
     <string name="artistBusy2">Please hold still while I finish painting .    </string>
     <string name="artistBusy3">Please hold still while I finish painting . .  </string>
     <string name="artistBusy4">Please hold still while I finish painting . . .</string>
+    <string name="gallery">gallery</string>
+    <string name="sit_for_a_portrait">sit for a portrait</string>
+    <string name="about">about</string>
 </resources>
