@@ -2,6 +2,7 @@ package com.example.workinprogress;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -41,12 +42,13 @@ public class DisplayImage extends AppCompatActivity {
 
         if (getIntent().getExtras() != null) {
             createNewImage = getIntent().getBooleanExtra("createImage", false);
-        }
 
-        if (!createNewImage) {
-            displayExistingImage();
-        } else {
-            createAndDisplayNewImage();
+            if (!createNewImage) {
+                currentImagePath = getIntent().getStringExtra("imageLocation");
+                displayExistingImage();
+            } else {
+                createAndDisplayNewImage();
+            }
         }
     }
 
@@ -73,6 +75,7 @@ public class DisplayImage extends AppCompatActivity {
 
     public void displayExistingImage() {
         findViewById(R.id.artistBusyView).setVisibility(View.INVISIBLE);
+        ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(BitmapFactory.decodeFile(currentImagePath));
     }
 
     public void createAndDisplayNewImage() {
@@ -119,48 +122,39 @@ public class DisplayImage extends AppCompatActivity {
 
     }
 
-//    public static Bitmap drawableToBitmap(CreateImage createdImage) {
-
-//        Drawable drawable = (Drawable)createdImage;
-
-//        Bitmap mutableBitmap = Bitmap.createBitmap(createdImage.getWidth(), createdImage.getHeight(), Bitmap.Config.ARGB_8888);
-//        Canvas canvas = new Canvas(mutableBitmap);
-//        createdImage.setBounds(0, 0, createdImage.getWidth(),createdImage.getHeight());
-//        createdImage.draw(canvas);
-
-//        Bitmap mutableBitmap = ((BitmapDrawable)drawable).getBitmap();
-
-//        return mutableBitmap;
-//    }
-
 
     public void save(View view) {
 
-        if (isExternalStorageWritable()) {
+        if(imageCreated) {
 
-            Log.i("external storage?", isExternalStorageWritable() + "");
+            if (isExternalStorageWritable()) {
 
-            try {
-                File file = getPublicAlbumStorageDir("artist_ex_machina");
-                FileOutputStream out = new FileOutputStream(file);
+                Log.i("external storage?", isExternalStorageWritable() + "");
+
+                try {
+                    File file = getPublicAlbumStorageDir("artist_ex_machina");
+                    FileOutputStream out = new FileOutputStream(file);
 
 
-                Bitmap bitmap = createdImage.createBitmap();
+                    Bitmap bitmap = createdImage.createBitmap();
 
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
 
 
 //                drawableToBitmap(createdImage).compress(Bitmap.CompressFormat.JPEG, 90, out);
-                out.flush();
-                out.close();
-                Toast.makeText(getApplicationContext(), "Saved successfully, Check gallery", Toast.LENGTH_SHORT).show();
-                galleryAddPic();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+                    out.flush();
+                    out.close();
+                    Toast.makeText(getApplicationContext(), "Saved successfully, Check gallery", Toast.LENGTH_SHORT).show();
+                    galleryAddPic();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
+
+        goToGallery();
     }
 
     public File getPublicAlbumStorageDir(String albumName) throws IOException {
@@ -205,52 +199,31 @@ public class DisplayImage extends AppCompatActivity {
         this.sendBroadcast(mediaScanIntent);
     }
 
-//    private void saveImageToExternalStorage(Bitmap finalBitmap) {
-//
-//        String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
-//
-//        Log.i("file path",root);
-//
-//        File myDir = new File(root + "/saved_images_1");
-//        myDir.mkdirs();
-//        Random generator = new Random();
-//        int n = 10000;
-//        n = generator.nextInt(n);
-//        String fname = "Image-" + n + ".jpg";
-//        File file = new File(myDir, fname);
-//        if (file.exists())
-//            file.delete();
-//        try {
-//            FileOutputStream out = new FileOutputStream(file);
-//            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-//            out.flush();
-//            out.close();
-//        }
-//        catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//
-//        // Tell the media scanner about the new file so that it is
-//        // immediately available to the user.
-//        MediaScannerConnection.scanFile(this, new String[]{file.toString()}, null,
-//                new MediaScannerConnection.OnScanCompletedListener() {
-//                    public void onScanCompleted(String path, Uri uri) {
-//                        Log.i("ExternalStorage", "Scanned " + path + ":");
-//                        Log.i("ExternalStorage", "-> uri=" + uri);
-//                    }
-//                });
-//
-//    }
-
-//
-
 
     public void share(View view) {
         //share image using other applications? Investigate possibilities
     }
 
     public void discard(View view) {
+
+        File file = new File(currentImagePath);
+        file.delete();
+        goToGallery();
+
+
+    }
+
+    private void goToGallery(){
+        Intent intent = new Intent(this, Gallery.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        super.onBackPressed();
+        startActivity(new Intent(this,MainActivity.class));
+        finish();
 
     }
 

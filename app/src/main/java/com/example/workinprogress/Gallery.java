@@ -1,39 +1,87 @@
 package com.example.workinprogress;
 
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
-import android.widget.Toast;
+import android.view.View;
+
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.squareup.picasso.Picasso;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 
 public class Gallery extends AppCompatActivity {
 
+    private RecyclerView recyclerView;
+    private LinearLayoutManager linearLayoutManager;
+    private GalleryRecyclerViewAdapter galleryRecyclerViewAdapter;
+    private String[] reverseFiles;
+    private GridLayoutManager gridLayoutManager;
+
+
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_gallery);
+        File file = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), getString(R.string.album_storage_name));
 
-        String albumName = "artist_ex_machina";
-
-        Uri file = Uri.fromFile(new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), albumName));
-
-
-        if(file.toString() != null && file.toString().length()>0)
-        {
-            Picasso.with(this).load(file).placeholder(R.drawable.elipse).into();
-            nameTxt.setText(file.toString());
-        }else
-        {
-            Toast.makeText(this, "Empty URI", Toast.LENGTH_SHORT).show();
+        String[] files = file.list();
+        for(int i = 0; i< files.length; i++){
+            files[i] = file.getPath()+"/"+files[i];
         }
+
+        reverseFiles = new String[files.length];
+
+        for(int i = 0; i< files.length; i++){
+            reverseFiles[files.length-i-1]=files[i];
+
+        }
+
+        setContentView(R.layout.activity_gallery);
+        recyclerView = findViewById(R.id.gallery_recycler_view);
+        recyclerView.setHasFixedSize(true); //improves performance for fixed size elements
+
+
+        gridLayoutManager = new GridLayoutManager(this,3);
+        recyclerView.setLayoutManager(gridLayoutManager);
+
+        // specify an adapter (see also next example)
+        galleryRecyclerViewAdapter = new GalleryRecyclerViewAdapter(reverseFiles);
+        recyclerView.setAdapter(galleryRecyclerViewAdapter);
+
+    }
+
+    public void displayImage(View view){
+
+        Intent intent = new Intent(this, DisplayImage.class);
+
+        String imageLocation = view.getContentDescription().toString();
+
+        intent.putExtra("imageLocation",imageLocation);
+
+        startActivity(intent);
 
 
     }
+
+    public void returnHome(View view){
+
+        Intent intent = new Intent(this, MainActivity.class);
+
+        startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        super.onBackPressed();
+        startActivity(new Intent(this,MainActivity.class));
+        finish();
+
+    }
+
 }

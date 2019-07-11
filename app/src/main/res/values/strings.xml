@@ -17,4 +17,5 @@
     <string name="gallery">gallery</string>
     <string name="sit_for_a_portrait">sit for a portrait</string>
     <string name="about">about</string>
+    <string name="album_storage_name">artist_ex_machina</string>
 </resources>
