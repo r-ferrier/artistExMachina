@@ -28,11 +28,13 @@ public class DisplayImage extends AppCompatActivity {
     private boolean imageCreated;
 
     String currentImagePath;
-    private CreateImage createdImage;
+    private TextImage createdImage;
 
     private ArrayList<Float> lightLevels;
     private ArrayList<double[]> locations;
     private ArrayList<Position> positions;
+    private int steps;
+    private float distance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +43,7 @@ public class DisplayImage extends AppCompatActivity {
         setContentView(R.layout.activity_display_image);
 
         if (getIntent().getExtras() != null) {
+
             createNewImage = getIntent().getBooleanExtra("createImage", false);
 
             if (!createNewImage) {
@@ -67,12 +70,6 @@ public class DisplayImage extends AppCompatActivity {
         }
     }
 
-
-    public void returnToHome(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-    }
-
     public void displayExistingImage() {
         findViewById(R.id.artistBusyView).setVisibility(View.INVISIBLE);
         ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(BitmapFactory.decodeFile(currentImagePath));
@@ -81,6 +78,10 @@ public class DisplayImage extends AppCompatActivity {
     public void createAndDisplayNewImage() {
 
         imageCreated = false;
+        getPublicAlbumStorageDir(getString(R.string.album_storage_name));
+
+        steps = getIntent().getIntExtra("steps",0);
+        distance = getIntent().getFloatExtra("distance",0);
 
         Thread thready = new Thread(new Runnable() {
             @Override
@@ -108,15 +109,9 @@ public class DisplayImage extends AppCompatActivity {
             locations = (ArrayList<double[]>) bundle.getSerializable("locations");
             positions = (ArrayList<Position>) bundle.getSerializable("positions");
 
-            for (int i = 0; i < 10; i++) {
-                if (i < lightLevels.size()) {
-                    String light = lightLevels.get(i) + "";
-                    Log.i("lightlevels", light);
-                }
-            }
         }
 
-        createdImage = new CreateImage(this, lightLevels, locations, positions);
+        createdImage = new TextImage(this, lightLevels, locations, positions, steps, distance);
         ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
         imageCreated = true;
 
@@ -132,7 +127,7 @@ public class DisplayImage extends AppCompatActivity {
                 Log.i("external storage?", isExternalStorageWritable() + "");
 
                 try {
-                    File file = getPublicAlbumStorageDir("artist_ex_machina");
+                    File file = new File(currentImagePath);
                     FileOutputStream out = new FileOutputStream(file);
 
 
@@ -157,7 +152,7 @@ public class DisplayImage extends AppCompatActivity {
         goToGallery();
     }
 
-    public File getPublicAlbumStorageDir(String albumName) throws IOException {
+    public File getPublicAlbumStorageDir(String albumName){
         // Get the directory for the user's public pictures directory.
         File file = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), albumName);
@@ -171,11 +166,16 @@ public class DisplayImage extends AppCompatActivity {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
 
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                file      /* directory */
-        );
+        File image = null;
+        try {
+            image = File.createTempFile(
+                    imageFileName,  /* prefix */
+                    ".jpg",         /* suffix */
+                    file      /* directory */
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         currentImagePath = image.getAbsolutePath();
 
@@ -207,9 +207,11 @@ public class DisplayImage extends AppCompatActivity {
     public void discard(View view) {
 
         File file = new File(currentImagePath);
-        file.delete();
-        goToGallery();
 
+        if(file.exists()) {
+            file.delete();
+        }
+        onBackPressed();
 
     }
 

@@ -25,22 +25,23 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
     private SensorManager sensorManager;
 
     private Sensor light;
-    private Sensor temp;
     private Sensor accelerometer;
     private boolean recordingData = false;
 
     public TextView lightText;
-    //    public TextView tempText;
     public TextView locationText;
     private TextView accelerometerText;
+    private TextView distanceText;
+    private TextView stepsText;
 
     private ArrayList<Float> lightLevels;
     private ArrayList<double[]> locations;
     private ArrayList<Position> positions;
+    private int steps;
+    private float distance;
 
     private LocationManager locationManager;
     private android.location.Location location;
-    private LocationListener locationListener;
 
     private boolean GPSExists;
     private boolean networkIsEnabled;
@@ -50,8 +51,14 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_short_portrait);
 
+        if (getIntent().getExtras() != null) {
+            steps = getIntent().getIntExtra("steps",0);
+            distance = getIntent().getFloatExtra("distance",0);
+        }
+
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         assignSensorTextAndManagers();
+        updateStaticValues();
 
         lightLevels = new ArrayList<>();
         locations = new ArrayList<>();
@@ -62,7 +69,6 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
     protected void onResume() {
         super.onResume();
         sensorManager.registerListener(this, light, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, temp, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -71,16 +77,23 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
                 10, this);
     }
 
-    public void assignSensorTextAndManagers() {
+    private void assignSensorTextAndManagers() {
+
         lightText = findViewById(R.id.lightValues);
-//        tempText = findViewById(R.id.temperatureValues);
         locationText = findViewById(R.id.locationValues);
         accelerometerText = findViewById(R.id.accelerometerValues);
+        stepsText = findViewById(R.id.stepsValues);
+        distanceText = findViewById(R.id.distanceValues);
 
         light = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-        temp = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+    }
 
+    private void updateStaticValues(){
+        String stepsString = "steps: "+steps;
+        String distanceString = "distance: "+distance;
+        stepsText.setText(stepsString);
+        distanceText.setText(distanceString);
     }
 
 
@@ -91,7 +104,6 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
             ((Button) view).setText(R.string.stop);
             locations.add(new double[]{getLocation().getLatitude(), getLocation().getLongitude()});
             ((TextView)findViewById(R.id.lightValues)).setTextColor(Color.CYAN);
-            ((TextView)findViewById(R.id.temperatureValues)).setTextColor(Color.CYAN);
             ((TextView)findViewById(R.id.locationValues)).setTextColor(Color.CYAN);
             ((TextView)findViewById(R.id.accelerometerValues)).setTextColor(Color.CYAN);
         } else {
@@ -109,6 +121,8 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         bundle.putSerializable("lightLevels", lightLevels);
         bundle.putSerializable("locations", locations);
         bundle.putSerializable("positions", positions);
+        intent.putExtra("distance",distance);
+        intent.putExtra("steps",steps);
         intent.putExtra("createImage",true);
 
         intent.putExtras(bundle);
@@ -124,8 +138,6 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
             if (recordingData) {
                 lightLevels.add(sensorEvent.values[0]);
             }
-//        } else if (sensorEvent.sensor == temp) {
-//            tempText.setText(String.valueOf(sensorEvent.values[0]));
         } else if (sensorEvent.sensor == accelerometer) {
 
             Position position = new Position(sensorEvent.values[0], sensorEvent.values[1], sensorEvent.values[2]);
@@ -213,14 +225,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
     }
 
-    @Override
-    public void onBackPressed()
-    {
-        super.onBackPressed();
-        startActivity(new Intent(this,MainActivity.class));
-        finish();
 
-    }
 
 
 }

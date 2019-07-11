@@ -1,6 +1,5 @@
 package com.example.workinprogress;
 
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -12,14 +11,12 @@ import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
-import android.graphics.drawable.Drawable;
 
 import androidx.annotation.RequiresApi;
 
-import java.io.File;
 import java.util.ArrayList;
 
-public class CreateImage extends BitmapDrawable {
+public class TextImage extends Painting {
 
     private int width;
     private int height;
@@ -28,31 +25,27 @@ public class CreateImage extends BitmapDrawable {
     private final Paint bluePaint;
     private final Paint greenPaint;
     private final Paint orangePaint;
+    private final Paint purplePaint;
 
-    private Context context;
     private int[] lightColours;
     private int[] lightColours2;
     private int[] lightColours3;
     private int firstLightFigure;
     private Canvas canvas;
     private final int lightRange = 40000;
-    private int textSize = 25;
+    private int textSize = 28;
 
     private Bitmap bitmap;
 
-    private ArrayList<Float> lightLevels;
-    private ArrayList<double[]> locations;
-    private ArrayList<Position> positions;
+    public TextImage(Context context, ArrayList<Float> lightLevels,
+                     ArrayList<double[]> locations, ArrayList<Position> positions, int steps, float distance){
 
-    public CreateImage(Context context, ArrayList<Float> lightLevels,
-                       ArrayList<double[]> locations, ArrayList<Position> positions){
-
-        this.locations = locations;
-        this.lightLevels = lightLevels;
-        this.positions = positions;
-        this.context = context;
+        super(context, lightLevels,
+                locations, positions, steps, distance);
 
         redPaint = new Paint();
+        redPaint.setARGB(225,230,50,20);
+        redPaint.setTextSize(textSize);
 
         bluePaint = new Paint();
         bluePaint.setARGB(255,40,60,150);
@@ -66,6 +59,10 @@ public class CreateImage extends BitmapDrawable {
         greenPaint.setARGB(255,40,180,70);
         greenPaint.setTextSize(textSize);
 
+        purplePaint = new Paint();
+        purplePaint.setARGB(255,220,0,200);
+        purplePaint.setTextSize(textSize);
+
 //        setLightColours();
 
     }
@@ -76,13 +73,16 @@ public class CreateImage extends BitmapDrawable {
 
         this.canvas = canvas;
 
-        this.width = getBounds().width();
-        this.height = getBounds().height();
+        width = getBounds().width();
+        height = getBounds().height();
 
         canvas.drawColor(Color.WHITE);
 
         int x = 60;
         int y = 30;
+
+        canvas.drawText("light:",x,y,greenPaint);
+        y+=textSize+10;
 
         for(Float lightLevel: lightLevels){
 
@@ -94,35 +94,39 @@ public class CreateImage extends BitmapDrawable {
 
         y = 30;
 
+        canvas.drawText("location:",x+150,y,orangePaint);
+        y+=textSize+10;
         for (double[] location: locations){
 
             String longitude = location[0]+"";
             String latitude = location[1]+"";
             String longAndLat = "lat: "+latitude+" long: "+longitude;
 
-            canvas.drawText(longAndLat,x+120,y,orangePaint);
+            canvas.drawText(longAndLat,x+150,y,orangePaint);
             y+=textSize+1;
             Log.i("location",longAndLat);
         }
 
         y = 30;
 
+        canvas.drawText("position:",x+670,y,bluePaint);
+        y+=textSize+10;
+
         for(Position position: positions){
 
             String positionString = "x: "+position.getxAxisString()+" y: "
                     +position.getyAxisString()+" z: "+position.getzAxisString();
 
-            canvas.drawText(positionString,x+550,y,bluePaint);
+            canvas.drawText(positionString,x+670,y,bluePaint);
             y+=textSize+1;
             Log.i("position",positionString);
         }
 
+        String distanceString = "distance: "+distance;
+        canvas.drawText(distanceString,x+150,height-100,purplePaint);
 
-
-
-
-
-
+        String stepsString = "steps: "+steps;
+        canvas.drawText(stepsString,x+150,height-50,redPaint);
 
 //        int[] bounds1 = new int[]{300,30,800,1000};
 //        int[] bounds2 = new int[]{100,400,900,1200};
@@ -210,19 +214,18 @@ public class CreateImage extends BitmapDrawable {
 
     @Override
     public int getOpacity() {
-        // Must be PixelFormat.UNKNOWN, TRANSLUCENT, TRANSPARENT, or OPAQUE
         return PixelFormat.OPAQUE;
     }
 
-    public int getWidth() {
+    private int getWidth() {
         return width;
     }
 
-    public int getHeight() {
+    private int getHeight() {
         return height;
     }
 
-    public Bitmap createBitmap(){
+    Bitmap createBitmap(){
 
         Bitmap  bitmap = Bitmap.createBitmap(this.getWidth(), this.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);

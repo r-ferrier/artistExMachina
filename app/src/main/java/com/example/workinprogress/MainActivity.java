@@ -1,30 +1,14 @@
 package com.example.workinprogress;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.database.Cursor;
-import android.database.MergeCursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.bumptech.glide.Glide;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -48,20 +31,16 @@ import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.result.DataReadResult;
 
-import java.io.File;
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.android.gms.fitness.data.DataType.*;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
+        GoogleApiClient.OnConnectionFailedListener{
 
 
     private static final int REQUEST_OAUTH = 1;
@@ -69,11 +48,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private boolean authInProgress = false;
     private ResultCallback<Status> mSubscribeResultCallback;
     private ResultCallback<Status> distanceSubscribeResultCallback;
-//    private LoadAlbum loadAlbumTask;
-    GridView galleryGridView;
-    ArrayList<HashMap<String, String>> albumList = new ArrayList<HashMap<String, String>>();
-
     private GoogleApiClient mGoogleApiClient;
+    private int steps;
+    private float distance;
 
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
@@ -82,62 +59,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        if (ContextCompat.checkSelfPermission
-                (this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission
-                (this, Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission
-                (this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission
-                (this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-        {
-            ActivityCompat.requestPermissions
-                    (this, new String[]{
-                            Manifest.permission.ACCESS_COARSE_LOCATION,
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-        }
-
-        initCallbacks();
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(Fitness.HISTORY_API).addApi(Fitness.RECORDING_API)
-                .addScope(new Scope(Scopes.FITNESS_ACTIVITY_READ))
-                .addScope(new Scope(Scopes.FITNESS_LOCATION_READ))
-                .addConnectionCallbacks(this)
-                .enableAutoManage(this, 0, this)
-                .build();
-
+        requestPermissions();
+        connectToAPIs(savedInstanceState);
         new ViewWeekStepCountTask().execute();
 
-        if (savedInstanceState != null) {
-            authInProgress = savedInstanceState.getBoolean(AUTH_PENDING);
-        }
-
-//
-//        galleryGridView = (GridView) findViewById(R.id.galleryGridView);
-//        int iDisplayWidth = getResources().getDisplayMetrics().widthPixels ;
-//        Resources resources = getApplicationContext().getResources();
-//        DisplayMetrics metrics = resources.getDisplayMetrics();
-//        float dp = iDisplayWidth / (metrics.densityDpi / 160f);
-//
-//        if(dp < 360)
-//        {
-//            dp = (dp - 17) / 2;
-//            float px = Function.convertDpToPixel(dp, getApplicationContext());
-//            galleryGridView.setColumnWidth(Math.round(px));
-//        }
-//
-//
-//        loadAlbumTask = new LoadAlbum();
-//        loadAlbumTask.execute();
-
-
-
     }
-
 
     private class ViewWeekStepCountTask extends AsyncTask<Void, Void, Void> {
 
@@ -166,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             Log.e("time", "\tStart: " + DateFormat.getDateInstance().format(startTime)+" "+ DateFormat.getTimeInstance().format(startTime));
             Log.e("time", "\tEnd: " + DateFormat.getDateInstance().format(endTime)+" "+ DateFormat.getTimeInstance().format(endTime));
 
-            DataReadRequest steps = new DataReadRequest.Builder()
+            DataReadRequest stepsAndDistance = new DataReadRequest.Builder()
                     .aggregate(TYPE_STEP_COUNT_DELTA, AGGREGATE_STEP_COUNT_DELTA)
                     .aggregate(TYPE_DISTANCE_DELTA, AGGREGATE_DISTANCE_DELTA)
                     .bucketByTime(1, TimeUnit.DAYS)
@@ -174,19 +100,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     .build();
 
 
-            DataReadResult stepsResult = Fitness.HistoryApi.readData(mGoogleApiClient, steps).await(1, TimeUnit.MINUTES);
+            DataReadResult result = Fitness.HistoryApi.readData(mGoogleApiClient, stepsAndDistance).await(1, TimeUnit.MINUTES);
 
 
-            if (stepsResult.getBuckets().size() > 0) {
+            if (result.getBuckets().size() > 0) {
 
-                Log.e("History", "Number of steps buckets: " + stepsResult.getBuckets().size());
-                List<DataSet> dataSets = stepsResult.getBuckets().get(0).getDataSets();
+                Log.e("History", "Number of buckets: " + result.getBuckets().size());
+                List<DataSet> dataSets = result.getBuckets().get(0).getDataSets();
 
-                int i = 0;
+                int i = 1;
 
                 for (DataSet dataSet : dataSets) {
+                    Log.i("dataset number",i+"");
                     showDataSet(dataSet);
-                    Log.i("dataset",i+"");
                     i++;
                 }
 
@@ -202,34 +128,23 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             DateFormat timeFormat = DateFormat.getTimeInstance();
 
             for (DataPoint dp : dataSet.getDataPoints()) {
-                Log.e("History", "Data point:");
-                Log.e("History", "\tType: " + dp.getDataType().getName());
                 Log.e("History", "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
                 Log.e("History", "\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)));
+
                 for (Field field : dp.getDataType().getFields()) {
-                    Log.e("History", "\tField: " + field.getName() +
-                            " Value: " + dp.getValue(field));
+
+                    if(dp.getDataType().equals(TYPE_STEP_COUNT_DELTA)){
+                        steps = dp.getValue(field).asInt();
+                    }else if(dp.getDataType().equals(TYPE_DISTANCE_DELTA)){
+                        distance = dp.getValue(field).asFloat();
+                    }
+
+                    Log.e("History", "\tField: " + field.getName());
+                    Log.e("History", "\tValue: " + dp.getValue(field));
                 }
             }
         }
     }
-
-
-//    public void viewImage(View view) {
-//
-//        String location = ((TextView) findViewById(R.id.locationText)).getText().toString();
-//        String light = ((TextView) findViewById(R.id.lightText)).getText().toString();
-//        String temp = ((TextView) findViewById(R.id.temperatureValues)).getText().toString();
-//
-//        Intent intent = new Intent(this, DisplayImage.class);
-//        intent.putExtra("temp", temp);
-//        intent.putExtra("light", light);
-//        intent.putExtra("location", location);
-//        startActivity(intent);
-//
-//
-//    }
-
 
 
     @Override
@@ -239,11 +154,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         Fitness.RecordingApi.subscribe(mGoogleApiClient, TYPE_DISTANCE_DELTA)
                 .setResultCallback(distanceSubscribeResultCallback);
-
-    }
-
-    @Override
-    public void onClick(View view) {
 
     }
 
@@ -313,6 +223,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void beginShortPortraitActivity(View view){
 
         Intent intent = new Intent(this, ShortPortrait.class);
+        intent.putExtra("steps",steps);
+        intent.putExtra("distance",distance);
         startActivity(intent);
 
     }
@@ -346,6 +258,44 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 }
             }
         }
+
+    }
+
+    private void requestPermissions(){
+        if (ContextCompat.checkSelfPermission
+                (this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission
+                (this, Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission
+                (this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission
+                (this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions
+                    (this, new String[]{
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+        }
+
+        initCallbacks();
+    }
+
+    private void connectToAPIs(Bundle savedInstanceState){
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Fitness.HISTORY_API).addApi(Fitness.RECORDING_API)
+                .addScope(new Scope(Scopes.FITNESS_ACTIVITY_READ))
+                .addScope(new Scope(Scopes.FITNESS_LOCATION_READ))
+                .addConnectionCallbacks(this)
+                .enableAutoManage(this, 0, this)
+                .build();
+
+        if (savedInstanceState != null) {
+            authInProgress = savedInstanceState.getBoolean(AUTH_PENDING);
+        }
+
+
 
     }
 
