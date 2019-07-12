@@ -1,10 +1,12 @@
-package com.example.workinprogress;
+package com.example.workinprogress.paintings;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
+
+import com.example.workinprogress.Position;
 
 import java.util.ArrayList;
 

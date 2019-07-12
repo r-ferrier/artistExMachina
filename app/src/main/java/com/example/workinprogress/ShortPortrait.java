@@ -115,6 +115,10 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
     public void stop(View view) {
 
+        ScaledValues scaledValues = new ScaledValues(lightLevels,locations,positions,steps,distance);
+
+        System.out.print(scaledValues.toString());
+
         Intent intent = new Intent(this, DisplayImage.class);
 
         Bundle bundle = new Bundle();

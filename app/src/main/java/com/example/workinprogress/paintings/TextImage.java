@@ -1,9 +1,8 @@
-package com.example.workinprogress;
+package com.example.workinprogress.paintings;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.util.Log;
@@ -13,6 +12,8 @@ import android.graphics.Paint;
 import android.graphics.PixelFormat;
 
 import androidx.annotation.RequiresApi;
+
+import com.example.workinprogress.Position;
 
 import java.util.ArrayList;
 
@@ -225,7 +226,7 @@ public class TextImage extends Painting {
         return height;
     }
 
-    Bitmap createBitmap(){
+    public Bitmap createBitmap(){
 
         Bitmap  bitmap = Bitmap.createBitmap(this.getWidth(), this.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
