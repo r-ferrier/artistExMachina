@@ -32,11 +32,11 @@ public class DisplayImage extends AppCompatActivity {
     String currentImagePath;
     private TextImage createdImage;
 
-    private ArrayList<Float> lightLevels;
-    private ArrayList<double[]> locations;
+    private ArrayList<Integer> lightLevels;
+    private ArrayList<Location> locations;
     private ArrayList<Position> positions;
     private int steps;
-    private float distance;
+    private int distance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,8 +82,38 @@ public class DisplayImage extends AppCompatActivity {
         imageCreated = false;
         getPublicAlbumStorageDir(getString(R.string.album_storage_name));
 
-        steps = getIntent().getIntExtra("steps",0);
-        distance = getIntent().getFloatExtra("distance",0);
+        if (getIntent().getExtras() != null) {
+
+            Bundle bundle = this.getIntent().getExtras();
+
+            ArrayList<SensorResult> sensorResults = (ArrayList<SensorResult>) bundle.getSerializable("sensorResults");
+
+            for (SensorResult s : sensorResults) {
+
+                switch (s.getName()) {
+                    case "steps":
+                        steps = (int) s.getResultsNumbers().get(0);
+                        break;
+                    case "distance":
+                        distance = (int) s.getResultsNumbers().get(0);
+                        break;
+                    case "light":
+                        lightLevels = s.getResultsNumbers();
+                        break;
+                    case "locations":
+                        locations = s.getResultsObjects();
+                        break;
+                    case "positions":
+                        positions = s.getResultsObjects();
+                        break;
+
+                }
+
+            }
+        }
+
+//        steps = getIntent().getIntExtra("steps",0);
+//        distance = getIntent().getFloatExtra("distance",0);
 
         Thread thready = new Thread(new Runnable() {
             @Override
@@ -103,15 +133,12 @@ public class DisplayImage extends AppCompatActivity {
         thready.start();
 
 
-        if (getIntent().getExtras() != null) {
 
-            Bundle bundle = this.getIntent().getExtras();
 
-            lightLevels = (ArrayList<Float>) bundle.getSerializable("lightLevels");
-            locations = (ArrayList<double[]>) bundle.getSerializable("locations");
-            positions = (ArrayList<Position>) bundle.getSerializable("positions");
 
-        }
+//            lightLevels = (ArrayList<Float>) bundle.getSerializable("lightLevels");
+//            locations = (ArrayList<double[]>) bundle.getSerializable("locations");
+//            positions = (ArrayList<Position>) bundle.getSerializable("positions");
 
         createdImage = new TextImage(this, lightLevels, locations, positions, steps, distance);
         ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);

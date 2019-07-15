@@ -34,8 +34,10 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
     private TextView distanceText;
     private TextView stepsText;
 
+    private ArrayList<SensorResult> sensorResults = new ArrayList<>();
+
     private ArrayList<Float> lightLevels;
-    private ArrayList<double[]> locations;
+    private ArrayList<Location> locations;
     private ArrayList<Position> positions;
     private int steps;
     private float distance;
@@ -52,8 +54,12 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         setContentView(R.layout.activity_short_portrait);
 
         if (getIntent().getExtras() != null) {
-            steps = getIntent().getIntExtra("steps",0);
-            distance = getIntent().getFloatExtra("distance",0);
+
+            sensorResults.add((SensorResult)getIntent().getSerializableExtra("steps"));
+            sensorResults.add((SensorResult)getIntent().getSerializableExtra("distance"));
+//
+//            steps = getIntent().getIntExtra("steps",0);
+//            distance = getIntent().getFloatExtra("distance",0);
         }
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -102,7 +108,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         if (!recordingData) {
             recordingData = true;
             ((Button) view).setText(R.string.stop);
-            locations.add(new double[]{getLocation().getLatitude(), getLocation().getLongitude()});
+            locations.add(new Location(getLocation().getLatitude(), getLocation().getLongitude()));
             ((TextView)findViewById(R.id.lightValues)).setTextColor(Color.CYAN);
             ((TextView)findViewById(R.id.locationValues)).setTextColor(Color.CYAN);
             ((TextView)findViewById(R.id.accelerometerValues)).setTextColor(Color.CYAN);
@@ -115,18 +121,18 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
     public void stop(View view) {
 
-        ScaledValues scaledValues = new ScaledValues(lightLevels,locations,positions,steps,distance);
+//        ScaledValues scaledValues = new ScaledValues(lightLevels,locations,positions,steps,distance);
 
-        System.out.print(scaledValues.toString());
+//        System.out.print(scaledValues.toString());
+
+        sensorResults.add(new SensorResult<Float,ResultValuesAppendable>(lightLevels,light,"light"));
+        sensorResults.add(new SensorResult<>(locations,true,"locations"));
+        sensorResults.add(new SensorResult<>(positions,true,"positions"));
 
         Intent intent = new Intent(this, DisplayImage.class);
 
         Bundle bundle = new Bundle();
-        bundle.putSerializable("lightLevels", lightLevels);
-        bundle.putSerializable("locations", locations);
-        bundle.putSerializable("positions", positions);
-        intent.putExtra("distance",distance);
-        intent.putExtra("steps",steps);
+        bundle.putSerializable("sensorResults",sensorResults);
         intent.putExtra("createImage",true);
 
         intent.putExtras(bundle);
@@ -144,7 +150,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
             }
         } else if (sensorEvent.sensor == accelerometer) {
 
-            Position position = new Position(sensorEvent.values[0], sensorEvent.values[1], sensorEvent.values[2]);
+            Position position = new Position(sensorEvent);
             String accelerometerTextString = " x: " + position.getxAxisString() + " y: " + position.getyAxisString() + " z: " + position.getzAxisString();
             accelerometerText.setText(accelerometerTextString);
 
@@ -167,7 +173,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         Log.i("location", locationTextString);
         locationText.setText(locationTextString);
         if (recordingData) {
-            locations.add(new double[]{location.getLatitude(), location.getLongitude()});
+            locations.add(new Location(location.getLatitude(),location.getLongitude()));
         }
     }
 

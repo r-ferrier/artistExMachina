@@ -13,6 +13,7 @@ import android.graphics.PixelFormat;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.workinprogress.Location;
 import com.example.workinprogress.Position;
 
 import java.util.ArrayList;
@@ -38,8 +39,8 @@ public class TextImage extends Painting {
 
     private Bitmap bitmap;
 
-    public TextImage(Context context, ArrayList<Float> lightLevels,
-                     ArrayList<double[]> locations, ArrayList<Position> positions, int steps, float distance){
+    public TextImage(Context context, ArrayList<Integer> lightLevels,
+                     ArrayList<Location> locations, ArrayList<Position> positions, int steps, int distance){
 
         super(context, lightLevels,
                 locations, positions, steps, distance);
@@ -85,7 +86,7 @@ public class TextImage extends Painting {
         canvas.drawText("light:",x,y,greenPaint);
         y+=textSize+10;
 
-        for(Float lightLevel: lightLevels){
+        for(Integer lightLevel: lightLevels){
 
             String lightLevelAsString = lightLevel+"";
             canvas.drawText(lightLevelAsString,x,y,greenPaint);
@@ -97,10 +98,10 @@ public class TextImage extends Painting {
 
         canvas.drawText("location:",x+150,y,orangePaint);
         y+=textSize+10;
-        for (double[] location: locations){
+        for (Location location: locations){
 
-            String longitude = location[0]+"";
-            String latitude = location[1]+"";
+            String longitude = location.getScaledResults().get(0)+"";
+            String latitude = location.getScaledResults().get(1)+"";
             String longAndLat = "lat: "+latitude+" long: "+longitude;
 
             canvas.drawText(longAndLat,x+150,y,orangePaint);

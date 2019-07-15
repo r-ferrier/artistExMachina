@@ -32,6 +32,7 @@ import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.result.DataReadResult;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -222,9 +223,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     public void beginShortPortraitActivity(View view){
 
+        ArrayList<Integer> stepsCount = new ArrayList<>();
+        stepsCount.add(steps);
+
+        ArrayList<Float> distanceCovered = new ArrayList<>();
+        distanceCovered.add(distance);
+
+        SensorResult<Integer,ResultValuesAppendable> stepsResult = new SensorResult<>(false,stepsCount,"steps");
+        SensorResult<Float,ResultValuesAppendable> distanceResult = new SensorResult<>(false, distanceCovered,"distance");
+
         Intent intent = new Intent(this, ShortPortrait.class);
-        intent.putExtra("steps",steps);
-        intent.putExtra("distance",distance);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("steps",stepsResult);
+        bundle.putSerializable("distance",distanceResult);
         startActivity(intent);
 
     }
