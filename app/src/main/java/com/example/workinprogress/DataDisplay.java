@@ -23,7 +23,7 @@ public class DataDisplay extends AppCompatActivity {
         ((TextView)findViewById(R.id.positionTextView)).setText(dataStrings.get(1));
         ((TextView)findViewById(R.id.locationTextView)).setText(dataStrings.get(2));
         ((TextView)findViewById(R.id.stepsTextView)).setText(dataStrings.get(3));
-        ((TextView)findViewById(R.id.distanceTextView)).setText(dataStrings.get(4));
+//        ((TextView)findViewById(R.id.distanceTextView)).setText(dataStrings.get(4));
 
 
     }

@@ -13,8 +13,7 @@ import android.graphics.PixelFormat;
 
 import androidx.annotation.RequiresApi;
 
-import com.example.workinprogress.Location;
-import com.example.workinprogress.Position;
+import com.example.workinprogress.dataSetsAndComponents.DataSetPoint;
 
 import java.util.ArrayList;
 
@@ -37,7 +36,7 @@ public class TextImage extends Painting {
     private Bitmap bitmap;
 
     public TextImage(Context context, ArrayList<Integer> lightLevels,
-                     ArrayList<Location> locations, ArrayList<Position> positions, ArrayList<Integer> steps, ArrayList<Integer> distance){
+                     ArrayList<DataSetPoint> locations, ArrayList<DataSetPoint> positions, ArrayList<Integer> steps, ArrayList<Integer> distance){
 
         super(context, lightLevels,
                 locations, positions, steps, distance);
@@ -95,11 +94,9 @@ public class TextImage extends Painting {
 
         canvas.drawText("location:",x+150,y,orangePaint);
         y+=textSize+10;
-        for (Location location: locations){
+        for (DataSetPoint location: locations){
 
-            String longitude = location.getScaledResults().get(0)+"";
-            String latitude = location.getScaledResults().get(1)+"";
-            String longAndLat = "lat: "+latitude+" long: "+longitude;
+            String longAndLat = location.toString();
 
             canvas.drawText(longAndLat,x+150,y,orangePaint);
             y+=textSize+1;
@@ -111,11 +108,9 @@ public class TextImage extends Painting {
         canvas.drawText("position:",x+670,y,bluePaint);
         y+=textSize+10;
 
-        for(Position position: positions){
+        for(DataSetPoint position: positions){
 
-            String positionString = "x: "+position.getxAxisString()+" y: "
-                    +position.getyAxisString()+" z: "+position.getzAxisString();
-
+            String positionString = position.toString();
             canvas.drawText(positionString,x+670,y,bluePaint);
             y+=textSize+1;
             Log.i("position",positionString);

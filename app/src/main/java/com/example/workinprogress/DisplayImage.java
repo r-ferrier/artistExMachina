@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -13,9 +12,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.workinprogress.dataSetsAndComponents.DataSet;
+import com.example.workinprogress.dataSetsAndComponents.DataSetPoint;
+import com.example.workinprogress.dataSetsAndComponents.SensorSingularPointDataSet;
+import com.example.workinprogress.dataSetsAndComponents.UnscaledSingleEntryDataSet;
 import com.example.workinprogress.paintings.AlbersImage;
 import com.example.workinprogress.paintings.Painting;
 import com.example.workinprogress.paintings.TextImage;
@@ -32,16 +34,16 @@ public class DisplayImage extends AppCompatActivity {
 
     private boolean createNewImage;
     private boolean imageCreated;
+    public static int IMAGE_SIZE_SCALAR = 100;
 
     String currentImagePath;
     private Painting createdImage;
 
     private ArrayList<Integer> lightLevels;
-    private ArrayList<Location> locations;
-    private ArrayList<Position> positions;
+    private ArrayList<DataSetPoint> locations;
+    private ArrayList<DataSetPoint> positions;
     private ArrayList<Integer> steps;
     private ArrayList<Integer> distance;
-
     private ArrayList<String> dataStrings;
 
 
@@ -92,39 +94,19 @@ public class DisplayImage extends AppCompatActivity {
 
         if (getIntent().getExtras() != null) {
 
-            Bundle bundle = this.getIntent().getExtras();
+            ArrayList<DataSet> dataSets = (ArrayList<DataSet>) this.getIntent().getExtras().getSerializable(getString(R.string.data_sets));
 
-            ArrayList<SensorResult> sensorResults = (ArrayList<SensorResult>) bundle.getSerializable("sensorResults");
+            steps = ((UnscaledSingleEntryDataSet)dataSets.get(0)).getScaledResults1();
+            distance = ((UnscaledSingleEntryDataSet)dataSets.get(1)).getScaledResults1();
+            lightLevels = ((SensorSingularPointDataSet)dataSets.get(2)).getScaledResults1();
+            positions = (dataSets.get(3)).getResults();
+            locations = (dataSets.get(4)).getResults();
 
-            for (SensorResult s : sensorResults) {
-
-                System.out.println(s.getName());
-                dataStrings.add(s.getResultsAsString());
-
-                switch (s.getName()) {
-                    case "steps":
-                        steps = s.getResultsNumbers();
-                        break;
-                    case "distance":
-                        distance = s.getResultsNumbers();
-                        break;
-                    case "light":
-                        lightLevels = s.getResultsNumbers();
-                        break;
-                    case "locations":
-                        locations = s.getResultsObjects();
-                        break;
-                    case "positions":
-                        positions = s.getResultsObjects();
-                        break;
-
-                }
-
+            for(DataSet dataSet: dataSets){
+                dataStrings.add(dataSet.toString());
             }
-        }
 
-//        steps = getIntent().getIntExtra("steps",0);
-//        distance = getIntent().getFloatExtra("distance",0);
+        }
 
         Thread thready = new Thread(new Runnable() {
             @Override
@@ -143,19 +125,10 @@ public class DisplayImage extends AppCompatActivity {
         });
         thready.start();
 
-
-
-
-
-//            lightLevels = (ArrayList<Float>) bundle.getSerializable("lightLevels");
-//            locations = (ArrayList<double[]>) bundle.getSerializable("locations");
-//            positions = (ArrayList<Position>) bundle.getSerializable("positions");
-
 //        createNewTextImage();
         createNewAlbersImage();
 
     }
-
 
     public void createNewTextImage(){
         createdImage = new TextImage(this, lightLevels, locations, positions, steps, distance);

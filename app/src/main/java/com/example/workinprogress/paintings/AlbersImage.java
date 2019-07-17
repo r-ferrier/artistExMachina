@@ -4,14 +4,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.drawable.GradientDrawable;
 
-import androidx.constraintlayout.solver.widgets.Rectangle;
-
-import com.example.workinprogress.Location;
-import com.example.workinprogress.Position;
-import com.example.workinprogress.SensorResult;
+import com.example.workinprogress.dataSetsAndComponents.DataSetPoint;
+import com.example.workinprogress.DisplayImage;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -28,13 +23,15 @@ public class AlbersImage extends Painting {
 //    private int maximumLightValue = 1000;
 
 
-    public AlbersImage(Context context, ArrayList<Integer> lightLevels, ArrayList<Location> locations, ArrayList<Position> positions, ArrayList<Integer> steps, ArrayList<Integer> distance) {
+    public AlbersImage(Context context, ArrayList<Integer> lightLevels, ArrayList<DataSetPoint> locations, ArrayList<DataSetPoint> positions, ArrayList<Integer> steps, ArrayList<Integer> distance) {
         super(context, lightLevels, locations, positions, steps, distance);
 
         paint1 = new Paint();
         paint2 = new Paint();
         paint3 = new Paint();
         paint4 = new Paint();
+
+        System.out.println(lightLevels);
 
     }
 
@@ -47,9 +44,7 @@ public class AlbersImage extends Painting {
         height = getBounds().height();
 
         firstLightLevelsExperiment();
-
         secondLightLevelsExperiment();
-
 
 
     }
@@ -66,25 +61,28 @@ public class AlbersImage extends Painting {
         paint1.setARGB(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
 
 
-        for(Integer lightLevel: lightLevels){
-            // following code limits colour selection options
-            if(lightLevel*(255/SensorResult.MAX_LIGHT_LEVEL)>highestLightLevel){
-                highestLightLevel=lightLevel*(255/SensorResult.MAX_LIGHT_LEVEL);
-            }
-        }
+        for(Integer lightLevel: lightLevels) {
 
-        if(highestLightLevel>256){
-            highestLightLevel=256;
+            // following code limits colour selection options
+            if ((lightLevel * (255 / DisplayImage.IMAGE_SIZE_SCALAR)) > highestLightLevel) {
+                highestLightLevel = lightLevel * (255 / DisplayImage.IMAGE_SIZE_SCALAR);
+            }
+
+
+            if (highestLightLevel > 256) {
+                highestLightLevel = 256;
+            }
         }
 
         for(Integer lightLevel: lightLevels){
 
             //set height as linked to lightlevel
-            yStartingPoint = (height/ SensorResult.MAX_LIGHT_LEVEL)*(lightLevel);
+            yStartingPoint = (height/ DisplayImage.IMAGE_SIZE_SCALAR)*(lightLevel);
             //draw rectangle at hightlevel
             canvas.drawRect(xStartingPoint,yStartingPoint,xStartingPoint+150,yStartingPoint+150,paint1);
             //reposition to the right for next lightlevel
             xStartingPoint+=20;
+
             paint1.setARGB(random.nextInt(highestLightLevel), random.nextInt(highestLightLevel), random.nextInt(highestLightLevel), random.nextInt(highestLightLevel));
             //colour selection + opacity limited to the highest lightvalue - can choose from a random assortment of colours up to but not over that light amount
         }
@@ -96,7 +94,7 @@ public class AlbersImage extends Painting {
 
         for(Integer lightLevel: lightLevels){
 
-            yStartingPoint = ((height/ SensorResult.MAX_LIGHT_LEVEL)*(lightLevel))+100;
+            yStartingPoint = ((height/ DisplayImage.IMAGE_SIZE_SCALAR)*(lightLevel))+100;
             canvas.drawRect(xStartingPoint,yStartingPoint,xStartingPoint+150,yStartingPoint+150,paint1);
             xStartingPoint+=20;
             paint1.setARGB(random.nextInt(256), random.nextInt(256), random.nextInt(256), random.nextInt(256));
@@ -116,7 +114,7 @@ public class AlbersImage extends Painting {
         for(Integer lightLevel: lightLevels){
 
             //set colour as linked to lightlevel
-            lightColourLevel = lightLevel*(255/SensorResult.MAX_LIGHT_LEVEL);
+            lightColourLevel = lightLevel*(255/DisplayImage.IMAGE_SIZE_SCALAR);
 
             //randomly assign this colour level to one channel
             lightColourLevels[random.nextInt(4)] = lightColourLevel;
@@ -124,7 +122,7 @@ public class AlbersImage extends Painting {
             paint1.setARGB(lightColourLevels[0], lightColourLevels[1], lightColourLevels[2], lightColourLevels[3]);
 
             //set height as linked to lightlevel
-            yStartingPoint = (height/ SensorResult.MAX_LIGHT_LEVEL)*(lightLevel);
+            yStartingPoint = (height/ DisplayImage.IMAGE_SIZE_SCALAR)*(lightLevel);
             //draw rectangle at hightlevel
             canvas.drawRect(xStartingPoint,yStartingPoint,xStartingPoint+350,yStartingPoint+350,paint1);
             //reposition to the right for next lightlevel

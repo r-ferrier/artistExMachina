@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.workinprogress.dataSetsAndComponents.UnscaledSingleEntryDataSet;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -32,7 +33,6 @@ import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.result.DataReadResult;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                 for (DataSet dataSet : dataSets) {
                     Log.i("dataset number",i+"");
-                    showDataSet(dataSet);
+                    showAndStoreDataSet(dataSet);
                     i++;
                 }
 
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
 
 
-        private void showDataSet(DataSet dataSet) {
+        private void showAndStoreDataSet(DataSet dataSet) {
             Log.e("History", "Data returned for Data type: " + dataSet.getDataType().getName());
 
             DateFormat dateFormat = DateFormat.getDateInstance();
@@ -223,23 +223,29 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     public void beginShortPortraitActivity(View view){
 
-        ArrayList<Integer> stepsCount = new ArrayList<>();
-        stepsCount.add(steps);
+//        ArrayList<Integer> stepsCount = new ArrayList<>();
+//        stepsCount.add(steps);
 
-        System.out.println("steps: "+steps);
+//        System.out.println("steps: "+steps);
 
-        ArrayList<Float> distanceCovered = new ArrayList<>();
-        distanceCovered.add(distance);
+        UnscaledSingleEntryDataSet<Integer> stepsData = new UnscaledSingleEntryDataSet<>(steps,getString(R.string.data_type_steps));
+        UnscaledSingleEntryDataSet<Float> distanceData = new UnscaledSingleEntryDataSet<>(distance,getString(R.string.data_type_distance));
 
-        System.out.println("steps: "+distance);
 
-        SensorResult<Integer,ResultValuesAppendable> stepsSensorResult = new SensorResult<>(false,stepsCount,"steps");
-        SensorResult<Float,ResultValuesAppendable> distanceSensorResult = new SensorResult<>(false, distanceCovered,"distance");
+//        ArrayList<Float> distanceCovered = new ArrayList<>();
+//        distanceCovered.add(distance);
+//
+//        System.out.println("steps: "+distance);
+
+//        SensorResult<Integer,ResultValuesAppendable> stepsSensorResult = new SensorResult<>(false,stepsCount,"steps");
+//        SensorResult<Float,ResultValuesAppendable> distanceSensorResult = new SensorResult<>(false, distanceCovered,"distance");
 
         Intent intent = new Intent(this, ShortPortrait.class);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("steps", stepsSensorResult);
-        bundle.putSerializable("distance",distanceSensorResult);
+        bundle.putSerializable(getString(R.string.data_type_steps),stepsData);
+        bundle.putSerializable(getString(R.string.data_type_distance),distanceData);
+//        bundle.putSerializable("steps", stepsSensorResult);
+//        bundle.putSerializable("distance",distanceSensorResult);
         intent.putExtras(bundle);
         startActivity(intent);
 

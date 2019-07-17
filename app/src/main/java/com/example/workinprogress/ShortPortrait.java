@@ -18,14 +18,22 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.workinprogress.dataSetsAndComponents.DataSet;
+import com.example.workinprogress.dataSetsAndComponents.LightData;
+import com.example.workinprogress.dataSetsAndComponents.LocationData;
+import com.example.workinprogress.dataSetsAndComponents.LocationTwoPointsDataSet;
+import com.example.workinprogress.dataSetsAndComponents.PositionData;
+import com.example.workinprogress.dataSetsAndComponents.SensorSingularPointDataSet;
+import com.example.workinprogress.dataSetsAndComponents.UnscaledSingleEntryDataSet;
+
 import java.util.ArrayList;
 
 public class ShortPortrait extends AppCompatActivity implements SensorEventListener, LocationListener {
 
     private SensorManager sensorManager;
 
-    private Sensor light;
-    private Sensor accelerometer;
+    private Sensor lightSensor;
+    private Sensor positionSensor;
     private boolean recordingData = false;
 
     public TextView lightText;
@@ -34,13 +42,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
     private TextView distanceText;
     private TextView stepsText;
 
-    private ArrayList<SensorResult> sensorResults = new ArrayList<>();
-
-    private ArrayList<Float> lightLevels;
-    private ArrayList<Location> locations;
-    private ArrayList<Position> positions;
-    private ArrayList<Integer> steps;
-    private ArrayList<Float> distance;
+    private ArrayList<DataSet> dataSets = new ArrayList<>();
 
     private LocationManager locationManager;
     private android.location.Location location;
@@ -53,32 +55,28 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_short_portrait);
 
-        if (getIntent().getExtras() != null) {
-
-            sensorResults.add((SensorResult)getIntent().getSerializableExtra("steps"));
-            sensorResults.add((SensorResult)getIntent().getSerializableExtra("distance"));
-//
-//            steps = getIntent().getIntExtra("steps",0);
-//            steps = (ArrayList<Integer>)getIntent().getSerializableExtra("steps");
-//            distance = (ArrayList<Float>)getIntent().getSerializableExtra("distance");
-        }
-
-        System.out.println("steps in short portrait: "+sensorResults.get(0).getName()+sensorResults.get(0).getResultsNumbers());
-
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         assignSensorTextAndManagers();
+
+        if (getIntent().getExtras() != null) {
+
+            dataSets.add((UnscaledSingleEntryDataSet)getIntent().getSerializableExtra(getString(R.string.data_type_steps)));
+            dataSets.add((UnscaledSingleEntryDataSet)getIntent().getSerializableExtra(getString(R.string.data_type_distance)));
+        }
+
+        dataSets.add(new SensorSingularPointDataSet(getString(R.string.data_type_light), lightSensor));
+        dataSets.add(new SensorSingularPointDataSet(getString(R.string.data_type_position), positionSensor));
+        dataSets.add(new LocationTwoPointsDataSet(getString(R.string.data_type_location)));
+
         updateStaticValues();
 
-        lightLevels = new ArrayList<>();
-        locations = new ArrayList<>();
-        positions = new ArrayList<>();
     }
 
     @SuppressLint("MissingPermission")
     protected void onResume() {
         super.onResume();
-        sensorManager.registerListener(this, light, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, lightSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, positionSensor, SensorManager.SENSOR_DELAY_NORMAL);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
@@ -94,15 +92,20 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         stepsText = findViewById(R.id.stepsValues);
         distanceText = findViewById(R.id.distanceValues);
 
-        light = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        positionSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     }
 
     private void updateStaticValues(){
-        String stepsString = "steps: "+steps;
-        String distanceString = "distance: "+distance;
-        stepsText.setText(stepsString);
-        distanceText.setText(distanceString);
+
+        for(DataSet dataset: dataSets){
+            if(dataset.getDataTypeName()==getString(R.string.data_type_steps)){
+                stepsText.setText(dataset.toString());
+            }
+            if(dataset.getDataTypeName()==getString(R.string.data_type_distance)){
+                distanceText.setText(dataset.toString());
+            }
+        }
     }
 
 
@@ -111,7 +114,13 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         if (!recordingData) {
             recordingData = true;
             ((Button) view).setText(R.string.stop);
-            locations.add(new Location(getLocation().getLatitude(), getLocation().getLongitude()));
+
+            for(DataSet dataSet: dataSets){
+                if(dataSet.getDataTypeName()==getString(R.string.data_type_location)){
+                    dataSet.addResult(new LocationData(getString(R.string.data_type_location),0,0));
+                }
+            }
+
             ((TextView)findViewById(R.id.lightValues)).setTextColor(Color.CYAN);
             ((TextView)findViewById(R.id.locationValues)).setTextColor(Color.CYAN);
             ((TextView)findViewById(R.id.accelerometerValues)).setTextColor(Color.CYAN);
@@ -124,20 +133,16 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
     public void stop(View view) {
 
-//        ScaledValues scaledValues = new ScaledValues(lightLevels,locations,positions,steps,distance);
+        sensorManager.unregisterListener(this);
 
-//        System.out.print(scaledValues.toString());
-
-        sensorResults.add(new SensorResult<>(lightLevels,light,"light"));
-        sensorResults.add(new SensorResult<>(locations,true,"locations"));
-        sensorResults.add(new SensorResult<>(accelerometer,positions,"positions"));
+        for(DataSet dataSet:dataSets){
+            dataSet.setScaledResults();
+        }
 
         Intent intent = new Intent(this, DisplayImage.class);
-
         Bundle bundle = new Bundle();
-        bundle.putSerializable("sensorResults",sensorResults);
+        bundle.putSerializable(getString(R.string.data_sets),dataSets);
         intent.putExtra("createImage",true);
-
         intent.putExtras(bundle);
         startActivity(intent);
     }
@@ -146,19 +151,28 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 
-        if (sensorEvent.sensor == light) {
+        if (sensorEvent.sensor == lightSensor) {
             lightText.setText(String.valueOf(sensorEvent.values[0]));
             if (recordingData) {
-                lightLevels.add(sensorEvent.values[0]);
+                for(DataSet dataSet: dataSets){
+                    if(dataSet.getDataTypeName()==getString(R.string.data_type_light)){
+                        dataSet.addResult(new LightData(getString(R.string.data_type_light),sensorEvent.values[0]));
+                    }
+                }
             }
-        } else if (sensorEvent.sensor == accelerometer) {
+        } else if (sensorEvent.sensor == positionSensor) {
 
-            Position position = new Position(sensorEvent);
-            String accelerometerTextString = " x: " + position.getxAxisString() + " y: " + position.getyAxisString() + " z: " + position.getzAxisString();
+            String accelerometerTextString = " x: " + sensorEvent.values[0] + " y: " + sensorEvent.values[1] + " z: " + sensorEvent.values[2];
+
             accelerometerText.setText(accelerometerTextString);
 
             if (recordingData) {
-                positions.add(position);
+
+                for(DataSet dataSet: dataSets){
+                    if(dataSet.getDataTypeName()==getString(R.string.data_type_position)){
+                        dataSet.addResult(new PositionData(getString(R.string.data_type_position),sensorEvent.values[0],sensorEvent.values[1],sensorEvent.values[2]));
+                    }
+                }
             }
         }
     }
@@ -171,12 +185,18 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
     // is this necessary? MAY JUST BE ABLE TO USE LOCATION INFO SENT TO LISTENER ONLOCATIONCHANGE
     @Override
     public void onLocationChanged(android.location.Location location) {
-//        double[] locationCoordinates = getLocation();
+
+//        location = getLocation();
         String locationTextString = "lat: " + location.getLatitude() + " long: " + location.getLongitude();
         Log.i("location", locationTextString);
         locationText.setText(locationTextString);
         if (recordingData) {
-            locations.add(new Location(location.getLatitude(),location.getLongitude()));
+
+            for(DataSet dataSet: dataSets){
+                if(dataSet.getDataTypeName()==getString(R.string.data_type_location)){
+                    dataSet.addResult(new LocationData(getString(R.string.data_type_location),location.getLatitude(),location.getLongitude()));
+                }
+            }
         }
     }
 

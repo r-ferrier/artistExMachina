@@ -7,16 +7,15 @@ import android.graphics.ColorFilter;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 
-import com.example.workinprogress.Location;
-import com.example.workinprogress.Position;
+import com.example.workinprogress.dataSetsAndComponents.DataSetPoint;
 
 import java.util.ArrayList;
 
 public class Painting extends Drawable {
 
     protected ArrayList<Integer> lightLevels;
-    protected ArrayList<Location> locations;
-    protected ArrayList<Position> positions;
+    protected ArrayList<DataSetPoint> locations;
+    protected ArrayList<DataSetPoint> positions;
     protected ArrayList<Integer> steps;
     protected ArrayList<Integer> distance;
     protected Context context;
@@ -25,7 +24,7 @@ public class Painting extends Drawable {
     protected int height;
 
     public Painting(Context context, ArrayList<Integer> lightLevels,
-                    ArrayList<Location> locations, ArrayList<Position> positions, ArrayList<Integer> steps, ArrayList<Integer> distance){
+                    ArrayList<DataSetPoint> locations, ArrayList<DataSetPoint> positions, ArrayList<Integer> steps, ArrayList<Integer> distance){
         this.locations = locations;
         this.lightLevels = lightLevels;
         this.positions = positions;
