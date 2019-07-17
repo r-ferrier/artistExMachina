@@ -74,9 +74,9 @@ public class Position implements Serializable, ResultValuesAppendable {
         scaledResults.add(Math.round(yAxis * scalar));
         scaledResults.add(Math.round(zAxis * scalar));
 
-        this.xAxisString = String.valueOf(xAxis);
-        this.yAxisString = String.valueOf(yAxis);
-        this.zAxisString = String.valueOf(zAxis);
+        this.xAxisString = String.valueOf(scaledResults.get(0));
+        this.yAxisString = String.valueOf(scaledResults.get(1));
+        this.zAxisString = String.valueOf(scaledResults.get(2));
     }
 
     @Override
@@ -84,4 +84,8 @@ public class Position implements Serializable, ResultValuesAppendable {
         return scaledResults;
     }
 
+    @Override
+    public String toString() {
+        return "x: "+getxAxisString()+" y: "+getyAxisString()+" z: "+getzAxisString();
+    }
 }

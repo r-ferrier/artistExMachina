@@ -45,6 +45,9 @@
         <activity android:name=".Gallery"
             android:parentActivityName=".MainActivity">
         </activity>
+        <activity android:name=".DataDisplay"
+            android:parentActivityName=".DisplayImage">
+        </activity>
     </application>
 
 </manifest>

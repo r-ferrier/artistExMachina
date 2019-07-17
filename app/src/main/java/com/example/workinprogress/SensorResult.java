@@ -7,6 +7,8 @@ import java.util.ArrayList;
 
 public class SensorResult<f extends Number, e extends ResultValuesAppendable> implements Serializable {
 
+    public static int MAX_LIGHT_LEVEL = 100;
+
     private float max;
     private float min;
     private final String name;
@@ -137,7 +139,9 @@ public class SensorResult<f extends Number, e extends ResultValuesAppendable> im
         } else {
 
             float range = max - min;
-            float scalar = 100 / range;
+            float scalar = MAX_LIGHT_LEVEL / range;
+
+            System.out.println(scalar);
 
             for (f result : resultsNumbers) {
                 scaledResultsNumbers.add(Math.round((Float) result * scalar));
@@ -149,12 +153,13 @@ public class SensorResult<f extends Number, e extends ResultValuesAppendable> im
         for (f result : resultsNumbers) {
 
             if(result instanceof Integer) {
-
-                scaledResultsNumbers.add((Integer) result);
+                scaledResultsNumbers.add((Integer)result);
             }else{
                 scaledResultsNumbers.add(Math.round((Float)result));
             }
         }
+
+        System.out.println("unscaled result: "+scaledResultsNumbers.get(0));
     }
 
     public ArrayList<e> getResultsObjects() {
@@ -167,6 +172,27 @@ public class SensorResult<f extends Number, e extends ResultValuesAppendable> im
 
     public String getName(){
         return name;
+    }
+
+    public String getResultsAsString(){
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(getName()+"\n");
+
+        if(resultsAreInObjectForm){
+            for (e result: resultsObjects){
+                sb.append(result.toString()+"\n");
+            }
+        }else{
+
+            for(int i=0;i<scaledResultsNumbers.size();i++){
+                sb.append(scaledResultsNumbers.get(i)+"\n");
+            }
+        }
+
+        return sb.toString();
+
     }
 
 }

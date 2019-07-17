@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -12,8 +13,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.workinprogress.paintings.AlbersImage;
+import com.example.workinprogress.paintings.Painting;
 import com.example.workinprogress.paintings.TextImage;
 
 import java.io.File;
@@ -30,13 +34,16 @@ public class DisplayImage extends AppCompatActivity {
     private boolean imageCreated;
 
     String currentImagePath;
-    private TextImage createdImage;
+    private Painting createdImage;
 
     private ArrayList<Integer> lightLevels;
     private ArrayList<Location> locations;
     private ArrayList<Position> positions;
-    private int steps;
-    private int distance;
+    private ArrayList<Integer> steps;
+    private ArrayList<Integer> distance;
+
+    private ArrayList<String> dataStrings;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +88,7 @@ public class DisplayImage extends AppCompatActivity {
 
         imageCreated = false;
         getPublicAlbumStorageDir(getString(R.string.album_storage_name));
+        dataStrings = new ArrayList<>();
 
         if (getIntent().getExtras() != null) {
 
@@ -90,12 +98,15 @@ public class DisplayImage extends AppCompatActivity {
 
             for (SensorResult s : sensorResults) {
 
+                System.out.println(s.getName());
+                dataStrings.add(s.getResultsAsString());
+
                 switch (s.getName()) {
                     case "steps":
-                        steps = (int) s.getResultsNumbers().get(0);
+                        steps = s.getResultsNumbers();
                         break;
                     case "distance":
-                        distance = (int) s.getResultsNumbers().get(0);
+                        distance = s.getResultsNumbers();
                         break;
                     case "light":
                         lightLevels = s.getResultsNumbers();
@@ -140,10 +151,24 @@ public class DisplayImage extends AppCompatActivity {
 //            locations = (ArrayList<double[]>) bundle.getSerializable("locations");
 //            positions = (ArrayList<Position>) bundle.getSerializable("positions");
 
+//        createNewTextImage();
+        createNewAlbersImage();
+
+    }
+
+
+    public void createNewTextImage(){
         createdImage = new TextImage(this, lightLevels, locations, positions, steps, distance);
         ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
+     //   ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
         imageCreated = true;
+    }
 
+    public void createNewAlbersImage(){
+        createdImage = new AlbersImage(this, lightLevels, locations, positions, steps, distance);
+        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
+  //      ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
+        imageCreated = true;
     }
 
 
@@ -159,13 +184,9 @@ public class DisplayImage extends AppCompatActivity {
                     File file = new File(currentImagePath);
                     FileOutputStream out = new FileOutputStream(file);
 
-
                     Bitmap bitmap = createdImage.createBitmap();
-
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
 
-
-//                drawableToBitmap(createdImage).compress(Bitmap.CompressFormat.JPEG, 90, out);
                     out.flush();
                     out.close();
                     Toast.makeText(getApplicationContext(), "Saved successfully, Check gallery", Toast.LENGTH_SHORT).show();
@@ -229,7 +250,16 @@ public class DisplayImage extends AppCompatActivity {
     }
 
 
-    public void share(View view) {
+    public void data(View view) {
+
+
+        Intent intent = new Intent(this,DataDisplay.class);
+
+        intent.putStringArrayListExtra("dataStrings",dataStrings);
+
+        startActivity(intent);
+
+
         //share image using other applications? Investigate possibilities
     }
 

@@ -20,9 +20,6 @@ import java.util.ArrayList;
 
 public class TextImage extends Painting {
 
-    private int width;
-    private int height;
-
     private final Paint redPaint;
     private final Paint bluePaint;
     private final Paint greenPaint;
@@ -40,7 +37,7 @@ public class TextImage extends Painting {
     private Bitmap bitmap;
 
     public TextImage(Context context, ArrayList<Integer> lightLevels,
-                     ArrayList<Location> locations, ArrayList<Position> positions, int steps, int distance){
+                     ArrayList<Location> locations, ArrayList<Position> positions, ArrayList<Integer> steps, ArrayList<Integer> distance){
 
         super(context, lightLevels,
                 locations, positions, steps, distance);
@@ -124,11 +121,12 @@ public class TextImage extends Painting {
             Log.i("position",positionString);
         }
 
-        String distanceString = "distance: "+distance;
+        String distanceString = "distance: "+distance.get(0);
         canvas.drawText(distanceString,x+150,height-100,purplePaint);
 
-        String stepsString = "steps: "+steps;
+        String stepsString = "steps: "+steps.get(0);
         canvas.drawText(stepsString,x+150,height-50,redPaint);
+
 
 //        int[] bounds1 = new int[]{300,30,800,1000};
 //        int[] bounds2 = new int[]{100,400,900,1200};
@@ -219,21 +217,6 @@ public class TextImage extends Painting {
         return PixelFormat.OPAQUE;
     }
 
-    private int getWidth() {
-        return width;
-    }
 
-    private int getHeight() {
-        return height;
-    }
-
-    public Bitmap createBitmap(){
-
-        Bitmap  bitmap = Bitmap.createBitmap(this.getWidth(), this.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        this.draw(canvas);
-
-        return bitmap;
-    }
 
 }

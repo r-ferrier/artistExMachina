@@ -55,12 +55,12 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/shareButton"
+            android:id="@+id/dataButton"
             android:layout_width="108dp"
             android:layout_height="36dp"
             android:layout_gravity="center|center_horizontal"
-            android:onClick="share"
-            android:text="share" />
+            android:onClick="data"
+            android:text="data" />
 
     </LinearLayout>
 

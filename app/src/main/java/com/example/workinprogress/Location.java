@@ -43,4 +43,9 @@ public class Location implements ResultValuesAppendable, Serializable {
     public ArrayList<Integer> getScaledResults() {
         return scaledResults;
     }
+
+    @Override
+    public String toString() {
+        return "lat: "+scaledResults.get(0)+"long: "+scaledResults.get(1);
+    }
 }

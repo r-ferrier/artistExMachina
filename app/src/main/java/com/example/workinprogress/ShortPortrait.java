@@ -39,8 +39,8 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
     private ArrayList<Float> lightLevels;
     private ArrayList<Location> locations;
     private ArrayList<Position> positions;
-    private int steps;
-    private float distance;
+    private ArrayList<Integer> steps;
+    private ArrayList<Float> distance;
 
     private LocationManager locationManager;
     private android.location.Location location;
@@ -59,8 +59,11 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
             sensorResults.add((SensorResult)getIntent().getSerializableExtra("distance"));
 //
 //            steps = getIntent().getIntExtra("steps",0);
-//            distance = getIntent().getFloatExtra("distance",0);
+//            steps = (ArrayList<Integer>)getIntent().getSerializableExtra("steps");
+//            distance = (ArrayList<Float>)getIntent().getSerializableExtra("distance");
         }
+
+        System.out.println("steps in short portrait: "+sensorResults.get(0).getName()+sensorResults.get(0).getResultsNumbers());
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         assignSensorTextAndManagers();
@@ -125,9 +128,9 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
 //        System.out.print(scaledValues.toString());
 
-        sensorResults.add(new SensorResult<Float,ResultValuesAppendable>(lightLevels,light,"light"));
+        sensorResults.add(new SensorResult<>(lightLevels,light,"light"));
         sensorResults.add(new SensorResult<>(locations,true,"locations"));
-        sensorResults.add(new SensorResult<>(positions,true,"positions"));
+        sensorResults.add(new SensorResult<>(accelerometer,positions,"positions"));
 
         Intent intent = new Intent(this, DisplayImage.class);
 

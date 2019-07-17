@@ -8,4 +8,6 @@ public interface ResultValuesAppendable {
 
     ArrayList<Integer> getScaledResults();
 
+    String toString();
+
 }

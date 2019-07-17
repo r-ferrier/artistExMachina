@@ -226,16 +226,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         ArrayList<Integer> stepsCount = new ArrayList<>();
         stepsCount.add(steps);
 
+        System.out.println("steps: "+steps);
+
         ArrayList<Float> distanceCovered = new ArrayList<>();
         distanceCovered.add(distance);
 
-        SensorResult<Integer,ResultValuesAppendable> stepsResult = new SensorResult<>(false,stepsCount,"steps");
-        SensorResult<Float,ResultValuesAppendable> distanceResult = new SensorResult<>(false, distanceCovered,"distance");
+        System.out.println("steps: "+distance);
+
+        SensorResult<Integer,ResultValuesAppendable> stepsSensorResult = new SensorResult<>(false,stepsCount,"steps");
+        SensorResult<Float,ResultValuesAppendable> distanceSensorResult = new SensorResult<>(false, distanceCovered,"distance");
 
         Intent intent = new Intent(this, ShortPortrait.class);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("steps",stepsResult);
-        bundle.putSerializable("distance",distanceResult);
+        bundle.putSerializable("steps", stepsSensorResult);
+        bundle.putSerializable("distance",distanceSensorResult);
+        intent.putExtras(bundle);
         startActivity(intent);
 
     }
