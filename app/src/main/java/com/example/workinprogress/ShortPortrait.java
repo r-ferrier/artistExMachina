@@ -24,6 +24,7 @@ import com.example.workinprogress.dataSetsAndComponents.LocationData;
 import com.example.workinprogress.dataSetsAndComponents.LocationTwoPointsDataSet;
 import com.example.workinprogress.dataSetsAndComponents.PositionData;
 import com.example.workinprogress.dataSetsAndComponents.SensorSingularPointDataSet;
+import com.example.workinprogress.dataSetsAndComponents.PositionSensorThreePointsDataSet;
 import com.example.workinprogress.dataSetsAndComponents.UnscaledSingleEntryDataSet;
 
 import java.util.ArrayList;
@@ -41,6 +42,8 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
     private TextView accelerometerText;
     private TextView distanceText;
     private TextView stepsText;
+
+    private ArrayList<TextView> shortPortraitActivityTextViews = new ArrayList<>();
 
     private ArrayList<DataSet> dataSets = new ArrayList<>();
 
@@ -65,7 +68,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         }
 
         dataSets.add(new SensorSingularPointDataSet(getString(R.string.data_type_light), lightSensor));
-        dataSets.add(new SensorSingularPointDataSet(getString(R.string.data_type_position), positionSensor));
+        dataSets.add(new PositionSensorThreePointsDataSet(getString(R.string.data_type_position), positionSensor));
         dataSets.add(new LocationTwoPointsDataSet(getString(R.string.data_type_location)));
 
         updateStaticValues();
@@ -86,6 +89,11 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
     private void assignSensorTextAndManagers() {
 
+        for (int i = 0; i<5; i++){
+            String textView = "R.id.textView"+i;
+            shortPortraitActivityTextViews.add((TextView)findViewById( getResources().getIdentifier(textView,"id",getPackageName())));
+        }
+
         lightText = findViewById(R.id.lightValues);
         locationText = findViewById(R.id.locationValues);
         accelerometerText = findViewById(R.id.accelerometerValues);
@@ -99,10 +107,11 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
     private void updateStaticValues(){
 
         for(DataSet dataset: dataSets){
-            if(dataset.getDataTypeName()==getString(R.string.data_type_steps)){
+
+            if(dataset.getDataTypeName().equals(getString(R.string.data_type_steps))){
                 stepsText.setText(dataset.toString());
             }
-            if(dataset.getDataTypeName()==getString(R.string.data_type_distance)){
+            if(dataset.getDataTypeName().equals(getString(R.string.data_type_distance))){
                 distanceText.setText(dataset.toString());
             }
         }

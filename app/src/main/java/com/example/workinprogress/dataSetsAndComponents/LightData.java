@@ -1,7 +1,5 @@
 package com.example.workinprogress.dataSetsAndComponents;
 
-import com.example.workinprogress.dataSetsAndComponents.DataSetPoint;
-
 import java.util.ArrayList;
 
 public class LightData implements DataSetPoint {

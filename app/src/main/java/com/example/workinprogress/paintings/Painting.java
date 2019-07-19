@@ -7,29 +7,39 @@ import android.graphics.ColorFilter;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 
+import com.example.workinprogress.dataSetsAndComponents.DataSet;
 import com.example.workinprogress.dataSetsAndComponents.DataSetPoint;
+import com.example.workinprogress.dataSetsAndComponents.SingularPointDataSet;
+import com.example.workinprogress.dataSetsAndComponents.ThreePointsDataSet;
+import com.example.workinprogress.dataSetsAndComponents.TwoPointsDataSet;
 
 import java.util.ArrayList;
 
 public class Painting extends Drawable {
 
-    protected ArrayList<Integer> lightLevels;
-    protected ArrayList<DataSetPoint> locations;
-    protected ArrayList<DataSetPoint> positions;
-    protected ArrayList<Integer> steps;
-    protected ArrayList<Integer> distance;
+    protected ArrayList<SingularPointDataSet> lightDistanceAndSteps = new ArrayList<>();
+    protected ArrayList<TwoPointsDataSet> locations = new ArrayList<>();
+    protected ArrayList<ThreePointsDataSet> positions = new ArrayList<>();
     protected Context context;
 
-    protected int width;
-    protected int height;
+    protected float width;
+    protected float height;
 
-    public Painting(Context context, ArrayList<Integer> lightLevels,
-                    ArrayList<DataSetPoint> locations, ArrayList<DataSetPoint> positions, ArrayList<Integer> steps, ArrayList<Integer> distance){
-        this.locations = locations;
-        this.lightLevels = lightLevels;
-        this.positions = positions;
-        this.steps = steps;
-        this.distance = distance;
+    public Painting(Context context, ArrayList<DataSet> dataSets){
+
+        for(DataSet dataSet: dataSets){
+
+            System.out.println(dataSet.getNumberOfDataPointsInEachSet()+dataSet.getDataTypeName()+"-----------------------");
+            if(dataSet.getNumberOfDataPointsInEachSet()==1){
+                lightDistanceAndSteps.add((SingularPointDataSet)dataSet);
+            }else if(dataSet.getNumberOfDataPointsInEachSet()==2){
+                locations.add((TwoPointsDataSet)dataSet);
+            }else if(dataSet.getNumberOfDataPointsInEachSet()==3){
+                positions.add((ThreePointsDataSet)dataSet);
+
+            }
+        }
+
         this.context = context;
     }
 
@@ -58,15 +68,14 @@ public class Painting extends Drawable {
 
     private int getWidth() {
 
-        return width;
+        return (int)width;
     }
 
     private int getHeight() {
-        return height;
+        return (int)height;
     }
 
     public Bitmap createBitmap(){
-
 
         Bitmap  bitmap = Bitmap.createBitmap(this.getWidth(), this.getHeight(), Bitmap.Config.ARGB_8888);
 

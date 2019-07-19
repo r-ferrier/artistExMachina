@@ -1,7 +1,5 @@
 package com.example.workinprogress.dataSetsAndComponents;
 
-import com.example.workinprogress.dataSetsAndComponents.DataSet;
-
 import java.util.ArrayList;
 
 public abstract class SingularPointDataSet extends DataSet {

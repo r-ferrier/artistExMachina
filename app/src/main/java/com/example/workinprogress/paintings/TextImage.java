@@ -13,6 +13,7 @@ import android.graphics.PixelFormat;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.workinprogress.dataSetsAndComponents.DataSet;
 import com.example.workinprogress.dataSetsAndComponents.DataSetPoint;
 
 import java.util.ArrayList;
@@ -35,11 +36,8 @@ public class TextImage extends Painting {
 
     private Bitmap bitmap;
 
-    public TextImage(Context context, ArrayList<Integer> lightLevels,
-                     ArrayList<DataSetPoint> locations, ArrayList<DataSetPoint> positions, ArrayList<Integer> steps, ArrayList<Integer> distance){
-
-        super(context, lightLevels,
-                locations, positions, steps, distance);
+    public TextImage(Context context, ArrayList<DataSet> dataSets) {
+        super(context, dataSets);
 
         redPaint = new Paint();
         redPaint.setARGB(225,230,50,20);
@@ -65,73 +63,73 @@ public class TextImage extends Painting {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    @Override
-    public void draw(Canvas canvas) {
-
-        this.canvas = canvas;
-
-        width = getBounds().width();
-        height = getBounds().height();
-
-        canvas.drawColor(Color.WHITE);
-
-        int x = 60;
-        int y = 30;
-
-        canvas.drawText("light:",x,y,greenPaint);
-        y+=textSize+10;
-
-        for(Integer lightLevel: lightLevels){
-
-            String lightLevelAsString = lightLevel+"";
-            canvas.drawText(lightLevelAsString,x,y,greenPaint);
-            y+=textSize+1;
-            Log.i("lightlevels",lightLevelAsString);
-        }
-
-        y = 30;
-
-        canvas.drawText("location:",x+150,y,orangePaint);
-        y+=textSize+10;
-        for (DataSetPoint location: locations){
-
-            String longAndLat = location.toString();
-
-            canvas.drawText(longAndLat,x+150,y,orangePaint);
-            y+=textSize+1;
-            Log.i("location",longAndLat);
-        }
-
-        y = 30;
-
-        canvas.drawText("position:",x+670,y,bluePaint);
-        y+=textSize+10;
-
-        for(DataSetPoint position: positions){
-
-            String positionString = position.toString();
-            canvas.drawText(positionString,x+670,y,bluePaint);
-            y+=textSize+1;
-            Log.i("position",positionString);
-        }
-
-        String distanceString = "distance: "+distance.get(0);
-        canvas.drawText(distanceString,x+150,height-100,purplePaint);
-
-        String stepsString = "steps: "+steps.get(0);
-        canvas.drawText(stepsString,x+150,height-50,redPaint);
-
-
-//        int[] bounds1 = new int[]{300,30,800,1000};
-//        int[] bounds2 = new int[]{100,400,900,1200};
-//        int[] bounds3 = new int[]{850,1050,1050,1250};
-
-//        lightLevels(lightColours,lightBounds()).draw(canvas);
-//        lightLevels(lightColours2,bounds2).draw(canvas);
-//        lightLevels(lightColours3,bounds3).draw(canvas);
-
-    }
+//    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+//    @Override
+//    public void draw(Canvas canvas) {
+//
+//        this.canvas = canvas;
+//
+//        width = getBounds().width();
+//        height = getBounds().height();
+//
+//        canvas.drawColor(Color.WHITE);
+//
+//        int x = 60;
+//        int y = 30;
+//
+//        canvas.drawText("light:",x,y,greenPaint);
+//        y+=textSize+10;
+//
+//        for(Integer lightLevel: lightLevels){
+//
+//            String lightLevelAsString = lightLevel+"";
+//            canvas.drawText(lightLevelAsString,x,y,greenPaint);
+//            y+=textSize+1;
+//            Log.i("lightlevels",lightLevelAsString);
+//        }
+//
+//        y = 30;
+//
+//        canvas.drawText("location:",x+150,y,orangePaint);
+//        y+=textSize+10;
+//        for (DataSetPoint location: locations){
+//
+//            String longAndLat = location.toString();
+//
+//            canvas.drawText(longAndLat,x+150,y,orangePaint);
+//            y+=textSize+1;
+//            Log.i("location",longAndLat);
+//        }
+//
+//        y = 30;
+//
+//        canvas.drawText("position:",x+670,y,bluePaint);
+//        y+=textSize+10;
+//
+//        for(DataSetPoint position: positions){
+//
+//            String positionString = position.toString();
+//            canvas.drawText(positionString,x+670,y,bluePaint);
+//            y+=textSize+1;
+//            Log.i("position",positionString);
+//        }
+//
+//        String distanceString = "distance: "+distance.get(0);
+//        canvas.drawText(distanceString,x+150,height-100,purplePaint);
+//
+//        String stepsString = "steps: "+steps.get(0);
+//        canvas.drawText(stepsString,x+150,height-50,redPaint);
+//
+//
+////        int[] bounds1 = new int[]{300,30,800,1000};
+////        int[] bounds2 = new int[]{100,400,900,1200};
+////        int[] bounds3 = new int[]{850,1050,1050,1250};
+//
+////        lightLevels(lightColours,lightBounds()).draw(canvas);
+////        lightLevels(lightColours2,bounds2).draw(canvas);
+////        lightLevels(lightColours3,bounds3).draw(canvas);
+//
+//    }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     private GradientDrawable lightLevels(int[] lightColours,int[] bounds){

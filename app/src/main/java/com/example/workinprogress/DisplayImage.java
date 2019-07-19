@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.service.autofill.Dataset;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -34,7 +35,7 @@ public class DisplayImage extends AppCompatActivity {
 
     private boolean createNewImage;
     private boolean imageCreated;
-    public static int IMAGE_SIZE_SCALAR = 100;
+    public static int IMAGE_SIZE_SCALAR = 1000;
 
     String currentImagePath;
     private Painting createdImage;
@@ -45,6 +46,8 @@ public class DisplayImage extends AppCompatActivity {
     private ArrayList<Integer> steps;
     private ArrayList<Integer> distance;
     private ArrayList<String> dataStrings;
+
+    private ArrayList<DataSet> dataSets;
 
 
     @Override
@@ -94,13 +97,7 @@ public class DisplayImage extends AppCompatActivity {
 
         if (getIntent().getExtras() != null) {
 
-            ArrayList<DataSet> dataSets = (ArrayList<DataSet>) this.getIntent().getExtras().getSerializable(getString(R.string.data_sets));
-
-            steps = ((UnscaledSingleEntryDataSet)dataSets.get(0)).getScaledResults1();
-            distance = ((UnscaledSingleEntryDataSet)dataSets.get(1)).getScaledResults1();
-            lightLevels = ((SensorSingularPointDataSet)dataSets.get(2)).getScaledResults1();
-            positions = (dataSets.get(3)).getResults();
-            locations = (dataSets.get(4)).getResults();
+            dataSets = (ArrayList<DataSet>) this.getIntent().getExtras().getSerializable(getString(R.string.data_sets));
 
             for(DataSet dataSet: dataSets){
                 dataStrings.add(dataSet.toString());
@@ -131,14 +128,14 @@ public class DisplayImage extends AppCompatActivity {
     }
 
     public void createNewTextImage(){
-        createdImage = new TextImage(this, lightLevels, locations, positions, steps, distance);
+        createdImage = new TextImage(this,  dataSets);
         ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
      //   ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
         imageCreated = true;
     }
 
     public void createNewAlbersImage(){
-        createdImage = new AlbersImage(this, lightLevels, locations, positions, steps, distance);
+        createdImage = new AlbersImage(this, dataSets);
         ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
   //      ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
         imageCreated = true;

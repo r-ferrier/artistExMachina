@@ -17,8 +17,7 @@ public abstract class DataSet implements Serializable {
     //result can only be added if it is for the same type of data and has the same number of data points
     public void addResult(DataSetPoint dataSetPoint){
 
-        System.out.println("dataset "+dataSetPoint+"-----------------------------------");
-        System.out.println("dataset "+numberOfDataPointsInEachSet+" "+dataTypeName+"-----------------------------------");
+        System.out.println("dataset added "+dataTypeName + dataSetPoint.toString());
 
         if (dataSetPoint.getNumberOfDataPointsInSet()==numberOfDataPointsInEachSet&&dataSetPoint.getDataTypeName()==dataTypeName) {
             results.add(dataSetPoint);
@@ -47,5 +46,9 @@ public abstract class DataSet implements Serializable {
 
     protected void setDataTypeName(String name){
         this.dataTypeName = name;
+    }
+
+    public int getNumberOfDataPointsInEachSet() {
+        return numberOfDataPointsInEachSet;
     }
 }

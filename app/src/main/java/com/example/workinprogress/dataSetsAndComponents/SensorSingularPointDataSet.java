@@ -1,11 +1,7 @@
 package com.example.workinprogress.dataSetsAndComponents;
 
 import android.hardware.Sensor;
-
 import com.example.workinprogress.DisplayImage;
-import com.example.workinprogress.dataSetsAndComponents.DataSetPoint;
-import com.example.workinprogress.dataSetsAndComponents.SingularPointDataSet;
-
 import java.util.ArrayList;
 
 public class SensorSingularPointDataSet extends SingularPointDataSet {
@@ -20,7 +16,7 @@ public class SensorSingularPointDataSet extends SingularPointDataSet {
         if (sensor.getType()==Sensor.TYPE_LIGHT){
             min = 0;
         } else {
-            min = max*-1;
+            min = max*-1+1;
         }
 
     }
@@ -45,7 +41,10 @@ public class SensorSingularPointDataSet extends SingularPointDataSet {
     private Integer applyScaling(float dataSetPoint){
 
         float range = max - min;
+        dataSetPoint+=max+1;
+
         float scalar = DisplayImage.IMAGE_SIZE_SCALAR/range;
+
         return (int)(dataSetPoint * scalar);
     }
 }
