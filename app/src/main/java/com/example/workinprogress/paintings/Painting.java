@@ -8,7 +8,6 @@ import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 
 import com.example.workinprogress.dataSetsAndComponents.DataSet;
-import com.example.workinprogress.dataSetsAndComponents.DataSetPoint;
 import com.example.workinprogress.dataSetsAndComponents.SingularPointDataSet;
 import com.example.workinprogress.dataSetsAndComponents.ThreePointsDataSet;
 import com.example.workinprogress.dataSetsAndComponents.TwoPointsDataSet;
