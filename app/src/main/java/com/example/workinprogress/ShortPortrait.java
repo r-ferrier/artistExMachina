@@ -165,7 +165,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
             if (recordingData) {
                 for(DataSet dataSet: dataSets){
                     if(dataSet.getDataTypeName()==getString(R.string.data_type_light)){
-                        dataSet.addResult(new LightData(getString(R.string.data_type_light),sensorEvent.values[0]));
+                        dataSet.addResult(new LightData(getString(R.string.data_type_light),sensorEvent.values[0],dataSet.getMax(),dataSet.getMin()));
                     }
                 }
             }
@@ -179,7 +179,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
                 for(DataSet dataSet: dataSets){
                     if(dataSet.getDataTypeName()==getString(R.string.data_type_position)){
-                        dataSet.addResult(new PositionData(getString(R.string.data_type_position),sensorEvent.values[0],sensorEvent.values[1],sensorEvent.values[2]));
+                        dataSet.addResult(new PositionData(getString(R.string.data_type_position),sensorEvent.values[0],sensorEvent.values[1],sensorEvent.values[2], dataSet.getMax(),dataSet.getMin()));
                     }
                 }
             }

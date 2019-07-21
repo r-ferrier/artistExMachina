@@ -14,6 +14,9 @@ public abstract class DataSet implements Serializable {
     private String dataTypeName;
     protected int numberOfDataPointsInEachSet;
 
+    protected float max;
+    protected float min;
+
     //result can only be added if it is for the same type of data and has the same number of data points
     public void addResult(DataSetPoint dataSetPoint){
 
@@ -50,5 +53,14 @@ public abstract class DataSet implements Serializable {
 
     public int getNumberOfDataPointsInEachSet() {
         return numberOfDataPointsInEachSet;
+    }
+
+    public float getMax(){
+        return max;
+    }
+
+
+    public float getMin(){
+        return min;
     }
 }

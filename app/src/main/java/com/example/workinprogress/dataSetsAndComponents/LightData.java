@@ -1,6 +1,9 @@
 package com.example.workinprogress.dataSetsAndComponents;
 
+import com.example.workinprogress.DisplayImage;
+
 import java.util.ArrayList;
+import java.util.Random;
 
 public class LightData implements DataSetPoint {
 
@@ -8,11 +11,31 @@ public class LightData implements DataSetPoint {
     private final int numberOfDataPoints;
     private String dataTypeName;
 
-    public LightData (String dataTypeName, Float dataPoint){
+    private float max;
+    private float min;
+
+    public LightData (String dataTypeName, Float dataPoint, float max, float min){
+
         this.numberOfDataPoints = 1;
         this.dataTypeName = dataTypeName;
-        dataPoints.add(dataPoint);
+        this.max = max;
+        this.min = min;
+        Random r = new Random();
+//        dataPoints.add((float)r.nextInt(500)+500);
+        dataPoints.add(scale(dataPoint));
         System.out.println("lightdata object"+dataPoint+"-----------------------------------");
+    }
+
+    private Float scale(Float datapoint){
+
+        float range = max - min;
+        float scalar = DisplayImage.IMAGE_SIZE_SCALAR/range;
+//
+        datapoint = (float)(20*(datapoint/Math.log(datapoint)));
+        datapoint*=(float)(Math.log(datapoint));
+        datapoint*=scalar;
+        return datapoint;
+
     }
 
     @Override
