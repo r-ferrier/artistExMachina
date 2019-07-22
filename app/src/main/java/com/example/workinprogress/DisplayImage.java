@@ -20,6 +20,7 @@ import com.example.workinprogress.dataSetsAndComponents.DataSetPoint;
 import com.example.workinprogress.dataSetsAndComponents.SensorSingularPointDataSet;
 import com.example.workinprogress.dataSetsAndComponents.UnscaledSingleEntryDataSet;
 import com.example.workinprogress.paintings.AlbersImage;
+import com.example.workinprogress.paintings.AutomaticDrawing;
 import com.example.workinprogress.paintings.Painting;
 import com.example.workinprogress.paintings.TextImage;
 
@@ -123,7 +124,8 @@ public class DisplayImage extends AppCompatActivity {
         thready.start();
 
 //        createNewTextImage();
-        createNewAlbersImage();
+//        createNewAlbersImage();
+        createNewAutomaticDrawingImage();
 
     }
 
@@ -138,6 +140,13 @@ public class DisplayImage extends AppCompatActivity {
         createdImage = new AlbersImage(this, dataSets);
         ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
   //      ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
+        imageCreated = true;
+    }
+
+    public void createNewAutomaticDrawingImage(){
+        createdImage = new AutomaticDrawing(this,dataSets);
+        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
+        //      ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
         imageCreated = true;
     }
 
