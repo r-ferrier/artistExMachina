@@ -42,6 +42,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
     private TextView accelerometerText;
     private TextView distanceText;
     private TextView stepsText;
+    private boolean nightMode = false;
 
     private ArrayList<TextView> shortPortraitActivityTextViews = new ArrayList<>();
 
@@ -67,9 +68,15 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
             dataSets.add((UnscaledSingleEntryDataSet)getIntent().getSerializableExtra(getString(R.string.data_type_distance)));
         }
 
-        dataSets.add(new SensorSingularPointDataSet(getString(R.string.data_type_light), lightSensor));
+        SensorSingularPointDataSet lightData = new SensorSingularPointDataSet(getString(R.string.data_type_light), lightSensor);
+        lightData.addResult(new LightData(getString(R.string.data_type_light),(float)1000,lightData.getMax(),lightData.getMin(),nightMode));
+
+        DataSet locationData = new LocationTwoPointsDataSet(getString(R.string.data_type_location));
+        locationData.addResult(new LocationData(getString(R.string.data_type_location),0,0));
+
+        dataSets.add(lightData);
         dataSets.add(new PositionSensorThreePointsDataSet(getString(R.string.data_type_position), positionSensor));
-        dataSets.add(new LocationTwoPointsDataSet(getString(R.string.data_type_location)));
+        dataSets.add(locationData);
 
         updateStaticValues();
 
@@ -85,6 +92,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                 2000,
                 10, this);
+        recordingData = false;
     }
 
     private void assignSensorTextAndManagers() {
@@ -110,6 +118,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
             if(dataset.getDataTypeName().equals(getString(R.string.data_type_steps))){
                 stepsText.setText(dataset.toString());
+                System.out.println("distance"+((UnscaledSingleEntryDataSet)dataset).getScaledResults1().get(0));
             }
             if(dataset.getDataTypeName().equals(getString(R.string.data_type_distance))){
                 distanceText.setText(dataset.toString());
@@ -165,7 +174,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
             if (recordingData) {
                 for(DataSet dataSet: dataSets){
                     if(dataSet.getDataTypeName()==getString(R.string.data_type_light)){
-                        dataSet.addResult(new LightData(getString(R.string.data_type_light),sensorEvent.values[0],dataSet.getMax(),dataSet.getMin()));
+                        dataSet.addResult(new LightData(getString(R.string.data_type_light),sensorEvent.values[0],dataSet.getMax(),dataSet.getMin(),nightMode));
                     }
                 }
             }
