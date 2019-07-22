@@ -65,10 +65,6 @@ public class AlbersImage extends Painting {
             canvasPositionsString += "[x: " + canvasPositions[i][0] + ", y: " + canvasPositions[i][1] + "], ";
         }
 
-//        for (int i = 0; i < newCanvasPositions.length; i++) {
-//            canvasPositionsString += "[x: " + newCanvasPositions[i][0] + ", y: " + newCanvasPositions[i][1] + "], ";
-//        }
-
         for (int i = 0; i < coloursValues.length; i++) {
             coloursString += "[A: " + coloursValues[i][0] + ", R: " + coloursValues[i][1] + ",G: " + coloursValues[i][2] + ",B: " + coloursValues[i][3] + "], ";
         }
@@ -79,19 +75,12 @@ public class AlbersImage extends Painting {
 
         firstEverythingExperiment();
 
-
-        // to be used to toggle alpha functionality
-//        paint1.setARGB(40,20,200,150);
-//        canvas.drawRect(50,50,150,150, paint1);
-//        canvas.drawRect(25,25,110,200, paint1);
     }
 
     private void firstEverythingExperiment() {
 
         drawImage(canvasPositions, coloursValues, newShapeSize);
 //        setWhiteSquare();
-
-
     }
 
     private void drawImage(int[][] canvasPositions, int[][] coloursValues, ArrayList<Integer> shapeSize) {
@@ -112,9 +101,6 @@ public class AlbersImage extends Painting {
 
             canvas.drawRect(x1, y1, x2, y2, paint1);
 
-//            System.out.println(canvasPositions[j][0]+" "+canvasPositions[j][1]+" "+shapeSize[j]+" "+shapeSize[j]+" canvas positions");
-//            System.out.println(coloursValues.length);
-//            Log.i("colours",Arrays.toString(coloursValues[j]));
         }
     }
 
@@ -123,12 +109,7 @@ public class AlbersImage extends Painting {
 
         int distance = 0;
         int numberOflocationsVisited = 1;
-
-
         distance = (int)((UnscaledSingleEntryDataSet)lightDistanceAndSteps.get(1)).getScaledResults1().get(0);
-
-
-
 
         System.out.println("distance" + distance + "---------------------");
 
@@ -138,8 +119,6 @@ public class AlbersImage extends Painting {
 
             Paint paint2 = new Paint();
             paint2.setARGB(150, 240, 240,240);
-
-
             int x1;
             int y1;
 
@@ -169,11 +148,8 @@ public class AlbersImage extends Painting {
 
                 canvas.drawRect(x1, y1, x2, y2, paint2);
                 System.out.println("canvasdrawRect"+x1+" "+y1+" "+x2+" "+y2+" ");
-
-
             }
         }
-
     }
 
 
@@ -239,7 +215,6 @@ public class AlbersImage extends Painting {
             }
             i += j - 1;
         }
-
     }
 
     private void setColoursValues() {
@@ -329,101 +304,5 @@ public class AlbersImage extends Painting {
             canvasPositions[i][0] = Math.round(xSize);
             canvasPositions[i][1] = Math.round(ySize);
         }
-
-//       shuffleCanvasPositions();
-
-
-//        setNewCanvasPositions();
-
-
     }
-
-    private void shuffleCanvasPositions(){
-        ArrayList<int[]> canvasPositions2 = new ArrayList<>();
-
-        for(int[] intArray: canvasPositions){
-            canvasPositions2.add(intArray.clone());
-        }
-
-        Collections.shuffle(canvasPositions2);
-
-        for(int i = 0; i<canvasPositions2.size();i++){
-            canvasPositions[i][0] = canvasPositions2.get(i)[0];
-            canvasPositions[i][1] = canvasPositions2.get(i)[1];
-        }
-    }
-
-
-    private void setNewCanvasPositions() {
-        newCanvasPositions = new int[numberOfSquares][2];
-        int increment = 100;
-        int loopNumber = 0;
-
-        for (int i = 0; i < numberOfSquares; i++) {
-
-            if (loopNumber == 0) {
-
-                //add in the existing array on the first loop
-                int j;
-                for (j = 0; j < canvasPositions.length; j++) {
-                    newCanvasPositions[j][0] = canvasPositions[j][0];
-                    newCanvasPositions[j][1] = canvasPositions[j][1];
-
-                }
-                i += j - 1;
-                loopNumber++;
-
-                //on the second loop increase values on the right hand side by 100 and decrease left hand side by 100
-            } else if (loopNumber == 1) {
-
-                int j;
-                for (j = 0; j < canvasPositions.length; j++) {
-                    if (j + i < newCanvasPositions.length) {
-                        newCanvasPositions[j + i][0] = canvasPositions[j][0] + (canvasPositions[j][0] + 1) / 2;
-                        newCanvasPositions[j + i][1] = canvasPositions[j][1];
-                    }
-                }
-                i += j - 1;
-                increment += 100;
-                loopNumber++;
-            } else if (loopNumber == 2) {
-                int j;
-                for (j = 0; j < canvasPositions.length; j++) {
-                    if (j + i < newCanvasPositions.length) {
-                        newCanvasPositions[j + i][1] = canvasPositions[j][1] + (canvasPositions[j][1] + 1) / 2;
-                        newCanvasPositions[j + i][0] = canvasPositions[j][0];
-                    }
-                }
-                i += j - 1;
-                increment += 100;
-                loopNumber++;
-            } else if (loopNumber == 3) {
-                int j;
-                for (j = 0; j < canvasPositions.length; j++) {
-                    if (j + i < newCanvasPositions.length) {
-                        newCanvasPositions[j + i][0] = canvasPositions[j][0] - (canvasPositions[j][0] + 1) / 2;
-                        newCanvasPositions[j + i][1] = canvasPositions[j][1];
-                    }
-                }
-                i += j - 1;
-                increment += 100;
-                loopNumber++;
-            } else if (loopNumber == 4) {
-                int j;
-                for (j = 0; j < canvasPositions.length; j++) {
-                    if (j + i < newCanvasPositions.length) {
-                        newCanvasPositions[j + i][1] = canvasPositions[j][1] - (canvasPositions[j][1] + 1) / 2;
-                        newCanvasPositions[j + i][0] = canvasPositions[j][0];
-                    }
-                }
-                i += j - 1;
-                increment += 100;
-                loopNumber = 1;
-            }
-
-        }
-
-    }
-
-
 }
