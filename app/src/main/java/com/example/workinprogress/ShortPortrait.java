@@ -26,6 +26,7 @@ import com.example.workinprogress.dataSetsAndComponents.PositionData;
 import com.example.workinprogress.dataSetsAndComponents.SensorSingularPointDataSet;
 import com.example.workinprogress.dataSetsAndComponents.PositionSensorThreePointsDataSet;
 import com.example.workinprogress.dataSetsAndComponents.UnscaledSingleEntryDataSet;
+import com.example.workinprogress.paintings.Painting;
 
 import java.util.ArrayList;
 
@@ -36,6 +37,8 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
     private Sensor lightSensor;
     private Sensor positionSensor;
     private boolean recordingData = false;
+
+    private String imageType = "Albers Image";
 
     public TextView lightText;
     public TextView locationText;
@@ -161,6 +164,8 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         Bundle bundle = new Bundle();
         bundle.putSerializable(getString(R.string.data_sets),dataSets);
         intent.putExtra("createImage",true);
+        intent.putExtra("imageType",imageType);
+
         intent.putExtras(bundle);
         startActivity(intent);
     }
@@ -276,7 +281,15 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
     }
 
-
+    public void changeImage(View view){
+        if(((TextView)view).getText()==getString(R.string.albers_image)){
+            ((TextView)view).setText(R.string.automatic_drawing);
+            imageType = getString(R.string.automatic_drawing);
+        }else{
+            ((TextView)view).setText(R.string.albers_image);
+            imageType = getString(R.string.albers_image);
+        }
+    }
 
 
 }

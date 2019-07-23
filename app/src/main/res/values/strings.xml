@@ -24,4 +24,6 @@
     <string name="data_type_distance">data_type_distance</string>
     <string name="data_type_light">data_type_light</string>
     <string name="data_sets">data sets</string>
+    <string name="albers_image">Albers Image</string>
+    <string name="automatic_drawing">Automatic Drawing</string>
 </resources>

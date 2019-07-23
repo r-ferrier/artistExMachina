@@ -40,6 +40,7 @@ public class DisplayImage extends AppCompatActivity {
 
     String currentImagePath;
     private Painting createdImage;
+    private String imageType = "Albers Image";
 
     private ArrayList<Integer> lightLevels;
     private ArrayList<DataSetPoint> locations;
@@ -58,6 +59,8 @@ public class DisplayImage extends AppCompatActivity {
         setContentView(R.layout.activity_display_image);
 
         if (getIntent().getExtras() != null) {
+
+            imageType = getIntent().getStringExtra("imageType");
 
             createNewImage = getIntent().getBooleanExtra("createImage", false);
 
@@ -125,7 +128,14 @@ public class DisplayImage extends AppCompatActivity {
 
 //        createNewTextImage();
 //        createNewAlbersImage();
-        createNewAutomaticDrawingImage();
+//        createNewAutomaticDrawingImage();
+
+
+        if(imageType.equals(getString(R.string.albers_image))){
+            createNewAlbersImage();
+        }else{
+            createNewAutomaticDrawingImage();
+        }
 
     }
 
