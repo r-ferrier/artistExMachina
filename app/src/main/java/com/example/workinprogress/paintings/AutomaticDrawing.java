@@ -1,17 +1,15 @@
 package com.example.workinprogress.paintings;
 
 import android.content.Context;
-import android.graphics.BlendMode;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 
+import com.example.workinprogress.DisplayImage;
 import com.example.workinprogress.dataSetsAndComponents.DataSet;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class AutomaticDrawing extends Painting {
 
@@ -105,7 +103,9 @@ public class AutomaticDrawing extends Painting {
         int lastControlX2 = positionsToBeDrawn[0][0];
         int lastControlY2 = positionsToBeDrawn[0][1];
 
-        for(int i = 0; i<positionsToBeDrawn.length;i++){
+        System.out.println("number of lines to draw = "+positionsToBeDrawn.length);
+
+        for (int i = 0; i < positionsToBeDrawn.length; i++) {
 
             path.moveTo(positionsToBeDrawn[i][0], positionsToBeDrawn[i][1]);
 
@@ -121,21 +121,21 @@ public class AutomaticDrawing extends Painting {
             int thisControlX2 = positionsToBeDrawn[i][0];
             int thisControlY2 = positionsToBeDrawn[i][3];
 
-           // check where the last line came from and where the next line is going on the x axis
-            if(lastControlX2<originX){
-                if(destinationX<originX){
+            // check where the last line came from and where the next line is going on the x axis
+            if (lastControlX2 < originX) {
+                if (destinationX < originX) {
                     //line came from left and is going left like this >
-                    thisControlX1 = ((originX-destinationX))+destinationX;
-                }else{
+                    thisControlX1 = ((originX - destinationX)) + destinationX;
+                } else {
                     //line came from left and is going right like this \
                     thisControlX1 = destinationX;
                 }
-            }else{
-                if(destinationX<originX){
+            } else {
+                if (destinationX < originX) {
                     thisControlX1 = destinationX;
                     //line came from right and is going left like this /
-                }else{
-                    thisControlX1 = ((originX-destinationX))+destinationX;
+                } else {
+                    thisControlX1 = ((originX - destinationX)) + destinationX;
                     //line came from right and is going right like this <
                 }
             }
@@ -164,7 +164,7 @@ public class AutomaticDrawing extends Painting {
             lastControlY1 = thisControlY1;
             lastControlY2 = thisControlY2;
 
-            path.cubicTo(thisControlX1,thisControlY1,thisControlX2,thisControlY2, destinationX, destinationY);
+            path.cubicTo(thisControlX1, thisControlY1, thisControlX2, thisControlY2, destinationX, destinationY);
 //
 //            path2.moveTo(testPositionsToBeDrawn[i][0], testPositionsToBeDrawn[i][1]);
 //            path2.lineTo(testPositionsToBeDrawn[i][2], testPositionsToBeDrawn[i][1]);
@@ -176,21 +176,33 @@ public class AutomaticDrawing extends Painting {
 
             if (increaseWidth) {
                 paint1.setStrokeWidth(paint1.getStrokeWidth() + 1);
-                if(paint1.getStrokeWidth()>=10){
+                if (paint1.getStrokeWidth() >= 10) {
                     increaseWidth = false;
                 }
             } else {
-                paint1.setStrokeWidth(paint1.getStrokeWidth()-1);
-                if(paint1.getStrokeWidth()<=1){
+                paint1.setStrokeWidth(paint1.getStrokeWidth() - 1);
+                if (paint1.getStrokeWidth() <= 1) {
                     increaseWidth = true;
                 }
             }
 
             path.reset();
 
+            if(i==1000){
+                paint1.setAlpha(120);
+                paint1.setColor(Color.GRAY);
+            }
+
+            if(i==2000){
+//                paint1.setAlpha(255);
+                paint1.setColor(Color.WHITE);
+            }
+
         }
 
         convertLightValuesToColour();
+
+
 
 
 //
@@ -210,57 +222,65 @@ public class AutomaticDrawing extends Painting {
 //        canvas.drawPath(path, paint1);
     }
 
-    private void convertLightValuesToColour(){
+    private void convertLightValuesToColour() {
 
         ArrayList<Integer> lightValues = lightDistanceAndSteps.get(2).getScaledResults1();
 
         int totalValue = 0;
-        int totalNumberofValues = lightValues.size();
+        int totalNumberofValues = (lightValues.size()) - 1;
         int average;
         int newColour;
         int xPosition;
         int yPosition;
         int circleSize;
 
-        for(Integer light: lightValues){
-            totalValue+= light;
+        for (Integer light : lightValues) {
+            totalValue += light;
         }
 
-        average = totalValue/totalNumberofValues;
+        totalValue -= lightValues.get(0);
 
-        if(average<255){
-            newColour = average;
-        } else {
-            newColour = average % 255;
+        average = totalValue / totalNumberofValues;
+
+        newColour = (int) (average * (255.0 / DisplayImage.IMAGE_SIZE_SCALAR));
+
+//        System.out.println("totalValue = "+totalValue);
+//        System.out.println("totalNumberOfValues = "+totalNumberofValues);
+//        System.out.println("average = "+average);
+//        System.out.println("newColour = "+newColour);
+
+        paint3.setARGB(150, newColour, newColour, newColour);
+
+        if (newColour < 30) {
+            paint3.setAlpha(255);
+        } else if (newColour < 60) {
+            paint3.setAlpha(200);
         }
-
-
-        paint3.setARGB(90,newColour,newColour,newColour);
 
         steps = lightDistanceAndSteps.get(0).getScaledResults1().get(0);
         distance = lightDistanceAndSteps.get(1).getScaledResults1().get(0);
 
-        if(steps<width){
+        if (steps < width) {
             xPosition = steps;
-        }else{
-            xPosition = steps % (int)width;
+        } else {
+            xPosition = steps % (int) width;
         }
 
-        if(distance<height){
+        if (distance < height) {
             yPosition = distance;
-        }else{
-            yPosition = distance%(int)height;
+        } else {
+            yPosition = distance % (int) height;
         }
 
-        if (steps>=10000){
+        if (steps >= 10000) {
             circleSize = 600;
-        }else{
-            circleSize = (int)((600.0/10000)*steps);
+        } else {
+            circleSize = (int) ((600.0 / 10000) * steps);
         }
 
 
+        canvas.drawCircle((float) xPosition, (float) yPosition, (float) (newColour+20), paint3);
 
-        canvas.drawCircle((float)xPosition,(float)yPosition,(float)newColour,paint3);
 
     }
 
@@ -288,8 +308,8 @@ public class AutomaticDrawing extends Painting {
 
             anglesAndDirections[i][1] = (positions.get(0).getScaledResults2().get(i)) % 360;
 
-            System.out.println("increment" + anglesAndDirections[i][0]);
-            System.out.println("angle" + anglesAndDirections[i][1]);
+//            System.out.println("increment" + anglesAndDirections[i][0]);
+//            System.out.println("angle" + anglesAndDirections[i][1]);
         }
 
         int startX = (int) (Math.round(width / 1.61803398875));
@@ -336,29 +356,29 @@ public class AutomaticDrawing extends Painting {
             stopY = Math.round((float) stopY) + startY;
 
 
-            if (stopX > width-30) {
+            if (stopX > width - 30) {
                 stopX = stopX - startX - startX - lengthOfstopX;
                 if (stopX < 30) {
                     stopX = 30;
                 }
             } else if (stopX < 30) {
                 stopX = stopX + startX + startX + lengthOfstopX;
-                if (stopX > width-30) {
+                if (stopX > width - 30) {
                     stopX = width - 30;
                 }
             }
 
-            if (stopY > height-30) {
-                System.out.println(stopY + " too high");
+            if (stopY > height - 30) {
+//                System.out.println(stopY + " too high");
                 stopY = stopY - startY - startY - lengthOfstopY;
                 if (stopY < 30) {
                     stopY = 30;
                 }
-                System.out.println(stopY + " fixed");
+//                System.out.println(stopY + " fixed");
             } else if (stopY < 30) {
                 stopY = stopY + startY + startY + lengthOfstopY;
-                if (stopY > height-30) {
-                    stopY = height-30;
+                if (stopY > height - 30) {
+                    stopY = height - 30;
                 }
             }
 
@@ -371,8 +391,8 @@ public class AutomaticDrawing extends Painting {
             startY = (int) stopY;
 
 
-            System.out.println("length = " + length + ", angle = " + originalAngle + ", height = " + height + " width = " + width);
-            System.out.println("start x = " + startX + ", start y = " + startY + ", stop x = " + stopX + ", stop y = " + stopY);
+//            System.out.println("length = " + length + ", angle = " + originalAngle + ", height = " + height + " width = " + width);
+//            System.out.println("start x = " + startX + ", start y = " + startY + ", stop x = " + stopX + ", stop y = " + stopY);
 
         }
 

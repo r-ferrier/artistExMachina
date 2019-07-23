@@ -19,6 +19,7 @@ import com.example.workinprogress.dataSetsAndComponents.DataSet;
 import com.example.workinprogress.dataSetsAndComponents.DataSetPoint;
 import com.example.workinprogress.dataSetsAndComponents.SensorSingularPointDataSet;
 import com.example.workinprogress.dataSetsAndComponents.UnscaledSingleEntryDataSet;
+import com.example.workinprogress.paintings.AbstractShapes;
 import com.example.workinprogress.paintings.AlbersImage;
 import com.example.workinprogress.paintings.AutomaticDrawing;
 import com.example.workinprogress.paintings.Painting;
@@ -129,6 +130,7 @@ public class DisplayImage extends AppCompatActivity {
 //        createNewTextImage();
 //        createNewAlbersImage();
 //        createNewAutomaticDrawingImage();
+//        createNewAbstractShapesImage();
 
 
         if(imageType.equals(getString(R.string.albers_image))){
@@ -137,6 +139,13 @@ public class DisplayImage extends AppCompatActivity {
             createNewAutomaticDrawingImage();
         }
 
+    }
+
+    public void createNewAbstractShapesImage(){
+        createdImage = new AbstractShapes(this,  dataSets);
+        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
+        //   ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
+        imageCreated = true;
     }
 
     public void createNewTextImage(){
