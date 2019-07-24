@@ -98,4 +98,9 @@ public class PositionData implements DataSetPoint {
     public ArrayList getResults() {
         return dataPoints;
     }
+
+    @Override
+    public ArrayList getScaledResults() {
+        return null;
+    }
 }

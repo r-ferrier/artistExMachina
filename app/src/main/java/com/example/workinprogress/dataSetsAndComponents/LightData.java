@@ -8,6 +8,7 @@ import java.util.Random;
 public class LightData implements DataSetPoint {
 
     private ArrayList<Float> dataPoints = new ArrayList<>();
+    private ArrayList<Float> scaledDataPoints = new ArrayList<>();
     private final int numberOfDataPoints;
     private String dataTypeName;
     private boolean nightMode;
@@ -24,11 +25,12 @@ public class LightData implements DataSetPoint {
         this.nightMode = nightMode;
         Random r = new Random();
 //        dataPoints.add((float)r.nextInt(500)+500);
-        dataPoints.add(scale(dataPoint));
-        System.out.println("lightdata object"+dataPoint+"-----------------------------------");
+        scaledDataPoints.add(scale(dataPoint));
+        dataPoints.add(dataPoint);
     }
 
     private Float scale(Float datapoint){
+
         float range = max - min;
         float scalar = DisplayImage.IMAGE_SIZE_SCALAR / range;
 
@@ -39,6 +41,8 @@ public class LightData implements DataSetPoint {
             datapoint *= (float) (Math.log(datapoint));
             datapoint *= scalar;
         }
+
+        System.out.println("max light value: "+((20*max/Math.log(max))*Math.log(20*max/Math.log(max)))*scalar);
 
 
         return datapoint;
@@ -62,5 +66,9 @@ public class LightData implements DataSetPoint {
     @Override
     public ArrayList getResults() {
         return dataPoints;
+    }
+
+    public ArrayList getScaledResults(){
+        return scaledDataPoints;
     }
 }

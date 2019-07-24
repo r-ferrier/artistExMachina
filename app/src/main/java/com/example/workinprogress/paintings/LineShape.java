@@ -9,9 +9,11 @@ import android.graphics.PixelFormat;
 
 public class LineShape extends Shape {
 
-    private int size;
+    protected int size;
 
-    public LineShape(int x1Start, int y1Start, int x2Start, int y2Start, int size){
+    public LineShape(int x1Start, int y1Start, int x2Start, int y2Start, int size, int[] aRGBColor){
+
+        super(aRGBColor);
         this.x1Start = x1Start;
         this.y1Start = y1Start;
         this.x2Start = x2Start;
@@ -27,8 +29,6 @@ public class LineShape extends Shape {
     @Override
     public void draw(Canvas canvas) {
 
-        Paint paint1 = new Paint();
-        paint1.setColor(Color.WHITE);
         Path path = new Path();
         paint1.setStyle(Paint.Style.FILL);
 //        paint1.setStrokeWidth(5);
@@ -42,10 +42,10 @@ public class LineShape extends Shape {
 
         canvas.drawPath(path, paint1);
 
-        System.out.println("starting points: x1 = " + x1Start + ", x2 = " + x2Start + ", y1 = " + y1Start + ", y2 = " + y2Start);
-        System.out.println("ending points: x1 = " + x1End + ", x2 = " + x2End + ", y1 = " + y1End + ", y2 = " + y2End);
-        System.out.println("width: "+width);
-        System.out.println("starting degree: "+startingDegree);
+//        System.out.println("starting points: x1 = " + x1Start + ", x2 = " + x2Start + ", y1 = " + y1Start + ", y2 = " + y2Start);
+//        System.out.println("ending points: x1 = " + x1End + ", x2 = " + x2End + ", y1 = " + y1End + ", y2 = " + y2End);
+//        System.out.println("width: "+width);
+//        System.out.println("starting degree: "+startingDegree);
 
     }
 

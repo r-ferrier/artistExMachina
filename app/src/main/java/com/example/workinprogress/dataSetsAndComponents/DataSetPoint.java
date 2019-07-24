@@ -14,4 +14,7 @@ public interface DataSetPoint<e extends Number> extends Serializable {
 
    ArrayList<e> getResults();
 
+   ArrayList<e> getScaledResults();
+
+
 }

@@ -1,5 +1,6 @@
 package com.example.workinprogress.paintings;
 
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 
 public abstract class Shape extends Drawable {
@@ -16,6 +17,13 @@ public abstract class Shape extends Drawable {
 
     protected int startingDegree;
     protected int width;
+
+    protected Paint paint1;
+
+    public Shape(int[] aRGBColor){
+        paint1 = new Paint();
+        paint1.setARGB(aRGBColor[0],aRGBColor[1],aRGBColor[2],aRGBColor[3]);
+    }
 
     public void setStartingDegree() {
 

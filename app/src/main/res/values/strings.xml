@@ -26,4 +26,5 @@
     <string name="data_sets">data sets</string>
     <string name="albers_image">Albers Image</string>
     <string name="automatic_drawing">Automatic Drawing</string>
+    <string name="abstract_shapes">Abstract Shapes</string>
 </resources>

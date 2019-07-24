@@ -32,6 +32,11 @@ public class LocationData implements DataSetPoint {
     }
 
     @Override
+    public ArrayList getScaledResults() {
+        return null;
+    }
+
+    @Override
     public String toString() {
         return "long: "+dataPoints.get(0).toString()+" lat: "+dataPoints.get(1).toString();
     }

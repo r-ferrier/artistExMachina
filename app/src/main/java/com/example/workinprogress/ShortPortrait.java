@@ -285,6 +285,9 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         if(((TextView)view).getText()==getString(R.string.albers_image)){
             ((TextView)view).setText(R.string.automatic_drawing);
             imageType = getString(R.string.automatic_drawing);
+        }else if(((TextView)view).getText()==getString(R.string.automatic_drawing)){
+            ((TextView)view).setText(R.string.abstract_shapes);
+            imageType = getString(R.string.abstract_shapes);
         }else{
             ((TextView)view).setText(R.string.albers_image);
             imageType = getString(R.string.albers_image);

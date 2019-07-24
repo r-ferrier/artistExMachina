@@ -10,13 +10,15 @@ import android.graphics.RectF;
 
 public class CurvedShape extends Shape {
 
-    private int size = 30;
+    private int size = 50;
     private int sweepingAngle;
     private boolean finishedCreatingEnds;
 
     private boolean clockwiseOrientation;
 
-    public CurvedShape(int x1Start, int y1Start, int x2Start, int y2Start, boolean clockwiseOrientation) {
+    public CurvedShape(int x1Start, int y1Start, int x2Start, int y2Start, boolean clockwiseOrientation, int[] aRGBColor) {
+
+        super(aRGBColor);
 
         this.clockwiseOrientation = clockwiseOrientation;
 
@@ -42,8 +44,6 @@ public class CurvedShape extends Shape {
     @Override
     public void draw(Canvas canvas) {
 
-        Paint paint1 = new Paint();
-        paint1.setColor(Color.WHITE);
         Path path = new Path();
         paint1.setStyle(Paint.Style.FILL);
 //        paint1.setStrokeWidth(5);
@@ -69,7 +69,7 @@ public class CurvedShape extends Shape {
 
 
 
-        System.out.println("ending points: x1 = " + x1End + ", x2 = " + x2End + ", y1 = " + y1End + ", y2 = " + y2End);
+//        System.out.println("ending points: x1 = " + x1End + ", x2 = " + x2End + ", y1 = " + y1End + ", y2 = " + y2End);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class CurvedShape extends Shape {
 
         switch (startingDegree) {
             case 0:
-                System.out.println("case 0");
+//                System.out.println("case 0");
                 if (clockwiseOrientation) {
                     x1End = (int) (rectF.left + size);
                     y1End = (int) rectF.bottom;
@@ -105,7 +105,7 @@ public class CurvedShape extends Shape {
                 }
                 return new int[]{x1End, y1End, x2End, y2End};
             case 90:
-                System.out.println("case 90");
+//                System.out.println("case 90");
                 if(clockwiseOrientation) {
                     x1End = (int) (rectF.left);
                     y1End = (int) (rectF.top + size);
@@ -119,7 +119,7 @@ public class CurvedShape extends Shape {
                 }
                 return new int[]{x1End, y1End, x2End, y2End};
             case 180:
-                System.out.println("case 180");
+//                System.out.println("case 180");
 
                 if(clockwiseOrientation) {
                     x1End = (int) (rectF.right - size);
@@ -135,7 +135,7 @@ public class CurvedShape extends Shape {
 
                 return new int[]{x1End, y1End, x2End, y2End};
             case 270:
-                System.out.println("case 270");
+//                System.out.println("case 270");
                 if(clockwiseOrientation) {
                     x1End = (int) rectF.right;
                     y1End = (int) (rectF.bottom - size);
