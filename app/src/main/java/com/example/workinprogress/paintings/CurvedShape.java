@@ -6,7 +6,6 @@ import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 
@@ -23,7 +22,7 @@ public class CurvedShape extends Drawable {
     private int y2Start;
 
     private int arcWidth;
-    private int size = 400;
+    private int size = 200;
     private int startingDegree;
 
     public CurvedShape(int x1Start, int y1Start, int x2Start, int y2Start) {
@@ -33,26 +32,9 @@ public class CurvedShape extends Drawable {
         this.y1Start = y1Start;
         this.y2Start = y2Start;
 
-
         // find out which orientation the coordinates are in
-        if (y1Start > y2Start) {
-            startingDegree = 270;
-            arcWidth = y1Start-y2Start;
-        } else if (y2Start > y1Start) {
-            startingDegree = 90;
-            arcWidth = y2Start-y1Start;
-        }
-
-        if (x1Start > x2Start) {
-            startingDegree = 0;
-            arcWidth = x1Start-x2Start;
-        } else if (x1Start < x2Start) {
-            startingDegree = 180;
-            arcWidth = x2Start-x1Start;
-        }
-
+        setStartingDegree();
     }
-
 
     @Override
     public void draw(Canvas canvas) {
@@ -63,82 +45,20 @@ public class CurvedShape extends Drawable {
         paint1.setStyle(Paint.Style.STROKE);
         paint1.setStrokeWidth(5);
 
+
         path.moveTo(x1Start, y1Start);
 
-        int rectCoordinatesLeft;
-        int rectCoordinatesTop;
-        int rectCoordinatesRight;
-        int rectCoordinatesBottom;
+        RectF outerLine = createRectangle(size,x1Start,y1Start);
+        RectF innerLine = createRectangle(size-arcWidth,x2Start,y2Start);
 
-        int rect2CoordinatesLeft;
-        int rect2CoordinatesTop;
-        int rect2CoordinatesRight;
-        int rect2CoordinatesBottom;
+        setEnds(outerLine);
 
-        if (startingDegree == 0) {
-            rectCoordinatesLeft = x1Start - size;
-            rect2CoordinatesLeft = rectCoordinatesLeft;
-            rectCoordinatesTop = y1Start;
-            rect2CoordinatesTop = rectCoordinatesTop;
-            rectCoordinatesRight = x1Start;
-            rect2CoordinatesRight = rectCoordinatesRight-arcWidth;
-            rectCoordinatesBottom = y1Start + size;
-            rect2CoordinatesBottom = rectCoordinatesBottom-arcWidth;
-        } else if (startingDegree == 90) {
-            rectCoordinatesLeft = x1Start - size;
-            rect2CoordinatesLeft = rectCoordinatesLeft+arcWidth;
-            rectCoordinatesTop = y1Start - size;
-            rect2CoordinatesTop = rectCoordinatesTop-arcWidth;
-            rectCoordinatesRight = x1Start+size;
-            rect2CoordinatesRight = rectCoordinatesRight+arcWidth;
-            rectCoordinatesBottom = y1Start+size;
-            rect2CoordinatesBottom = rectCoordinatesBottom-arcWidth;
-        } else if (startingDegree == 180) {
-            rectCoordinatesLeft = x1Start;
-            rect2CoordinatesLeft = rectCoordinatesLeft+arcWidth;
-            rectCoordinatesTop = y1Start - size;
-            rect2CoordinatesTop = rectCoordinatesTop+arcWidth;
-            rectCoordinatesRight = x1Start + size;
-            rect2CoordinatesRight = rectCoordinatesRight;
-            rectCoordinatesBottom = y1Start;
-            rect2CoordinatesBottom = rectCoordinatesBottom;
-        } else {
-            rectCoordinatesLeft = x1Start;
-            rect2CoordinatesLeft = rectCoordinatesLeft;
-            rectCoordinatesTop = y1Start;
-            rect2CoordinatesTop = rectCoordinatesTop+arcWidth;
-            rectCoordinatesRight = x1Start+size;
-            rect2CoordinatesRight = rectCoordinatesRight-arcWidth;
-            rectCoordinatesBottom = y1Start+size;
-            rect2CoordinatesBottom = rectCoordinatesBottom;
-        }
-
-        System.out.println("Rectangle: "+rectCoordinatesLeft+", "+rectCoordinatesTop+", "+rectCoordinatesRight+", "+rectCoordinatesBottom);
-
-
-        RectF rectF = new RectF(rectCoordinatesLeft,rectCoordinatesTop,rectCoordinatesRight,rectCoordinatesBottom);
-
-        path.addArc(rectF,startingDegree,90);
-
-        System.out.println("starting degree = "+startingDegree);
-
-        if(startingDegree==0){
-            path.lineTo(rectCoordinatesLeft,rectCoordinatesBottom-arcWidth);
-        }else if(startingDegree==90){
-            path.lineTo(rectCoordinatesLeft+arcWidth,rectCoordinatesTop+size);
-        }else if(startingDegree==180){
-            path.lineTo(rectCoordinatesRight,rectCoordinatesTop+arcWidth);
-        }else{
-            path.lineTo(rectCoordinatesRight-arcWidth,rectCoordinatesBottom);
-        }
-
-        RectF rect2 = new RectF(rect2CoordinatesLeft,rect2CoordinatesTop,rect2CoordinatesRight,rect2CoordinatesBottom);
-
-        path.addArc(rect2,startingDegree,-90);
+        path.addArc(outerLine,startingDegree,90);
+        path.lineTo(x2End,y2End);
+        path.addArc(innerLine,startingDegree+90,-90);
+        path.lineTo(x1Start,y1Start);
 
         canvas.drawPath(path,paint1);
-
-//        canvas.drawCircle(500, 500, 200, paint1);
     }
 
     @Override
@@ -155,4 +75,85 @@ public class CurvedShape extends Drawable {
     public int getOpacity() {
         return PixelFormat.OPAQUE;
     }
+
+
+    private void setEnds(RectF rectF){
+        switch (startingDegree){
+            case 0:
+                x1End = (int)rectF.left+size;
+                y1End = (int)rectF.bottom;
+                x2End = x1End;
+                y2End = y1End - arcWidth;
+            case 90:
+                x1End = (int)rectF.left;
+                y1End = (int)rectF.top+size;
+                x2End = x1End+arcWidth;
+                y2End = y1End;
+            case 180:
+                x1End = (int)rectF.right-size;
+                y1End = (int)rectF.top;
+                x2End = x1End;
+                y2End = y1End+arcWidth;
+            case 270:
+                x1End = (int)rectF.right;
+                y1End = (int)rectF.bottom-size;
+                x2End = x1End - arcWidth;
+                y2End = y1End;
+        }
+    }
+
+    private void setStartingDegree(){
+        if (y1Start > y2Start) {
+            startingDegree = 90;
+            arcWidth = y1Start-y2Start;
+        } else if (y2Start > y1Start) {
+            startingDegree = 270;
+            arcWidth = y2Start-y1Start;
+        }
+
+        if (x1Start > x2Start) {
+            startingDegree = 0;
+            arcWidth = x1Start-x2Start;
+        } else if (x1Start < x2Start) {
+            startingDegree = 180;
+            arcWidth = x2Start-x1Start;
+        }
+    }
+
+
+    private RectF createRectangle(int size, int x1Start, int y1Start){
+
+        RectF rectf = new RectF();
+
+        switch (startingDegree){
+            case 0:
+                rectf.left = x1Start - size - size;
+                rectf.top = y1Start - size;
+                rectf.right = x1Start;
+                rectf.bottom = y1Start + size;
+                break;
+            case 90:
+                rectf.left = x1Start - size;
+                rectf.top = y1Start - size - size;
+                rectf.right = x1Start+size;
+                rectf.bottom = y1Start;
+                break;
+            case 180:
+                rectf.left = x1Start;
+                rectf.top = y1Start - size;
+                rectf.right = x1Start + size + size;
+                rectf.bottom = y1Start + size;
+                break;
+            case 270:
+                rectf.left = x1Start - size;
+                rectf.top = y1Start;
+                rectf.right = x1Start+size;
+                rectf.bottom = y1Start+size + size;
+                break;
+        }
+//        System.out.println("Rectangle: "+rectCoordinatesLeft+", "+rectCoordinatesTop+", "+rectCoordinatesRight+", "+rectCoordinatesBottom);
+        return rectf;
+
+    }
+
 }

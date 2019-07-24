@@ -35,7 +35,7 @@ public class AbstractShapes extends Painting {
         paint1.setStrokeCap(Paint.Cap.ROUND);
         paint1.setStrokeJoin(Paint.Join.ROUND);
 
-        CurvedShape curvedShape = new CurvedShape(600,400,600,560);
+        CurvedShape curvedShape = new CurvedShape(500,700,500,750);
         curvedShape.draw(canvas);
 
 //        canvas.drawCircle(200,200,200,paint1);

@@ -130,14 +130,14 @@ public class DisplayImage extends AppCompatActivity {
 //        createNewTextImage();
 //        createNewAlbersImage();
 //        createNewAutomaticDrawingImage();
-//        createNewAbstractShapesImage();
+        createNewAbstractShapesImage();
 
 
-        if(imageType.equals(getString(R.string.albers_image))){
-            createNewAlbersImage();
-        }else{
-            createNewAutomaticDrawingImage();
-        }
+//        if(imageType.equals(getString(R.string.albers_image))){
+//            createNewAlbersImage();
+//        }else{
+//            createNewAutomaticDrawingImage();
+//        }
 
     }
 
