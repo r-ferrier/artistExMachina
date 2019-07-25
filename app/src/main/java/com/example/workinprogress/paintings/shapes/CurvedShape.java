@@ -9,15 +9,16 @@ import android.graphics.RectF;
 
 public class CurvedShape extends Shape {
 
-    private int size = 50;
+    private int size;
     private int sweepingAngle;
     private boolean finishedCreatingEnds;
 
     private boolean clockwiseOrientation;
 
-    public CurvedShape(int x1Start, int y1Start, int x2Start, int y2Start, boolean clockwiseOrientation, int[] aRGBColor) {
+    public CurvedShape(int x1Start, int y1Start, int x2Start, int y2Start, boolean clockwiseOrientation, int[] aRGBColor, int size) {
 
         super(aRGBColor);
+        this.size = size;
 
         this.clockwiseOrientation = clockwiseOrientation;
 

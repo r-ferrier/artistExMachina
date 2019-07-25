@@ -25,6 +25,8 @@ public class AbstractShapes extends Painting {
     private Paint paint1;
     private ArrayList<int[]> colourValuesArray;
     private ArrayList<Integer> lightValues;
+    private int numberOfShapes;
+    private int averageSize;
 
     public AbstractShapes(Context context, ArrayList<DataSet> dataSets) {
         super(context, dataSets);
@@ -42,12 +44,12 @@ public class AbstractShapes extends Painting {
 
 
         if (shapes.size() < 1) {
-            drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2)+ 20, (int) (height / 2),setSingleChannelColours(0));
-            drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2) + 300, (int) (height / 2),setSingleChannelColours(0));
-            drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2) + 300, (int) (height / 2),setSingleChannelColours(0));
-            drawALoadOfShapes((int) (width / 2) + 40, (int) (height / 2), (int) (width / 2), (int) (height / 2),setSingleChannelColours(1));
-            drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2) + 5, (int) (height / 2),setSingleChannelColours(2));
-            drawALoadOfShapes((int) (width / 2) + 5, (int) (height / 2), (int) (width / 2), (int) (height / 2),setSingleChannelColours(3));
+//            drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2)+(averageSize/2), (int) (height / 2),setSingleChannelColours(0),averageSize/2);
+//            drawALoadOfShapes((int) (width / 2)+(averageSize/2), (int) (height / 2), (int) (width / 2)+(averageSize/2)+(averageSize/2), (int) (height / 2),setSingleChannelColours(0));
+            drawALoadOfShapes((int) (width / 2)-(averageSize/4), (int) (height / 2), (int) (width / 2)-(averageSize/2)-(averageSize/10), (int) (height / 2),setSingleChannelColours(0),(averageSize/10));
+            drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2)+(averageSize/8), (int) (height / 2),setSingleChannelColours(1),(averageSize/8));
+            drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2)+(averageSize/16), (int) (height / 2),setSingleChannelColours(2),(averageSize/28));
+            drawALoadOfShapes((int) (width / 2) , (int) (height / 2), (int) (width / 2)+(averageSize/32), (int) (height / 2),setSingleChannelColours(3),(averageSize/40));
         } else {
 
             for (Shape shape : shapes) {
@@ -78,6 +80,7 @@ public class AbstractShapes extends Painting {
         lightValues = ((SensorSingularPointDataSet) lightDistanceAndSteps.get(2)).getScaledResults2();
         ArrayList<Integer> xPositions = positions.get(0).getScaledResults3();
         ArrayList<Integer> yPositions = positions.get(0).getScaledResults2();
+        ArrayList<Integer> sizes = positions.get(0).getScaledResults1();
 
         Collections.sort(lightValues);
 
@@ -96,11 +99,48 @@ public class AbstractShapes extends Painting {
             colourValuesArray.add(colours);
         }
 
+        numberOfShapes = (xPositions.size())/2;
 
+        int totalSize = 0;
+
+        int highestValue = 0;
+        int secondHighestValue = 0;
+        int thirdHighestValue = 0;
+        int fourthHighestValue = 0;
+
+        for(Integer size: sizes){
+            size-=500;
+            if(size<0){
+                size*=-1;
+            }
+
+            totalSize+=size;
+            if(size>highestValue){
+                fourthHighestValue = thirdHighestValue;
+                thirdHighestValue = secondHighestValue;
+                secondHighestValue = highestValue;
+                highestValue = size;
+            }else if(size>secondHighestValue){
+                fourthHighestValue = thirdHighestValue;
+                thirdHighestValue = secondHighestValue;
+                secondHighestValue = size;
+            }else if(size>thirdHighestValue){
+                fourthHighestValue = thirdHighestValue;
+                thirdHighestValue = size;
+            }else if(size>fourthHighestValue){
+                fourthHighestValue = size;
+            }
+        }
+
+
+        averageSize = (((highestValue+secondHighestValue+thirdHighestValue+fourthHighestValue)/4)+(totalSize/numberOfShapes))/2;
+        averageSize = (500-averageSize);
+
+        System.out.println("average size: "+averageSize);
 
     }
 
-    private void drawALoadOfShapes(int startX1, int startY1, int startX2, int startY2, ArrayList<int[]> colourValuesArrayForLoop) {
+    private void drawALoadOfShapes(int startX1, int startY1, int startX2, int startY2, ArrayList<int[]> colourValuesArrayForLoop, int shapeWidth) {
 
         int x1Start = startX1;
         int x2Start = startX2;
@@ -110,7 +150,7 @@ public class AbstractShapes extends Painting {
 
         Random random = new Random();
 
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < numberOfShapes; i++) {
 
             int j = i;
             int[] coloursForThisLoop = new int[4];
@@ -122,7 +162,9 @@ public class AbstractShapes extends Painting {
 
             Shape shapeInLoop;
 
-            int lineLength = (random.nextInt(95))+5;
+            int lineLength = (random.nextInt(10000/numberOfShapes))+shapeWidth;
+
+            System.out.println(lineLength+" line length");
 
 
             int choice = random.nextInt(16);
@@ -130,7 +172,7 @@ public class AbstractShapes extends Painting {
             if (choice<=3) {
                 shapeInLoop = new LineShape(x1Start, y1Start, x2Start, y2Start, lineLength, coloursForThisLoop);
             } else if (choice <=8) {
-                shapeInLoop = new CurvedShape(x1Start, y1Start, x2Start, y2Start, random.nextBoolean(), coloursForThisLoop);
+                shapeInLoop = new CurvedShape(x1Start, y1Start, x2Start, y2Start, random.nextBoolean(), coloursForThisLoop, lineLength);
             } else if (choice <=11){
                 shapeInLoop = new CircleShape(x1Start, y1Start, x2Start, y2Start, lineLength, coloursForThisLoop);
             }else {
