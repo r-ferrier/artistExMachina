@@ -1,4 +1,4 @@
-package com.example.workinprogress.paintings;
+package com.example.workinprogress.paintings.shapes;
 
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;

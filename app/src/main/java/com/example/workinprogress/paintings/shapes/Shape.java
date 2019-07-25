@@ -1,4 +1,4 @@
-package com.example.workinprogress.paintings;
+package com.example.workinprogress.paintings.shapes;
 
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;

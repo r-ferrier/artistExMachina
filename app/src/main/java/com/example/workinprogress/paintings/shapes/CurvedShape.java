@@ -1,7 +1,6 @@
-package com.example.workinprogress.paintings;
+package com.example.workinprogress.paintings.shapes;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
