@@ -9,11 +9,11 @@ import android.graphics.RectF;
 
 public class CurvedShape extends Shape {
 
-    private int size;
-    private int sweepingAngle;
+    protected int size;
+    protected int sweepingAngle;
     private boolean finishedCreatingEnds;
 
-    private boolean clockwiseOrientation;
+    protected boolean clockwiseOrientation;
 
     public CurvedShape(int x1Start, int y1Start, int x2Start, int y2Start, boolean clockwiseOrientation, int[] aRGBColor, int size) {
 
@@ -87,7 +87,7 @@ public class CurvedShape extends Shape {
         return PixelFormat.OPAQUE;
     }
 
-    private int[] setEnds(RectF rectF) {
+    protected int[] setEnds(RectF rectF) {
 
         switch (startingDegree) {
             case 0:
@@ -155,7 +155,7 @@ public class CurvedShape extends Shape {
         return new int[]{0, 0, 0, 0};
     }
 
-    private RectF createRectangle(int size, int x1Start, int y1Start) {
+    protected RectF createRectangle(int size, int x1Start, int y1Start) {
 
         RectF rectf = new RectF();
 

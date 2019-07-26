@@ -52,9 +52,9 @@ public class PositionSensorThreePointsDataSet extends ThreePointsDataSet {
 
         for (DataSetPoint dataSetPoint : getResults()) {
 
-            scaledResults1.add(applyScaling((float) dataSetPoint.getResults().get(0)));
-            scaledResults2.add(applyScaling((float) dataSetPoint.getResults().get(1)));
-            scaledResults3.add(applyScaling((float) dataSetPoint.getResults().get(2)));
+            scaledResults1.add(applyScaling((float) dataSetPoint.getScaledResults().get(0)));
+            scaledResults2.add(applyScaling((float) dataSetPoint.getScaledResults().get(1)));
+            scaledResults3.add(applyScaling((float) dataSetPoint.getScaledResults().get(2)));
 
 
 //
@@ -67,6 +67,48 @@ public class PositionSensorThreePointsDataSet extends ThreePointsDataSet {
 
 
         }
+
+        int max = 0;
+
+        for(Integer integer: scaledResults1){
+            if(integer>max){
+                max = integer;
+            }
+        }
+        for(Integer integer: scaledResults2){
+            if(integer>max){
+                max = integer;
+            }
+        }
+        for(Integer integer: scaledResults3){
+            if(integer>max){
+                max = integer;
+            }
+        }
+
+        float unscaledMax = 0;
+
+
+        for (DataSetPoint dataSetPoint : getResults()) {
+
+            if((float)dataSetPoint.getResults().get(0)>unscaledMax){
+                unscaledMax = (float)dataSetPoint.getResults().get(0);
+            }
+
+            if((float)dataSetPoint.getResults().get(1)>unscaledMax){
+                unscaledMax = (float)dataSetPoint.getResults().get(1);
+            }
+
+            if((float)dataSetPoint.getResults().get(2)>unscaledMax){
+                unscaledMax = (float)dataSetPoint.getResults().get(2);
+            }
+
+        }
+
+
+        System.out.println("MAXIMUM SCALED LIGHT VALUE "+max+"-----------------------------------");
+
+        System.out.println("MAXIMUM UNSCALED LIGHT VALUE "+unscaledMax+"-----------------------------------");
 
         System.out.println(scaledResults1+"\nyuguygytyryrddresreyuguygytyryrddresreyuguygytyryrddresre");
         System.out.println(scaledResults2+"\nyuguygytyryrddresreyuguygytyryrddresreyuguygytyryrddresre");

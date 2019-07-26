@@ -44,7 +44,6 @@ public class LightData implements DataSetPoint {
 
         System.out.println("max light value: "+((20*max/Math.log(max))*Math.log(20*max/Math.log(max)))*scalar);
 
-
         return datapoint;
     }
 
@@ -69,6 +68,10 @@ public class LightData implements DataSetPoint {
     }
 
     public ArrayList getScaledResults(){
+
+        System.out.println("light values: "+scaledDataPoints.toString());
+
+
         return scaledDataPoints;
     }
 }

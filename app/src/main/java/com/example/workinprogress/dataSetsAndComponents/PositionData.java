@@ -6,7 +6,8 @@ import java.util.ArrayList;
 
 public class PositionData implements DataSetPoint {
 
-    private final ArrayList<Float> dataPoints = new ArrayList<>();
+    private final ArrayList<Float> scaledDataPoints = new ArrayList<>();
+    private final ArrayList<Float> unscaledDataPoints = new ArrayList<>();
     private final int numberOfDataPoints = 3;
     private String dataTypeName;
 
@@ -18,18 +19,22 @@ public class PositionData implements DataSetPoint {
         this.max = max;
         this.min = min;
 
-        dataPoints.add(scaleResults(dataPoint));
-        dataPoints.add(scaleResults(dataPoint2));
-        dataPoints.add(scaleResults(dataPoint3));
+        unscaledDataPoints.add(dataPoint);
+        unscaledDataPoints.add(dataPoint2);
+        unscaledDataPoints.add(dataPoint3);
 
-        System.out.println(dataPoint + " = original value ---------"+dataPoints.get(0)+" = scaled value ------------");
+        scaledDataPoints.add(scaleResults(dataPoint));
+        scaledDataPoints.add(scaleResults(dataPoint2));
+        scaledDataPoints.add(scaleResults(dataPoint3));
+
+        System.out.println(dataPoint + " = original value ---------"+ scaledDataPoints.get(0)+" = scaled value ------------");
 
     }
 
 
     @Override
     public String toString() {
-        return "x: " + dataPoints.get(0).toString() + " y: " + dataPoints.get(1).toString() + " z: " + dataPoints.get(2).toString();
+        return "x: " + scaledDataPoints.get(0).toString() + " y: " + scaledDataPoints.get(1).toString() + " z: " + scaledDataPoints.get(2).toString();
     }
 
     private float scaleResults(float f) {
@@ -96,11 +101,11 @@ public class PositionData implements DataSetPoint {
 
     @Override
     public ArrayList getResults() {
-        return dataPoints;
+        return unscaledDataPoints;
     }
 
     @Override
     public ArrayList getScaledResults() {
-        return null;
+        return scaledDataPoints;
     }
 }

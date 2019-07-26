@@ -12,6 +12,7 @@ import com.example.workinprogress.paintings.shapes.CircleShape;
 import com.example.workinprogress.paintings.shapes.CurvedShape;
 import com.example.workinprogress.paintings.shapes.LineShape;
 import com.example.workinprogress.paintings.shapes.Shape;
+import com.example.workinprogress.paintings.shapes.SquareShape;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,12 +45,19 @@ public class AbstractShapes extends Painting {
 
 
         if (shapes.size() < 1) {
+            if(averageSize>200) {
 //            drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2)+(averageSize/2), (int) (height / 2),setSingleChannelColours(0),averageSize/2);
 //            drawALoadOfShapes((int) (width / 2)+(averageSize/2), (int) (height / 2), (int) (width / 2)+(averageSize/2)+(averageSize/2), (int) (height / 2),setSingleChannelColours(0));
-            drawALoadOfShapes((int) (width / 2)-(averageSize/4), (int) (height / 2), (int) (width / 2)-(averageSize/2)-(averageSize/10), (int) (height / 2),setSingleChannelColours(0),(averageSize/10));
-            drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2)+(averageSize/8), (int) (height / 2),setSingleChannelColours(1),(averageSize/8));
-            drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2)+(averageSize/16), (int) (height / 2),setSingleChannelColours(2),(averageSize/28));
-            drawALoadOfShapes((int) (width / 2) , (int) (height / 2), (int) (width / 2)+(averageSize/32), (int) (height / 2),setSingleChannelColours(3),(averageSize/40));
+                drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2) + (averageSize / 10), (int) (height / 2), setSingleChannelColours(0), (averageSize / 10));
+                drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2) + (averageSize / 8), (int) (height / 2), setSingleChannelColours(1), (averageSize / 8));
+                drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2) + (averageSize / 16), (int) (height / 2), setSingleChannelColours(2), (averageSize / 40));
+                drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2) + (averageSize / 32), (int) (height / 2), setSingleChannelColours(3), (averageSize / 40));
+            }else{
+                drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2) + (averageSize / 10), (int) (height / 2), setSingleChannelColours(0), (averageSize / 40));
+                drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2) + (averageSize / 8), (int) (height / 2), setSingleChannelColours(1), (averageSize / 40));
+                drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2) + (averageSize / 16), (int) (height / 2), setSingleChannelColours(2), (averageSize / 40));
+                drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2) + (averageSize / 32), (int) (height / 2), setSingleChannelColours(3), (averageSize / 40));
+            }
         } else {
 
             for (Shape shape : shapes) {
@@ -172,11 +180,13 @@ public class AbstractShapes extends Painting {
             if (choice<=3) {
                 shapeInLoop = new LineShape(x1Start, y1Start, x2Start, y2Start, lineLength, coloursForThisLoop);
             } else if (choice <=8) {
-                shapeInLoop = new CurvedShape(x1Start, y1Start, x2Start, y2Start, random.nextBoolean(), coloursForThisLoop, lineLength);
+                shapeInLoop = new CurvedShape(x1Start, y1Start, x2Start, y2Start, random.nextBoolean(), coloursForThisLoop, 20);
             } else if (choice <=11){
                 shapeInLoop = new CircleShape(x1Start, y1Start, x2Start, y2Start, lineLength, coloursForThisLoop);
-            }else {
+            }else if(choice<=14) {
                 shapeInLoop = new BumpyShape(x1Start, y1Start, x2Start, y2Start, lineLength, coloursForThisLoop);
+            }else{
+                shapeInLoop = new CurvedShape(x1Start, y1Start, x2Start, y2Start, random.nextBoolean(), coloursForThisLoop, 20);
             }
             shapeInLoop.draw(canvas);
 
