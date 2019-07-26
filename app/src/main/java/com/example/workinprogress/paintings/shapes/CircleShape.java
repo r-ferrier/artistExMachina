@@ -19,6 +19,9 @@ public class CircleShape extends LineShape {
 
         findCentre();
         canvas.drawCircle(centreX,centreY,(float)(size/3),paint1);
+
+        System.out.println("centrex: "+centreX+" centreY: "+centreY);
+
     }
 
     private void findCentre() {
@@ -44,7 +47,7 @@ public class CircleShape extends LineShape {
         } else {
             if (y1End > y1Start) {
                 centreY = ((y1End - y1Start) / 2) + y1Start;
-            } else if (x1Start > x1End) {
+            } else if (y1Start > y1End) {
                 centreY = ((y1Start - y1End) / 2) + y1End;
             }
 

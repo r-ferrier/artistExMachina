@@ -12,9 +12,10 @@ import com.example.workinprogress.paintings.shapes.CircleShape;
 import com.example.workinprogress.paintings.shapes.CurvedShape;
 import com.example.workinprogress.paintings.shapes.LineShape;
 import com.example.workinprogress.paintings.shapes.Shape;
-import com.example.workinprogress.paintings.shapes.SquareShape;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
@@ -28,6 +29,13 @@ public class AbstractShapes extends Painting {
     private ArrayList<Integer> lightValues;
     private int numberOfShapes;
     private int averageSize;
+
+    private int startX1 = 0;
+    private int startY1 = 0;
+    private int startX2 = 0;
+    private int startY2 = 0;
+
+    private int[] lineWidths;
 
     public AbstractShapes(Context context, ArrayList<DataSet> dataSets) {
         super(context, dataSets);
@@ -45,18 +53,18 @@ public class AbstractShapes extends Painting {
 
 
         if (shapes.size() < 1) {
-            if(averageSize>200) {
+            if (averageSize > 200) {
 //            drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2)+(averageSize/2), (int) (height / 2),setSingleChannelColours(0),averageSize/2);
 //            drawALoadOfShapes((int) (width / 2)+(averageSize/2), (int) (height / 2), (int) (width / 2)+(averageSize/2)+(averageSize/2), (int) (height / 2),setSingleChannelColours(0));
-                drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2) + (averageSize / 10), (int) (height / 2), setSingleChannelColours(0), (averageSize / 10));
-                drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2) + (averageSize / 8), (int) (height / 2), setSingleChannelColours(1), (averageSize / 8));
-                drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2) + (averageSize / 16), (int) (height / 2), setSingleChannelColours(2), (averageSize / 40));
-                drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2) + (averageSize / 32), (int) (height / 2), setSingleChannelColours(3), (averageSize / 40));
-            }else{
-                drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2) + (averageSize / 10), (int) (height / 2), setSingleChannelColours(0), (averageSize / 40));
-                drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2) + (averageSize / 8), (int) (height / 2), setSingleChannelColours(1), (averageSize / 40));
-                drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2) + (averageSize / 16), (int) (height / 2), setSingleChannelColours(2), (averageSize / 40));
-                drawALoadOfShapes((int) (width / 2), (int) (height / 2), (int) (width / 2) + (averageSize / 32), (int) (height / 2), setSingleChannelColours(3), (averageSize / 40));
+                setStartingPositions(0);
+                drawALoadOfShapes(setSingleChannelColours(0));
+                drawALoadOfShapes(setSingleChannelColours(1));
+            } else {
+                setStartingPositions(0);
+                drawALoadOfShapes(setSingleChannelColours(0));
+                drawALoadOfShapes(setSingleChannelColours(1));
+                drawALoadOfShapes(setSingleChannelColours(2));
+                drawALoadOfShapes(setSingleChannelColours(3));
             }
         } else {
 
@@ -67,7 +75,19 @@ public class AbstractShapes extends Painting {
 
     }
 
-    private ArrayList<int[]> setSingleChannelColours(int channel){
+    private void setStartingPositions(int i) {
+        startX1 = startX2;
+        startY1 = (int) height;
+        startX2 = startX1 + lineWidths[i];
+        startY2 = (int) height;
+
+        System.out.println("startx1 and linewidth: " + lineWidths[i]);
+
+        System.out.println("startx1: " + startX1 + " starty1: " + startY1 + " startx2: " + startX2 + " starty2: " + startY2);
+
+    }
+
+    private ArrayList<int[]> setSingleChannelColours(int channel) {
 
         ArrayList<int[]> coloursValues = new ArrayList<>();
 
@@ -86,28 +106,59 @@ public class AbstractShapes extends Painting {
     private void getDataForDrawingShapes() {
 
         lightValues = ((SensorSingularPointDataSet) lightDistanceAndSteps.get(2)).getScaledResults2();
-        ArrayList<Integer> xPositions = positions.get(0).getScaledResults3();
-        ArrayList<Integer> yPositions = positions.get(0).getScaledResults2();
         ArrayList<Integer> sizes = positions.get(0).getScaledResults1();
 
-        Collections.sort(lightValues);
+        Collections.shuffle(lightValues);
+
 
 
         colourValuesArray = new ArrayList<>();
 
         Random random = new Random();
 
-        int[] colours = new int[]{255, 255, 255, 255};
+        int[] colours = new int[]{90, 20, 20, 20};
         colourValuesArray.add(colours);
 
-        for(int i = 1; i<lightValues.size();i++){
-            lightValues.set(i,lightValues.get(i)* (40000 / 255));
-            colours = colourValuesArray.get(i-1).clone();
-            colours[random.nextInt(4)]=lightValues.get(i);
+        for (int i = 1; i < lightValues.size(); i++) {
+
+            int colourNumber = (255-(int)(lightValues.get(i)*(255.0/40000.0)));
+
+            System.out.println("scalar "+255.0/40000.0);
+            lightValues.set(i,colourNumber);
+            colours = colourValuesArray.get(i - 1).clone();
+
+
+
+//            if(colourNumber>colours[1]){
+//                colours[1] = colourNumber;
+//            }else if(colourNumber>colours[2]){
+//                colours[2] = colourNumber;
+//            }else if(colourNumber>colours[0]){
+//                colours[0] = colourNumber;
+//            }else if(colourNumber>colours[3]){
+//                colours[3] = colourNumber;
+//            }else{
+//                colours[1] = colourNumber;
+//            }
+
+
+
+            colours[random.nextInt(4)] = lightValues.get(i);
+
+            if(lightValues.get(i)>230){
+                colours[random.nextInt(3)+1]-= 100;
+            }
+
+
+
+
+
             colourValuesArray.add(colours);
+
+            System.out.println(Arrays.toString(colours));
         }
 
-        numberOfShapes = (xPositions.size())/2;
+        numberOfShapes = (sizes.size()) / 2;
 
         int totalSize = 0;
 
@@ -116,49 +167,77 @@ public class AbstractShapes extends Painting {
         int thirdHighestValue = 0;
         int fourthHighestValue = 0;
 
-        for(Integer size: sizes){
-            size-=500;
-            if(size<0){
-                size*=-1;
+        for (Integer size : sizes) {
+            size -= 500;
+            if (size < 0) {
+                size *= -1;
             }
 
-            totalSize+=size;
-            if(size>highestValue){
+            totalSize += size;
+            if (size > highestValue) {
                 fourthHighestValue = thirdHighestValue;
                 thirdHighestValue = secondHighestValue;
                 secondHighestValue = highestValue;
                 highestValue = size;
-            }else if(size>secondHighestValue){
+            } else if (size > secondHighestValue) {
                 fourthHighestValue = thirdHighestValue;
                 thirdHighestValue = secondHighestValue;
                 secondHighestValue = size;
-            }else if(size>thirdHighestValue){
+            } else if (size > thirdHighestValue) {
                 fourthHighestValue = thirdHighestValue;
                 thirdHighestValue = size;
-            }else if(size>fourthHighestValue){
+            } else if (size > fourthHighestValue) {
                 fourthHighestValue = size;
             }
         }
 
 
-        averageSize = (((highestValue+secondHighestValue+thirdHighestValue+fourthHighestValue)/4)+(totalSize/numberOfShapes))/2;
-        averageSize = (500-averageSize);
+        averageSize = (((highestValue + secondHighestValue + thirdHighestValue + fourthHighestValue) / 4) + (totalSize / numberOfShapes)) / 2;
+        averageSize = (500 - averageSize);
 
-        System.out.println("average size: "+averageSize);
 
+        //setting lineWidths
+
+        double sizeUpperBounds;
+        double sizeLowerBounds;
+
+        if(averageSize>400){
+            sizeLowerBounds = (double)averageSize/6;
+            sizeUpperBounds = (double)averageSize/1.5-sizeLowerBounds;
+        }else if(averageSize>300){
+            sizeLowerBounds = (double)averageSize/16;
+            sizeUpperBounds = (double)averageSize/2-sizeLowerBounds;
+        }else if(averageSize>200){
+            sizeLowerBounds = (double)averageSize/50;
+            sizeUpperBounds = (double)averageSize/8-sizeLowerBounds;
+        }else{
+            sizeLowerBounds = (double)averageSize/100;
+            sizeUpperBounds = (double)averageSize/32-sizeLowerBounds;
+        }
+
+        lineWidths = new int[2000];
+
+        for(int i = 0;i<lineWidths.length;i++){
+            lineWidths[i] = random.nextInt((int)sizeUpperBounds)+(int)sizeLowerBounds;
+        }
+
+        System.out.println("average size: " + averageSize);
     }
 
-    private void drawALoadOfShapes(int startX1, int startY1, int startX2, int startY2, ArrayList<int[]> colourValuesArrayForLoop, int shapeWidth) {
+    private void drawALoadOfShapes(ArrayList<int[]> colourValuesArrayForLoop) {
 
-        int x1Start = startX1;
-        int x2Start = startX2;
-        int y1Start = startY1;
-        int y2Start = startY2;
-
+        int loopStartX1 = startX1;
+        int loopStartY1 = startY1;
+        int loopStartX2 = startX2;
+        int loopStartY2 = startY2;
 
         Random random = new Random();
 
+        int lineWidthIndex = 0;
+
         for (int i = 0; i < numberOfShapes; i++) {
+
+
 
             int j = i;
             int[] coloursForThisLoop = new int[4];
@@ -170,35 +249,56 @@ public class AbstractShapes extends Painting {
 
             Shape shapeInLoop;
 
-            int lineLength = (random.nextInt(10000/numberOfShapes))+shapeWidth;
+            int lineLength = (random.nextInt(10000 / numberOfShapes)) + lineWidths[lineWidthIndex];
 
-            System.out.println(lineLength+" line length");
+            System.out.println(lineLength + " line length");
 
 
             int choice = random.nextInt(16);
 
-            if (choice<=3) {
-                shapeInLoop = new LineShape(x1Start, y1Start, x2Start, y2Start, lineLength, coloursForThisLoop);
-            } else if (choice <=8) {
-                shapeInLoop = new CurvedShape(x1Start, y1Start, x2Start, y2Start, random.nextBoolean(), coloursForThisLoop, 20);
-            } else if (choice <=11){
-                shapeInLoop = new CircleShape(x1Start, y1Start, x2Start, y2Start, lineLength, coloursForThisLoop);
-            }else if(choice<=14) {
-                shapeInLoop = new BumpyShape(x1Start, y1Start, x2Start, y2Start, lineLength, coloursForThisLoop);
-            }else{
-                shapeInLoop = new CurvedShape(x1Start, y1Start, x2Start, y2Start, random.nextBoolean(), coloursForThisLoop, 20);
+            if (choice <= 3) {
+                shapeInLoop = new LineShape(loopStartX1, loopStartY1, loopStartX2, loopStartY2, lineLength, coloursForThisLoop);
+            } else if (choice <= 8) {
+                shapeInLoop = new CurvedShape(loopStartX1, loopStartY1, loopStartX2, loopStartY2, random.nextBoolean(), coloursForThisLoop, (int)(lineLength*1.5));
+            } else if (choice <= 11) {
+                shapeInLoop = new CircleShape(loopStartX1, loopStartY1, loopStartX2, loopStartY2, lineLength, coloursForThisLoop);
+            } else if (choice <= 14) {
+                shapeInLoop = new BumpyShape(loopStartX1, loopStartY1, loopStartX2, loopStartY2, lineLength, coloursForThisLoop);
+            } else {
+                shapeInLoop = new CurvedShape(loopStartX1, loopStartY1, loopStartX2, loopStartY2, random.nextBoolean(), coloursForThisLoop,(int)(lineLength*1.5));
             }
+
             shapeInLoop.draw(canvas);
 
-            x1Start = shapeInLoop.getX1End();
-            y1Start = shapeInLoop.getY1End();
-            x2Start = shapeInLoop.getX2End();
-            y2Start = shapeInLoop.getY2End();
+            loopStartX1 = shapeInLoop.getX1End();
+            loopStartY1 = shapeInLoop.getY1End();
+            loopStartX2 = shapeInLoop.getX2End();
+            loopStartY2 = shapeInLoop.getY2End();
+
+//            System.out.println("loopstartx1: " + loopStartX1 + " loopstarty1: " + loopStartY1 + " loopstartx2: " + loopStartX2 + " loopstarty2: " + loopStartY2);
+
+            if (loopStartX1 < 0 || loopStartX1 > width || loopStartY1 < 0 || loopStartY1 > height || loopStartX2 < 0 || loopStartX2 > width || loopStartY2 < 0 || loopStartY2 > height) {
+
+                lineWidthIndex++;
+                setStartingPositions(lineWidthIndex);
+
+                loopStartX1 = startX1;
+                loopStartY1 = startY1;
+                loopStartX2 = startX2;
+                loopStartY2 = startY2;
+
+                if (startX1 > width) break;
+
+//                System.out.println("CHANGING startx1: " + startX1 + " starty1: " + startY1 + " startx2: " + startX2 + " starty2: " + startY2);
+            }
+
 
 //            System.out.println("starting points for shapeinloop: x1 = " + x1Start + ", x2 = " + x2Start + ", y1 = " + y1Start + ", y2 = " + y2Start);
 
             shapes.add(shapeInLoop);
         }
+
+
     }
 
 
