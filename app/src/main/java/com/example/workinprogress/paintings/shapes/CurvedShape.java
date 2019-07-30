@@ -57,16 +57,15 @@ public class CurvedShape extends Shape {
 
         path.moveTo(x1Start, y1Start);
         path.addArc(outerLine, startingDegree, sweepingAngle);
-        if(clockwiseOrientation) {
+        if (clockwiseOrientation) {
             path.lineTo(x2End, y2End);
-        }else{
+        } else {
             path.lineTo(x1End, y1End);
         }
         path.addArc(innerLine, startingDegree + sweepingAngle, sweepingAngle * -1);
         path.lineTo(x1Start, y1Start);
 
         canvas.drawPath(path, paint1);
-
 
 
 //        System.out.println("ending points: x1 = " + x1End + ", x2 = " + x2End + ", y1 = " + y1End + ", y2 = " + y2End);
@@ -97,7 +96,7 @@ public class CurvedShape extends Shape {
                     y1End = (int) rectF.bottom;
                     x2End = x1End;
                     y2End = y1End - width;
-                }else{
+                } else {
                     x2End = (int) (rectF.left + size);
                     y2End = (int) rectF.top;
                     x1End = x2End;
@@ -106,12 +105,12 @@ public class CurvedShape extends Shape {
                 return new int[]{x1End, y1End, x2End, y2End};
             case 90:
 //                System.out.println("case 90");
-                if(clockwiseOrientation) {
+                if (clockwiseOrientation) {
                     x1End = (int) (rectF.left);
                     y1End = (int) (rectF.top + size);
                     x2End = x1End + width;
                     y2End = y1End;
-                }else{
+                } else {
                     x2End = (int) (rectF.right);
                     y2End = (int) (rectF.top + size);
                     x1End = x2End - width;
@@ -136,12 +135,12 @@ public class CurvedShape extends Shape {
                 return new int[]{x1End, y1End, x2End, y2End};
             case 270:
 //                System.out.println("case 270");
-                if(clockwiseOrientation) {
+                if (clockwiseOrientation) {
                     x1End = (int) rectF.right;
                     y1End = (int) (rectF.bottom - size);
                     x2End = x1End - width;
                     y2End = y1End;
-                }else{
+                } else {
                     x2End = (int) rectF.left;
                     y2End = (int) (rectF.bottom - size);
                     x1End = x2End + width;

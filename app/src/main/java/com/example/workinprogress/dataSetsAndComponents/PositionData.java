@@ -27,7 +27,7 @@ public class PositionData implements DataSetPoint {
         scaledDataPoints.add(scaleResults(dataPoint2));
         scaledDataPoints.add(scaleResults(dataPoint3));
 
-        System.out.println(dataPoint + " = original value ---------"+ scaledDataPoints.get(0)+" = scaled value ------------");
+//        System.out.println(dataPoint + " = original value ---------"+ scaledDataPoints.get(0)+" = scaled value ------------");
 
     }
 
@@ -79,11 +79,11 @@ public class PositionData implements DataSetPoint {
         d *= scalar;
 
 
-        System.out.println("max range res" +
-                "caled: "+max+" ****************************");
-        System.out.println("min range rescaled: "+min+" ****************************");
-        System.out.println("total range rescaled: "+range+" ****************************");
-        System.out.println("scalar rescaled: "+scalar+" ****************************");
+//        System.out.println("max range res" +
+//                "caled: "+max+" ****************************");
+//        System.out.println("min range rescaled: "+min+" ****************************");
+//        System.out.println("total range rescaled: "+range+" ****************************");
+//        System.out.println("scalar rescaled: "+scalar+" ****************************");
 
         return (float)d;
     }

@@ -37,6 +37,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
     private Sensor lightSensor;
     private Sensor positionSensor;
     private boolean recordingData = false;
+    private int positionDataCount = 0;
 
     private String imageType = "Albers Image";
 
@@ -184,6 +185,10 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
                 }
             }
         } else if (sensorEvent.sensor == positionSensor) {
+
+            positionDataCount++;
+
+            System.out.println("number of position data collected-----------"+positionDataCount+"----------------");
 
             String accelerometerTextString = " x: " + sensorEvent.values[0] + " y: " + sensorEvent.values[1] + " z: " + sensorEvent.values[2];
 

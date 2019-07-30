@@ -20,6 +20,7 @@ import com.example.workinprogress.paintings.AbstractShapes;
 import com.example.workinprogress.paintings.AlbersImage;
 import com.example.workinprogress.paintings.AutomaticDrawing;
 import com.example.workinprogress.paintings.Painting;
+import com.example.workinprogress.paintings.Recursion;
 import com.example.workinprogress.paintings.TextImage;
 
 import java.io.File;
@@ -129,14 +130,16 @@ public class DisplayImage extends AppCompatActivity {
 //        createNewAutomaticDrawingImage();
 //        createNewAbstractShapesImage();
 
+//
+//        if(imageType.equals(getString(R.string.albers_image))){
+//            createNewAlbersImage();
+//        }else if(imageType.equals(getString(R.string.abstract_shapes))){
+//            createNewAbstractShapesImage();
+//        }else{
+//            createNewAutomaticDrawingImage();
+//        }
 
-        if(imageType.equals(getString(R.string.albers_image))){
-            createNewAlbersImage();
-        }else if(imageType.equals(getString(R.string.abstract_shapes))){
-            createNewAbstractShapesImage();
-        }else{
-            createNewAutomaticDrawingImage();
-        }
+        createNewRecursionImage();
 
     }
 
@@ -167,6 +170,14 @@ public class DisplayImage extends AppCompatActivity {
         //      ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
         imageCreated = true;
     }
+
+    public void createNewRecursionImage(){
+        createdImage = new Recursion(this,dataSets);
+        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
+        //      ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
+        imageCreated = true;
+    }
+
 
 
     public void save(View view) {

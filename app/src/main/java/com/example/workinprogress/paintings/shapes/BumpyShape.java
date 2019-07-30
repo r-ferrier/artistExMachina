@@ -49,7 +49,7 @@ public class BumpyShape extends LineShape {
 
     }
 
-    private ArrayList<RectF> createRectFs(float startingX, float startingY){
+    protected ArrayList<RectF> createRectFs(float startingX, float startingY){
 
         float increment = ((float)size)/4;
 

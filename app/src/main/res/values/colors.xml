@@ -3,4 +3,9 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="yellowOchre">#edae49</color>
+    <color name="coralRed">#D1495B</color>
+    <color name="metallicSeaweed">#00798C</color>
+    <color name="dustyBlue">#30638E</color>
+    <color name="imperialBlue">#003D5B</color>
 </resources>
