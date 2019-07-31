@@ -22,7 +22,7 @@ public class AbstractShapes extends Painting {
 
 
     private Canvas canvas;
-    private ArrayList<Shape> shapes;
+    private ArrayList<Shape> shapes  = new ArrayList<>();
     private ArrayList<int[]> colourValuesArray = new ArrayList<>();
     private ArrayList<Integer> lightValues;
     private int numberOfShapes;
@@ -35,14 +35,12 @@ public class AbstractShapes extends Painting {
     private int startX2 = 0;
     private int startY2 = 0;
 
-    private int startingDegreeChoice;
+    private int startingDegreeChoice = random.nextInt(8);
 
     private int[] lineWidths;
 
     public AbstractShapes(Context context, ArrayList<DataSet> dataSets) {
         super(context, dataSets);
-        shapes = new ArrayList<>();
-        startingDegreeChoice = random.nextInt(8);
     }
 
     public void draw(Canvas canvas) {
@@ -198,6 +196,7 @@ public class AbstractShapes extends Painting {
         colourValuesArray.addAll(temporaryHoldingArray);
     }
 
+
     private void getDataForDrawingShapes() {
 
         lightValues = ((SensorSingularPointDataSet) lightDistanceAndSteps.get(2)).getScaledResults2();
@@ -218,40 +217,21 @@ public class AbstractShapes extends Painting {
 
         int totalSize = 0;
 
-        int highestValue = 0;
-        int secondHighestValue = 0;
-        int thirdHighestValue = 0;
-        int fourthHighestValue = 0;
-
         for (Integer size : sizes) {
             size -= 500;
+
             if (size < 0) {
                 size *= -1;
             }
 
-            totalSize += size;
-            if (size > highestValue) {
-                fourthHighestValue = thirdHighestValue;
-                thirdHighestValue = secondHighestValue;
-                secondHighestValue = highestValue;
-                highestValue = size;
-            } else if (size > secondHighestValue) {
-                fourthHighestValue = thirdHighestValue;
-                thirdHighestValue = secondHighestValue;
-                secondHighestValue = size;
-            } else if (size > thirdHighestValue) {
-                fourthHighestValue = thirdHighestValue;
-                thirdHighestValue = size;
-            } else if (size > fourthHighestValue) {
-                fourthHighestValue = size;
-            }
+            totalSize+=size;
         }
 
+        ArrayList<Integer> highestSizes = (ArrayList<Integer>)sizes.clone();
+        Collections.sort(highestSizes,Collections.reverseOrder());
 
-        averageSize = (((highestValue + secondHighestValue + thirdHighestValue + fourthHighestValue) / 4) + (totalSize / numberOfShapes)) / 2;
+        averageSize = (((highestSizes.get(0)+highestSizes.get(1)+highestSizes.get(2)+highestSizes.get(3)) / 4) + (totalSize / numberOfShapes)) / 2;
         averageSize = (500 - averageSize);
-
-        System.out.println("highestvalue: " + highestValue);
 
 
         //setting lineWidths

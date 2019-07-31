@@ -11,35 +11,36 @@ import com.example.workinprogress.dataSetsAndComponents.DataSet;
 import com.example.workinprogress.dataSetsAndComponents.SensorSingularPointDataSet;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 
-public class Recursion extends Painting {
+public class Landscape extends Painting {
 
-    private Paint paint1;
     private Canvas canvas;
-    private Path path;
     private ArrayList<Path> paths;
     private ArrayList<Paint> paints;
     private ArrayList<int[]> controls;
     private Random random;
-    private Paint[] paintsOptions;
+    private ArrayList<Paint> paintsOptions;
     private int numberOfLoops;
-    private Paint[] paintsChoice;
+    private int numberOfPaintOptions = 9;
+    private ArrayList<Integer> sizes;
+    private int sizeRange = 500;
+    private int sizeCounter = 0;
+
 
     private int averageLightValue;
     private int averageSize;
     private int canvasColor;
 
 
-    public Recursion(Context context, ArrayList<DataSet> dataSets) {
+    public Landscape(Context context, ArrayList<DataSet> dataSets) {
         super(context, dataSets);
 
         random = new Random();
         setData();
         setPaints();
-
-
 
     }
 
@@ -47,7 +48,7 @@ public class Recursion extends Painting {
     private void setData() {
 
         ArrayList<Integer> lightValues = ((SensorSingularPointDataSet) lightDistanceAndSteps.get(2)).getScaledResults2();
-        ArrayList<Integer> sizes = positions.get(0).getScaledResults1();
+        sizes = positions.get(0).getScaledResults1();
         sizes.addAll(positions.get(0).getScaledResults2());
         sizes.addAll(positions.get(0).getScaledResults3());
 
@@ -65,11 +66,13 @@ public class Recursion extends Painting {
         System.out.println("average light: " + averageLightValue);
         System.out.println("average size: " + averageSize);
 
-        if(averageSize<=50){
-            numberOfLoops = 12;
-        }else if(averageSize<=60){
+        if(sizes.size()<=20) {
+            numberOfLoops = 3;
+        }else if(sizes.size()<=50){
+            numberOfLoops = 5;
+        }else if(sizes.size()<=100){
             numberOfLoops = 24;
-        }else if(averageSize<=80){
+        }else if(sizes.size()<=200){
             numberOfLoops = 32;
         }else{
             numberOfLoops = 64;
@@ -78,6 +81,7 @@ public class Recursion extends Painting {
 
     }
 
+    //helper method to return average of any array of Integers
     private int getAverage(ArrayList<Integer> values) {
         int total = 0;
 
@@ -88,67 +92,79 @@ public class Recursion extends Painting {
         return total / values.size();
     }
 
+    // method to create all the available paint options and set their transparencies nominally to 100.
+    // Calls on a second method to build final array of paint colours.
     private void setPaints() {
 
-        paintsOptions = new Paint[]{new Paint(), new Paint(), new Paint(), new Paint(), new Paint(), new Paint(), new Paint(), new Paint(), new Paint()};
+        paintsOptions = new ArrayList<>();
 
-        paintsOptions[0].setColor(context.getResources().getColor(R.color.yellowOchre));
-        paintsOptions[1].setColor(context.getResources().getColor(R.color.coralRed));
-        paintsOptions[2].setColor(context.getResources().getColor(R.color.metallicSeaweed));
-        paintsOptions[3].setColor(context.getResources().getColor(R.color.imperialBlue));
-        paintsOptions[4].setColor(context.getResources().getColor(R.color.juneBudYellow));
-        paintsOptions[5].setColor(context.getResources().getColor(R.color.iguanaGreen));
-        paintsOptions[6].setColor(context.getResources().getColor(R.color.rosyBrown));
-        paintsOptions[7].setColor(context.getResources().getColor(R.color.purpleNavy));
-        paintsOptions[8].setColor(context.getResources().getColor(R.color.purplePineapple));
+        for(int i = 0; i<numberOfPaintOptions; i++){
+            paintsOptions.add(new Paint());
+        }
 
+        paintsOptions.get(0).setColor(context.getResources().getColor(R.color.yellowOchre));
+        paintsOptions.get(1).setColor(context.getResources().getColor(R.color.coralRed));
+        paintsOptions.get(2).setColor(context.getResources().getColor(R.color.metallicSeaweed));
+        paintsOptions.get(3).setColor(context.getResources().getColor(R.color.imperialBlue));
+        paintsOptions.get(4).setColor(context.getResources().getColor(R.color.juneBudYellow));
+        paintsOptions.get(5).setColor(context.getResources().getColor(R.color.iguanaGreen));
+        paintsOptions.get(6).setColor(context.getResources().getColor(R.color.rosyBrown));
+        paintsOptions.get(7).setColor(context.getResources().getColor(R.color.purpleNavy));
+        paintsOptions.get(8).setColor(context.getResources().getColor(R.color.purplePineapple));
 
-        for (int i = 0; i < paintsOptions.length; i++) {
-            paintsOptions[i].setStyle(Paint.Style.FILL);
-            paintsOptions[i].setAlpha(100);
+        for (Paint paint: paintsOptions) {
+            paint.setStyle(Paint.Style.FILL);
+            paint.setAlpha(100);
         }
 
         choosePaints();
-
     }
 
+    // method to decide which and how many colours to use from the available options
     private void choosePaints() {
 
+//        int lightValueForARGB = 255-(int)((double)averageLightValue/(1000.0/255));
+
         Paint opaquePaint = new Paint();
+        int numberOfOptions;
+//        canvasColor = Color.argb(255,lightValueForARGB,lightValueForARGB,lightValueForARGB);
+//        opaquePaint.setColor(canvasColor);
 
         if (averageLightValue < 2500) {
 
             canvasColor = Color.BLACK;
             opaquePaint.setColor(canvasColor);
 
-            if (averageLightValue < 500) {
-                paintsChoice = new Paint[]{paintsOptions[random.nextInt(8)],
-                        paintsOptions[random.nextInt(8)], paintsOptions[random.nextInt(8)],opaquePaint};
+            if (averageLightValue < 1000) {
+                numberOfOptions = 2;
             } else {
-                paintsChoice = new Paint[]{paintsOptions[random.nextInt(8)],
-                        paintsOptions[random.nextInt(8)], paintsOptions[random.nextInt(8)],
-                        paintsOptions[random.nextInt(8)],opaquePaint};
+                numberOfOptions = 4;
             }
         } else {
-
             canvasColor = Color.WHITE;
             opaquePaint.setColor(canvasColor);
 
             if (averageLightValue < 10000) {
-                paintsChoice = new Paint[]{paintsOptions[random.nextInt(8)],
-                        paintsOptions[random.nextInt(8)], paintsOptions[random.nextInt(8)],
-                        paintsOptions[random.nextInt(8)], paintsOptions[random.nextInt(8)],opaquePaint};
+              numberOfOptions = 6;
             } else {
-                paintsChoice = new Paint[]{paintsOptions[random.nextInt(8)],
-                        paintsOptions[random.nextInt(8)], paintsOptions[random.nextInt(8)],
-                        paintsOptions[random.nextInt(8)], paintsOptions[random.nextInt(8)],
-                        paintsOptions[random.nextInt(8)],opaquePaint};
-                canvasColor = Color.WHITE;
+               numberOfOptions = 8;
             }
-
         }
 
+        removePaintsFromOptions(opaquePaint,numberOfOptions);
     }
+
+    // helper method to remove paints from choices and set one colour opaque
+    private void removePaintsFromOptions(Paint opaquePaint, int numberOfOptions){
+
+        for(int i = numberOfPaintOptions; i>numberOfOptions; i--){
+            paintsOptions.remove(random.nextInt(i));
+        }
+
+//        paintsOptions.get(random.nextInt(paintsOptions.size())).setAlpha(255);
+        paintsOptions.add(opaquePaint);
+    }
+
 
 
     @Override
@@ -164,13 +180,11 @@ public class Recursion extends Painting {
             paths = new ArrayList<>();
             paints = new ArrayList<>();
 
-
 //            setUpForOriginalIdea();
             setUpForLandscapeIdea();
 //            setUpForOriginalIdea();
             setUpDrawing();
         }
-
 
         for (int i = 0; i < paths.size(); i++) {
             canvas.drawPath(paths.get(i), paints.get(i));
@@ -184,9 +198,10 @@ public class Recursion extends Painting {
 
         for(int[] control: controls){
             paths.add(new Path());
-            paints.add(paintsChoice[random.nextInt(paintsChoice.length)]);
+            paints.addAll(paintsOptions);
         }
 
+        Collections.shuffle(paints);
 
         for (int i = 0; i < controls.size(); i++) {
 
@@ -197,9 +212,6 @@ public class Recursion extends Painting {
 
         System.out.println("number of controls: "+controls.size());
 
-
-
-//        Collections.shuffle(paints);
     }
 
 
@@ -228,6 +240,7 @@ public class Recursion extends Painting {
 
         Random random = new Random();
 
+
         for (int i = controls.size(); i < controls.size() + 1; i++) {
 
             if (controls.get(i - 1)[6] > width) {
@@ -244,9 +257,9 @@ public class Recursion extends Painting {
 
             int potentialLength = x3 - x1;
 
-            int controlY1 = y1 - (random.nextInt(heightLimit));
+            int controlY1 = y1 - (getheightLimitedSizeForMountain(heightLimit));
             int controlX1 = random.nextInt(potentialLength) + x1;
-            int controlY2 = y1 - (random.nextInt(heightLimit));
+            int controlY2 = y1 - (getheightLimitedSizeForMountain(heightLimit));
             int controlX2 = random.nextInt(potentialLength) + x1;
 
 
@@ -265,11 +278,23 @@ public class Recursion extends Painting {
         return end;
     }
 
+    private int getheightLimitedSizeForMountain(int heightLimit){
+
+        int sizeToUse = (int)((sizes.get(sizeCounter++))*((float)heightLimit/sizeRange));
+        sizeToUse *= 2;
+
+        if(sizeCounter>=sizes.size()){
+            sizeCounter = 0;
+        }
+        System.out.println("sizeToUse: "+sizeToUse);
+        return sizeToUse;
+    }
+
     private void addMountainRange(int start, int centre, int end, int heightLimit) {
 
         controls.add(new int[]{start, centre, start + random.nextInt(end),
-                centre - random.nextInt(heightLimit), start + random.nextInt(end),
-                centre - random.nextInt(heightLimit), end, centre});
+                centre - getheightLimitedSizeForMountain(heightLimit), start + random.nextInt(end),
+                centre - getheightLimitedSizeForMountain(heightLimit), end, centre});
 
         fillOutNewMountainRange(controls, heightLimit);
     }

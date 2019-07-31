@@ -19,8 +19,9 @@ import com.example.workinprogress.dataSetsAndComponents.DataSetPoint;
 import com.example.workinprogress.paintings.AbstractShapes;
 import com.example.workinprogress.paintings.AlbersImage;
 import com.example.workinprogress.paintings.AutomaticDrawing;
+import com.example.workinprogress.paintings.KineticArt;
 import com.example.workinprogress.paintings.Painting;
-import com.example.workinprogress.paintings.Recursion;
+import com.example.workinprogress.paintings.Landscape;
 import com.example.workinprogress.paintings.TextImage;
 
 import java.io.File;
@@ -139,8 +140,7 @@ public class DisplayImage extends AppCompatActivity {
 //            createNewAutomaticDrawingImage();
 //        }
 
-        createNewRecursionImage();
-
+        createNewKineticImage();
     }
 
     public void createNewAbstractShapesImage(){
@@ -171,8 +171,15 @@ public class DisplayImage extends AppCompatActivity {
         imageCreated = true;
     }
 
-    public void createNewRecursionImage(){
-        createdImage = new Recursion(this,dataSets);
+    public void createNewLandscapeImage(){
+        createdImage = new Landscape(this,dataSets);
+        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
+        //      ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
+        imageCreated = true;
+    }
+
+    public void createNewKineticImage(){
+        createdImage = new KineticArt(this,dataSets);
         ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
         //      ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
         imageCreated = true;
