@@ -333,52 +333,5 @@ public class KineticArt extends Painting {
         }
     }
 
-//        controls.add(new int[]{widthStart, heightStart,(random.nextInt(widthLimit-50))+50,
-//                random.nextInt(heightEnd),(random.nextInt(widthLimit-50))+50,
-//                random.nextInt(heightEnd), widthCentre, heightCentre});
-//        paths.add(new Path());
-//        newControls(controls);
-
-
-//            controls.add(new int[]{centre, heightStart, centre - (random.nextInt(widthLimit)), random.nextInt(heightEnd), centre + (random.nextInt(widthLimit)), random.nextInt(heightEnd), centre,heightEnd, Color.GREEN});
-//
-//
-//            controls.add(new int[]{centre, heightStart, centre - (random.nextInt(widthLimit)), random.nextInt(heightEnd), centre + (random.nextInt(widthLimit)), random.nextInt(heightEnd),centre, heightEnd, Color.BLUE});
-//
-//
-//            controls.add(new int[]{centre, heightStart, centre - (random.nextInt(widthLimit)), random.nextInt(heightEnd),centre + (random.nextInt(widthLimit)), random.nextInt(heightEnd), centre, heightEnd, Color.RED});
-
-
-
-//    private ArrayList<int[]> newControls(ArrayList<int[]> controls) {
-//
-//        Random random = new Random();
-//
-//
-//
-//
-////        for (int i = 1; i < 3; i++) {
-////
-////            int x1 = controls.get(i - 1)[6];
-////            int y1 = controls.get(i - 1)[7];
-////
-////            int y3 = y1 + (int) ((height - 50) / 3);
-////
-////            int potentialLength = y3 - y1;
-////
-////            int controlX1 = x1 + (random.nextInt((int) (width / 2)));
-////            int controlY1 = random.nextInt(potentialLength) + y1;
-////            int controlX2 = x1 - (random.nextInt((int) (width / 2)));
-////            int controlY2 = random.nextInt(potentialLength) + y1;
-////
-////
-////            controls.add(new int[]{x1, y1, controlX1, controlY1, controlX2, controlY2, x1, y3});
-////            paths.add(new Path());
-////
-////        }
-//
-//        return controls;
-//    }
-
 
 }

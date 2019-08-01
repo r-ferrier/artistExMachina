@@ -11,7 +11,6 @@ import com.example.workinprogress.paintings.shapes.CircleShape;
 import com.example.workinprogress.paintings.shapes.CurvedShape;
 import com.example.workinprogress.paintings.shapes.LineShape;
 import com.example.workinprogress.paintings.shapes.Shape;
-import com.example.workinprogress.paintings.shapes.SquiggleShape;
 
 import java.util.ArrayList;
 import java.util.Arrays;
