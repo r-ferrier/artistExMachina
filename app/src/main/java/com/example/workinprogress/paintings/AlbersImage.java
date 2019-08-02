@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
+
 public class AlbersImage extends Painting {
     private Paint paint1;
     private Canvas canvas;

@@ -290,6 +290,10 @@ public class AutomaticDrawing extends Painting {
 
         anglesAndDirections = new int[positions.get(0).getScaledResults1().size()][2];
 
+        System.out.println("size 1: "+positions.get(0).getScaledResults1().size());
+        System.out.println("size 2: "+positions.get(0).getScaledResults2().size());
+        System.out.println("size 3: "+positions.get(0).getScaledResults3().size());
+
         // this is where we will store all the x/y coordinates, as x1, y1, x2, y2
         positionsToBeDrawn = new int[anglesAndDirections.length][4];
 

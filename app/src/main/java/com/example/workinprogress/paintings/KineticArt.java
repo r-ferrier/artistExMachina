@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.Random;
 
 
-public class KineticArt extends Painting {
+public class KineticArt extends AbstractShapes {
 
     private Canvas canvas;
     private ArrayList<Path> paths;
@@ -82,29 +82,6 @@ public class KineticArt extends Painting {
         }
 
         setHighestAndLowestValueArrays();
-
-    }
-
-    private ArrayList<Integer> setUniqueValueArrays(ArrayList<Integer> sortedArray) {
-
-        for (int i = 0; i < sortedArray.size() - 1; i++) {
-
-
-                while (sortedArray.get(i + 1) == sortedArray.get(i)) {
-                    sortedArray.remove(i + 1);
-                    if(sortedArray.size()-1==i){
-                        break;
-                    }
-                }
-
-
-        }
-
-        while (sortedArray.size() < 10) {
-            sortedArray.add(0);
-        }
-
-        return sortedArray;
 
     }
 

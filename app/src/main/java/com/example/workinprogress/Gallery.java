@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
+import java.util.Arrays;
 
 public class Gallery extends AppCompatActivity {
 
@@ -40,6 +41,8 @@ public class Gallery extends AppCompatActivity {
             reverseFiles[files.length-i-1]=files[i];
 
         }
+
+        System.out.println("files: "+Arrays.toString(files));
 
         setContentView(R.layout.activity_gallery);
         recyclerView = findViewById(R.id.gallery_recycler_view);

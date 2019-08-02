@@ -107,10 +107,10 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         }
 
         lightText = findViewById(R.id.lightValues);
-        locationText = findViewById(R.id.locationValues);
+//        locationText = findViewById(R.id.locationValues);
         accelerometerText = findViewById(R.id.accelerometerValues);
-        stepsText = findViewById(R.id.stepsValues);
-        distanceText = findViewById(R.id.distanceValues);
+//        stepsText = findViewById(R.id.stepsValues);
+//        distanceText = findViewById(R.id.distanceValues);
 
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         positionSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -121,11 +121,11 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         for(DataSet dataset: dataSets){
 
             if(dataset.getDataTypeName().equals(getString(R.string.data_type_steps))){
-                stepsText.setText(dataset.toString());
+      //          stepsText.setText(dataset.toString());
                 System.out.println("distance"+((UnscaledSingleEntryDataSet)dataset).getScaledResults1().get(0));
             }
             if(dataset.getDataTypeName().equals(getString(R.string.data_type_distance))){
-                distanceText.setText(dataset.toString());
+     //           distanceText.setText(dataset.toString());
             }
         }
     }
@@ -144,7 +144,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
             }
 
             ((TextView)findViewById(R.id.lightValues)).setTextColor(Color.CYAN);
-            ((TextView)findViewById(R.id.locationValues)).setTextColor(Color.CYAN);
+//            ((TextView)findViewById(R.id.locationValues)).setTextColor(Color.CYAN);
             ((TextView)findViewById(R.id.accelerometerValues)).setTextColor(Color.CYAN);
         } else {
             stop(view);
@@ -188,7 +188,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
             positionDataCount++;
 
-            System.out.println("number of position data collected-----------"+positionDataCount+"----------------");
+//            System.out.println("number of position data collected-----------"+positionDataCount+"----------------");
 
             String accelerometerTextString = " x: " + sensorEvent.values[0] + " y: " + sensorEvent.values[1] + " z: " + sensorEvent.values[2];
 
@@ -217,7 +217,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 //        location = getLocation();
         String locationTextString = "lat: " + location.getLatitude() + " long: " + location.getLongitude();
         Log.i("location", locationTextString);
-        locationText.setText(locationTextString);
+//        locationText.setText(locationTextString);
         if (recordingData) {
 
             for(DataSet dataSet: dataSets){

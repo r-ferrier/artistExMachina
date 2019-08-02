@@ -1,18 +1,24 @@
 package com.example.workinprogress;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import com.example.workinprogress.dataSetsAndComponents.DataSet;
 import com.example.workinprogress.dataSetsAndComponents.DataSetPoint;
@@ -22,7 +28,6 @@ import com.example.workinprogress.paintings.AutomaticDrawing;
 import com.example.workinprogress.paintings.KineticArt;
 import com.example.workinprogress.paintings.Painting;
 import com.example.workinprogress.paintings.Landscape;
-import com.example.workinprogress.paintings.TextImage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -51,12 +56,23 @@ public class DisplayImage extends AppCompatActivity {
 
     private ArrayList<DataSet> dataSets;
 
+    private LayoutInflater inflater;
+    private ViewPager vp;
+
+    private ArrayList<Drawable> drawables;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_image);
+
+        inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        //Reference ViewPager defined in activity
+        vp=(ViewPager)findViewById(R.id.pager);
+        //set the adapter that will create the individual pages
+        vp.setAdapter(new MyPagesAdapter(this));
 
         if (getIntent().getExtras() != null) {
 
@@ -72,6 +88,45 @@ public class DisplayImage extends AppCompatActivity {
             }
         }
     }
+
+
+    class MyPagesAdapter extends PagerAdapter {
+
+        private Context context;
+
+        public MyPagesAdapter(Context context){
+            this.context = context;
+        }
+
+        @Override
+        public int getCount() {
+            //Return total pages, one for each image type
+            return 5;
+        }
+        //Create the given page (indicated by position)
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            View page = inflater.inflate(R.layout.thumbnail_view, null);
+            ((ImageView)page.findViewById(R.id.thumbnail_view)).setImageDrawable(drawables.get(position));
+            //Add the page to the front of the queue
+            ((ViewPager) container).addView(page, 0);
+//            createdImage = (Painting)drawables.get(position);
+            imageCreated = true;
+            return page;
+        }
+        @Override
+        public boolean isViewFromObject(View arg0, Object arg1) {
+            //See if object from instantiateItem is related to the given view
+            //required by API
+            return arg0==(View)arg1;
+        }
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            ((ViewPager) container).removeView((View) object);
+            object=null;
+        }
+    }
+
 
     private void animateWaitingScreen(TextView animationText) {
         try {
@@ -96,7 +151,6 @@ public class DisplayImage extends AppCompatActivity {
     public void createAndDisplayNewImage() {
 
         imageCreated = false;
-        getPublicAlbumStorageDir(getString(R.string.album_storage_name));
         dataStrings = new ArrayList<>();
 
         if (getIntent().getExtras() != null) {
@@ -140,50 +194,60 @@ public class DisplayImage extends AppCompatActivity {
 //            createNewAutomaticDrawingImage();
 //        }
 
-        createNewKineticImage();
+//        createNewKineticImage();
+
+        drawables = new ArrayList<>();
+
+        drawables.add(new AbstractShapes(this,  dataSets));
+        drawables.add(new AutomaticDrawing(this,  dataSets));
+        drawables.add(new AlbersImage(this,  dataSets));
+        drawables.add(new Landscape(this,  dataSets));
+        drawables.add(new KineticArt(this,  dataSets));
+
+
     }
 
-    public void createNewAbstractShapesImage(){
-        createdImage = new AbstractShapes(this,  dataSets);
-        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
-        //   ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
-        imageCreated = true;
-    }
-
-    public void createNewTextImage(){
-        createdImage = new TextImage(this,  dataSets);
-        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
-     //   ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
-        imageCreated = true;
-    }
-
-    public void createNewAlbersImage(){
-        createdImage = new AlbersImage(this, dataSets);
-        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
-  //      ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
-        imageCreated = true;
-    }
-
-    public void createNewAutomaticDrawingImage(){
-        createdImage = new AutomaticDrawing(this,dataSets);
-        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
-        //      ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
-        imageCreated = true;
-    }
-
-    public void createNewLandscapeImage(){
-        createdImage = new Landscape(this,dataSets);
-        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
-        //      ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
-        imageCreated = true;
-    }
-
-    public void createNewKineticImage(){
-        createdImage = new KineticArt(this,dataSets);
-        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
-        //      ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
-        imageCreated = true;
-    }
+//    public void createNewAbstractShapesImage(){
+//        createdImage = new AbstractShapes(this,  dataSets);
+//        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
+//        //   ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
+//        imageCreated = true;
+//    }
+//
+//    public void createNewTextImage(){
+//        createdImage = new TextImage(this,  dataSets);
+//        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
+//     //   ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
+//        imageCreated = true;
+//    }
+//
+//    public void createNewAlbersImage(){
+//        createdImage = new AlbersImage(this, dataSets);
+//        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
+//  //      ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
+//        imageCreated = true;
+//    }
+//
+//    public void createNewAutomaticDrawingImage(){
+//        createdImage = new AutomaticDrawing(this,dataSets);
+//        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
+//        //      ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
+//        imageCreated = true;
+//    }
+//
+//    public void createNewLandscapeImage(){
+//        createdImage = new Landscape(this,dataSets);
+//        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
+//        //      ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
+//        imageCreated = true;
+//    }
+//
+//    public void createNewKineticImage(){
+//        createdImage = new KineticArt(this,dataSets);
+//        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
+//        //      ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
+//        imageCreated = true;
+//    }
 
 
 
@@ -191,10 +255,18 @@ public class DisplayImage extends AppCompatActivity {
 
         if(imageCreated) {
 
+            //find the currently viewed drawable
+            int currentItem =vp.getCurrentItem();
+            createdImage = (Painting)drawables.get(currentItem);
+
+            // create an empty file for it in the correct location
+            setCurrentImagePath(getString(R.string.album_storage_name));
+
+
+            // check if we can write to external storage
             if (isExternalStorageWritable()) {
 
-                Log.i("external storage?", isExternalStorageWritable() + "");
-
+                //output new file to new imagePath
                 try {
                     File file = new File(currentImagePath);
                     FileOutputStream out = new FileOutputStream(file);
@@ -204,7 +276,7 @@ public class DisplayImage extends AppCompatActivity {
 
                     out.flush();
                     out.close();
-                    Toast.makeText(getApplicationContext(), "Saved successfully, Check gallery", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Saved successfully", Toast.LENGTH_SHORT).show();
                     galleryAddPic();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -217,7 +289,7 @@ public class DisplayImage extends AppCompatActivity {
         goToGallery();
     }
 
-    public File getPublicAlbumStorageDir(String albumName){
+    public void setCurrentImagePath(String albumName){
         // Get the directory for the user's public pictures directory.
         File file = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), albumName);
@@ -228,9 +300,12 @@ public class DisplayImage extends AppCompatActivity {
 
         Log.e("filename", file.getAbsolutePath());
 
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
+        // create a couple of strings to name the image file with
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HHmmss").format(new Date());
 
+        String imageFileName = timeStamp + "_"+ createdImage.getClass().getSimpleName();
+
+        // create a temporary file using the directory, created filename and a jpg suffix
         File image = null;
         try {
             image = File.createTempFile(
@@ -242,11 +317,13 @@ public class DisplayImage extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        currentImagePath = image.getAbsolutePath();
-
-        return image;
+        //store the path to use for this image as currentImagePath
+        currentImagePath = file+"/"+imageFileName+".jpg";
+        System.out.println("file: "+currentImagePath);
     }
 
+
+    //helper method to check if external storage can be written to
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
@@ -256,6 +333,7 @@ public class DisplayImage extends AppCompatActivity {
     }
 
 
+    // helper method to enable the android system to recognise a new file has been added to an external folder
     private void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(currentImagePath);
@@ -273,7 +351,6 @@ public class DisplayImage extends AppCompatActivity {
         intent.putStringArrayListExtra("dataStrings",dataStrings);
 
         startActivity(intent);
-
 
         //share image using other applications? Investigate possibilities
     }

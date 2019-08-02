@@ -226,8 +226,7 @@ public class AbstractShapes extends Painting {
             totalSize+=size;
         }
 
-        ArrayList<Integer> highestSizes = (ArrayList<Integer>)sizes.clone();
-        Collections.sort(highestSizes,Collections.reverseOrder());
+        ArrayList<Integer> highestSizes = setUniqueValueArrays((ArrayList<Integer>)sizes.clone());
 
         averageSize = (((highestSizes.get(0)+highestSizes.get(1)+highestSizes.get(2)+highestSizes.get(3)) / 4) + (totalSize / numberOfShapes)) / 2;
         averageSize = (500 - averageSize);
@@ -276,6 +275,29 @@ public class AbstractShapes extends Painting {
         }
 
         System.out.println("average size: " + averageSize);
+    }
+
+    protected ArrayList<Integer> setUniqueValueArrays(ArrayList<Integer> sortedArray) {
+
+        for (int i = 0; i < sortedArray.size() - 1; i++) {
+
+
+            while (sortedArray.get(i + 1) == sortedArray.get(i)) {
+                sortedArray.remove(i + 1);
+                if(sortedArray.size()-1==i){
+                    break;
+                }
+            }
+
+
+        }
+
+        while (sortedArray.size() < 10) {
+            sortedArray.add(0);
+        }
+
+        return sortedArray;
+
     }
 
     private Shape setShape(int loopStartX1, int loopStartY1, int loopStartX2, int loopStartY2, int widthRestrictedlineLength, int[] coloursForThisLoop) {
