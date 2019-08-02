@@ -286,7 +286,7 @@ public class AutomaticDrawing extends Painting {
 
     private void convertPositionsToXYValues() {
 
-        steps = lightDistanceAndSteps.get(0).getScaledResults1().get(0);
+//        steps = lightDistanceAndSteps.get(0).getScaledResults1().get(0);
 
         anglesAndDirections = new int[positions.get(0).getScaledResults1().size()][2];
 

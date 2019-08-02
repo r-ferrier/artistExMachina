@@ -30,56 +30,31 @@ public class AlbersImage extends Painting {
         super(context, dataSets);
         paint1 = new Paint();
         paint1.setARGB(10, 255, 200, 90);
-        System.out.println("in the albers image -------------------------------------------------");
-        System.out.println(positions.get(0).getScaledResults1());
-        System.out.println(positions.get(0).getScaledResults2());
-        System.out.println(positions.get(0).getScaledResults3());
+//        System.out.println("in the albers image -------------------------------------------------");
+//        System.out.println(positions.get(0).getScaledResults1());
+//        System.out.println(positions.get(0).getScaledResults2());
+//        System.out.println(positions.get(0).getScaledResults3());
         setColoursValues();
         numberOfSquares = lightDistanceAndSteps.get(0).getScaledResults1().get(0);
     }
 
     public void draw(Canvas canvas) {
+
         this.canvas = canvas;
         canvas.drawColor(Color.WHITE);
         width = getBounds().width();
         height = getBounds().height();
-        setCanvasPositions();
-        setSquareSizes();
-        String canvasPositionsString = "";
-        String coloursString = "";
-        for (int i = 0; i < canvasPositions.length; i++) {
-            canvasPositionsString += "[x: " + canvasPositions[i][0] + ", y: " + canvasPositions[i][1] + "], ";
+
+        if(canvasPositions==null) {
+            setCanvasPositions();
+            setSquareSizes();
+//            printOutInfo();
         }
 
-//        for (int i = 0; i < newCanvasPositions.length; i++) {
-//            canvasPositionsString += "[x: " + newCanvasPositions[i][0] + ", y: " + newCanvasPositions[i][1] + "], ";
-//        }
-
-        for (int i = 0; i < coloursValues.length; i++) {
-            coloursString += "[A: " + coloursValues[i][0] + ", R: " + coloursValues[i][1] + ",G: " + coloursValues[i][2] + ",B: " + coloursValues[i][3] + "], ";
-        }
-        System.out.println("shape positions" + canvasPositionsString);
-        System.out.println("shape sizes scaled" + shapeSize.toString());
-        System.out.println(" colours" + coloursString);
-
-        firstEverythingExperiment();
-
-
-        // to be used to toggle alpha functionality
-//        paint1.setARGB(40,20,200,150);
-//        canvas.drawRect(50,50,150,150, paint1);
-//        canvas.drawRect(25,25,110,200, paint1);
+        drawImage();
     }
 
-    private void firstEverythingExperiment() {
-
-        drawImage(canvasPositions, coloursValues, newShapeSize);
-//        setWhiteSquare();
-
-
-    }
-
-    private void drawImage(int[][] canvasPositions, int[][] coloursValues, ArrayList<Integer> shapeSize) {
+    private void drawImage() {
         for (int i = 0; i < canvasPositions.length; i++) {
 //
             int j = i;
@@ -87,6 +62,7 @@ public class AlbersImage extends Painting {
                 j -= coloursValues.length;
             }
             paint1.setARGB(coloursValues[j][0], coloursValues[j][1], coloursValues[j][2], coloursValues[j][3]);
+
             //set canvas positions so image sits centrally
             int x1 = canvasPositions[i][0] - (shapeSize.get(i) / 2);
             int y1 = canvasPositions[i][1] - (shapeSize.get(i) / 2);
@@ -94,62 +70,8 @@ public class AlbersImage extends Painting {
             int y2 = canvasPositions[i][1] + (shapeSize.get(i) / 2);
 
             canvas.drawRect(x1, y1, x2, y2, paint1);
-
-//            System.out.println(canvasPositions[j][0]+" "+canvasPositions[j][1]+" "+shapeSize[j]+" "+shapeSize[j]+" canvas positions");
-//            System.out.println(coloursValues.length);
-//            Log.i("colours",Arrays.toString(coloursValues[j]));
         }
     }
-
-    private void setWhiteSquare() {
-
-        int distance = 0;
-        int numberOflocationsVisited = 1;
-
-
-        distance = (int) ((UnscaledSingleEntryDataSet) lightDistanceAndSteps.get(1)).getScaledResults1().get(0);
-
-
-        System.out.println("distance" + distance + "---------------------");
-
-        if (distance > 0) {
-            numberOflocationsVisited += locations.get(0).getScaledResults1().size();
-
-            Paint paint2 = new Paint();
-            paint2.setARGB(150, 240, 240, 240);
-
-
-            int x1;
-            int y1;
-
-            if (distance > width) {
-                x1 = (int) (distance % width);
-            } else {
-                x1 = (int) (width % distance);
-            }
-            if (distance > height) {
-                y1 = (int) (distance % height);
-            } else {
-                y1 = (int) (height % distance);
-            }
-            int x2 = x1 + 200;
-            int y2 = y1 + 30;
-            System.out.println("distance%width" + x1 + "---------------------");
-            System.out.println("distance%height" + y1 + "---------------------");
-            System.out.println("locations visited" + numberOflocationsVisited + "---------------------");
-            for (int i = 0; i < numberOflocationsVisited; i++) {
-                y1 += 50;
-                y2 += 50;
-
-                canvas.drawRect(x1, y1, x2, y2, paint2);
-                System.out.println("canvasdrawRect" + x1 + " " + y1 + " " + x2 + " " + y2 + " ");
-
-
-            }
-        }
-
-    }
-
 
     private void setSquareSizes() {
         shapeSize = new ArrayList<>();
@@ -365,5 +287,24 @@ public class AlbersImage extends Painting {
 
         }
 
+    }
+
+    private void printOutInfo(){
+        String canvasPositionsString = "";
+        String coloursString = "";
+        for (int i = 0; i < canvasPositions.length; i++) {
+            canvasPositionsString += "[x: " + canvasPositions[i][0] + ", y: " + canvasPositions[i][1] + "], ";
+        }
+
+        for (int i = 0; i < newCanvasPositions.length; i++) {
+            canvasPositionsString += "[x: " + newCanvasPositions[i][0] + ", y: " + newCanvasPositions[i][1] + "], ";
+        }
+
+        for (int i = 0; i < coloursValues.length; i++) {
+            coloursString += "[A: " + coloursValues[i][0] + ", R: " + coloursValues[i][1] + ",G: " + coloursValues[i][2] + ",B: " + coloursValues[i][3] + "], ";
+        }
+        System.out.println("shape positions" + canvasPositionsString);
+        System.out.println("shape sizes scaled" + shapeSize.toString());
+        System.out.println(" colours" + coloursString);
     }
 }

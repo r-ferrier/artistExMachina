@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,7 +39,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class DisplayImage extends AppCompatActivity {
+public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageChangeListener {
 
     private boolean createNewImage;
     private boolean imageCreated;
@@ -53,6 +55,7 @@ public class DisplayImage extends AppCompatActivity {
     private ArrayList<Integer> steps;
     private ArrayList<Integer> distance;
     private ArrayList<String> dataStrings;
+    private boolean[] saved;
 
     private ArrayList<DataSet> dataSets;
 
@@ -72,7 +75,9 @@ public class DisplayImage extends AppCompatActivity {
         //Reference ViewPager defined in activity
         vp=(ViewPager)findViewById(R.id.pager);
         //set the adapter that will create the individual pages
-        vp.setAdapter(new MyPagesAdapter(this));
+        vp.setAdapter(new ImagePagerAdapter(this));
+
+        vp.addOnPageChangeListener(this);
 
         if (getIntent().getExtras() != null) {
 
@@ -84,17 +89,37 @@ public class DisplayImage extends AppCompatActivity {
                 currentImagePath = getIntent().getStringExtra("imageLocation");
                 displayExistingImage();
             } else {
-                createAndDisplayNewImage();
+                createAndDisplayImages();
             }
         }
     }
 
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        if(saved[position]){
+            findViewById(R.id.keepButton).setVisibility(View.INVISIBLE);
+        }else{
+            findViewById(R.id.keepButton).setVisibility(View.VISIBLE);
+        }
+    }
 
-    class MyPagesAdapter extends PagerAdapter {
+    @Override
+    public void onPageSelected(int position) {
+
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
+
+
+
+    class ImagePagerAdapter extends PagerAdapter {
 
         private Context context;
 
-        public MyPagesAdapter(Context context){
+        public ImagePagerAdapter(Context context){
             this.context = context;
         }
 
@@ -125,6 +150,8 @@ public class DisplayImage extends AppCompatActivity {
             ((ViewPager) container).removeView((View) object);
             object=null;
         }
+
+
     }
 
 
@@ -148,7 +175,7 @@ public class DisplayImage extends AppCompatActivity {
         ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(BitmapFactory.decodeFile(currentImagePath));
     }
 
-    public void createAndDisplayNewImage() {
+    public void createAndDisplayImages() {
 
         imageCreated = false;
         dataStrings = new ArrayList<>();
@@ -180,22 +207,20 @@ public class DisplayImage extends AppCompatActivity {
         });
         thready.start();
 
-//        createNewTextImage();
-//        createNewAlbersImage();
-//        createNewAutomaticDrawingImage();
-//        createNewAbstractShapesImage();
+//        createImage();
+        createDrawables();
+        createdSavedStatusArray();
+    }
 
-//
-//        if(imageType.equals(getString(R.string.albers_image))){
-//            createNewAlbersImage();
-//        }else if(imageType.equals(getString(R.string.abstract_shapes))){
-//            createNewAbstractShapesImage();
-//        }else{
-//            createNewAutomaticDrawingImage();
-//        }
+    private void createdSavedStatusArray(){
+        saved = new boolean[drawables.size()];
 
-//        createNewKineticImage();
+        for(boolean savedStatus: saved){
+            savedStatus=false;
+        }
+    }
 
+    private void createDrawables(){
         drawables = new ArrayList<>();
 
         drawables.add(new AbstractShapes(this,  dataSets));
@@ -203,9 +228,18 @@ public class DisplayImage extends AppCompatActivity {
         drawables.add(new AlbersImage(this,  dataSets));
         drawables.add(new Landscape(this,  dataSets));
         drawables.add(new KineticArt(this,  dataSets));
-
-
     }
+
+//    private void createImage(){
+        //
+//        if(imageType.equals(getString(R.string.albers_image))){
+//            createNewAlbersImage();
+//        }else if(imageType.equals(getString(R.string.abstract_shapes))){
+//            createNewAbstractShapesImage();
+//        }else{
+//            createNewAutomaticDrawingImage();
+//        }
+//    }
 
 //    public void createNewAbstractShapesImage(){
 //        createdImage = new AbstractShapes(this,  dataSets);
@@ -276,7 +310,11 @@ public class DisplayImage extends AppCompatActivity {
 
                     out.flush();
                     out.close();
+
                     Toast.makeText(getApplicationContext(), "Saved successfully", Toast.LENGTH_SHORT).show();
+                    findViewById(R.id.keepButton).setVisibility(View.INVISIBLE);
+                    saved[currentItem]=true;
+
                     galleryAddPic();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -286,7 +324,7 @@ public class DisplayImage extends AppCompatActivity {
             }
         }
 
-        goToGallery();
+       // goToGallery();
     }
 
     public void setCurrentImagePath(String albumName){
@@ -306,16 +344,16 @@ public class DisplayImage extends AppCompatActivity {
         String imageFileName = timeStamp + "_"+ createdImage.getClass().getSimpleName();
 
         // create a temporary file using the directory, created filename and a jpg suffix
-        File image = null;
-        try {
-            image = File.createTempFile(
-                    imageFileName,  /* prefix */
-                    ".jpg",         /* suffix */
-                    file      /* directory */
-            );
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        File image = null;
+//        try {
+//            image = File.createTempFile(
+//                    imageFileName,  /* prefix */
+//                    ".jpg",         /* suffix */
+//                    file      /* directory */
+//            );
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         //store the path to use for this image as currentImagePath
         currentImagePath = file+"/"+imageFileName+".jpg";
@@ -357,16 +395,20 @@ public class DisplayImage extends AppCompatActivity {
 
     public void discard(View view) {
 
-        File file = new File(currentImagePath);
+//        File file = new File(currentImagePath);
+//
+//        if(file.exists()) {
+//            file.delete();
+//        }
+//
 
-        if(file.exists()) {
-            file.delete();
-        }
-        onBackPressed();
+
+
+//        onBackPressed();
 
     }
 
-    private void goToGallery(){
+    public void goToGallery(View view){
         Intent intent = new Intent(this, Gallery.class);
         startActivity(intent);
     }
