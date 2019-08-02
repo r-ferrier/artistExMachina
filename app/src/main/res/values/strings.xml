@@ -27,4 +27,6 @@
     <string name="albers_image">Albers Image</string>
     <string name="automatic_drawing">Automatic Drawing</string>
     <string name="abstract_shapes">Abstract Shapes</string>
+    <string name="scroll_left">&lt;&lt; scroll left</string>
+    <string name="scroll_right">scroll right &gt;&gt;</string>
 </resources>
