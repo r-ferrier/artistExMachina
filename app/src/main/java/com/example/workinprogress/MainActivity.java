@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,12 +23,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.workinprogress.dataSetsAndComponents.UnscaledSingleEntryDataSet;
 import com.example.workinprogress.paintings.shapes.BumpyShape;
+import com.example.workinprogress.paintings.shapes.CircleShape;
 import com.example.workinprogress.paintings.shapes.CurvedShape;
 import com.example.workinprogress.paintings.shapes.LineShape;
 import com.example.workinprogress.paintings.shapes.Shape;
@@ -84,31 +83,31 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         runAnimations();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void runAnimations() {
 
         TextView titleText = findViewById(R.id.titleText);
+        View buttonsLayout = findViewById(R.id.buttonPanel);
 
-        ImageButton galleryButton = findViewById(R.id.galleryButton);
-        ImageButton aboutButton = findViewById(R.id.aboutButton);
-        ImageButton portraitButton = findViewById(R.id.sitForPortraitButton);
+        ObjectAnimator moveButtons = ObjectAnimator.ofFloat(buttonsLayout, "translationY", 600f, 0f, 40f);
+        ObjectAnimator moveText = ObjectAnimator.ofFloat(titleText, "translationY", -600f, 0f, -40f);
 
-        ObjectAnimator positionTextOffScreen = ObjectAnimator.ofFloat(titleText, "translationY", -600f);
-        ObjectAnimator moveTextDown = ObjectAnimator.ofFloat(titleText, "translationY", 0f);
-
-        positionTextOffScreen.setDuration(0);
-        positionTextOffScreen.start();
+        buttonsLayout.setVisibility(View.VISIBLE);
         titleText.setVisibility(View.VISIBLE);
+
+        moveText.setDuration(5000);
+        moveButtons.setDuration(5000);
+        moveText.start();
+        moveButtons.start();
 
         drawShapes();
 
-        moveTextDown.setDuration(3000);
-        moveTextDown.start();
     }
 
     private void drawShapes() {
 
         FrameLayout animatedShapesDrawing = findViewById(R.id.animationPortion);
-        ViewTreeObserver observer= animatedShapesDrawing.getViewTreeObserver();
+        ViewTreeObserver observer = animatedShapesDrawing.getViewTreeObserver();
 
         observer.addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -120,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         float height = animatedShapesDrawing.getHeight();
 
                         ArrayList<Shape> shapes = new ArrayList<>();
+                        ArrayList<Shape> thinShapes = new ArrayList<>();
 
                         shapes.add(new CurvedShape(0, 0, 0, (int) (height / 4), true, new int[]{255, 230, 50, 20}, (int) (height / 2)));
                         shapes.add(new CurvedShape(shapes.get(0).getX1End(), shapes.get(0).getY1End(), shapes.get(0).getX2End(), shapes.get(0).getY2End(), false, new int[]{255, 230, 150, 20}, (int) (height / 2)));
@@ -129,19 +129,35 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         shapes.add(new CurvedShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), false, new int[]{255, 180, 220, 40}, (int) (height / 2.5)));
                         shapes.add(new CurvedShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), false, new int[]{255, 180, 220, 70}, (int) (height / 3.5)));
                         shapes.add(new LineShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), (int) (height), new int[]{155, 130, 200, 130}));
+                        shapes.add(new LineShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), (int) (height), new int[]{155, 130, 200, 130}));
+                        shapes.add(new LineShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), (int) (height), new int[]{155, 130, 200, 130}));
+                        shapes.add(new LineShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), (int) (height), new int[]{155, 130, 200, 130}));
+                        shapes.add(new LineShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), (int) (height), new int[]{155, 130, 200, 130}));
+                        shapes.add(new LineShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), (int) (height), new int[]{155, 130, 200, 130}));
+
+                        thinShapes.add(new LineShape(0, (int) ((height / 16) * 6), 0, (int) ((height / 16) * 7), (int) (height), new int[]{155, 130, 200, 130}));
+                        thinShapes.add(new CurvedShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), false, new int[]{100, 200, 220, 20}, (int) (height / 5)));
+                        thinShapes.add(new CurvedShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), false, new int[]{100, 200, 100, 50}, (int) (height / 6)));
+                        thinShapes.add(new CurvedShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), false, new int[]{100, 200, 220, 20}, (int) (height / 2)));
+                        thinShapes.add(new CurvedShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), false, new int[]{100, 200, 20, 100}, (int) (height / 6)));
+                        thinShapes.add(new CurvedShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), true, new int[]{100, 10, 220, 20}, (int) (height / 5)));
+                        thinShapes.add(new CurvedShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), true, new int[]{100, 150, 50, 90}, (int) (height / 8)));
+                        thinShapes.add(new CurvedShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), true, new int[]{100, 80, 100, 40}, (int) (height / 5)));
+                        thinShapes.add(new CurvedShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), true, new int[]{100, 200, 220, 20}, (int) (height / 3.5)));
+                        thinShapes.add(new BumpyShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), (int) (height / 3), new int[]{100, 200, 220, 20}));
+                        thinShapes.add(new CircleShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), (int) (height / 5), new int[]{100, 200, 20, 220}));
+                        thinShapes.add(new LineShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), (int) (height), new int[]{100,220, 20, 150}));
+                        thinShapes.add(new CurvedShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), false, new int[]{100, 20, 70, 180}, (int) (height / 2)));
 
                         LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
                         ArrayList<ImageView> imageViews = new ArrayList<>();
 
 
-                        for(Shape shape: shapes){
-
+                        for (Shape shape : shapes) {
                             imageViews.add((ImageView) inflater.inflate(R.layout.single_image, null));
-
+                            imageViews.add((ImageView) inflater.inflate(R.layout.single_image, null));
                         }
-
-
 
 
                         Thread thread = new Thread(new Runnable() {
@@ -151,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                                 for (int i = 0; i < shapes.size(); i++) {
 
                                     try {
-                                        Thread.sleep(500);
+                                        Thread.sleep(200);
                                     } catch (InterruptedException e) {
                                         e.printStackTrace();
                                     }
@@ -159,13 +175,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                                     final ImageView imageView = imageViews.get(i);
                                     final Shape shape = shapes.get(i);
 
+                                    final ImageView imageView2 = imageViews.get(i + shapes.size());
+                                    final Shape shape2 = thinShapes.get(i);
+
                                     new Handler(Looper.getMainLooper()).post(
                                             new Runnable() {
                                                 @Override
                                                 public void run() {
                                                     animatedShapesDrawing.addView(imageView);
-
                                                     imageView.setImageDrawable(shape);
+                                                    animatedShapesDrawing.addView(imageView2);
+                                                    imageView2.setImageDrawable(shape2);
                                                 }
                                             }
                                     );
@@ -185,7 +205,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         });
 
                         thread.start();
-
 
 
                     }
