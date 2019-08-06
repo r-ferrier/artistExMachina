@@ -8,21 +8,38 @@
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/pager"
-        android:layout_width="match_parent"
-        android:layout_height="489dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="0dp"
+        android:layout_height="412dp"
+        android:layout_marginTop="48dp"
+        app:layout_constraintBottom_toTopOf="@id/textView7"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.26999998">
 
     </androidx.viewpager.widget.ViewPager>
 
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/image_not_saved"
+        android:textColor="#808080"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toTopOf="@+id/dots"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pager" />
+
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/dots"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/createdImageDisplayImage"
+        app:layout_constraintBottom_toTopOf="@id/keepButtonLinearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView7"
         app:tabBackground="@drawable/tab_selector"
         app:tabGravity="center"
         app:tabIndicatorHeight="0dp">
@@ -30,64 +47,71 @@
     </com.google.android.material.tabs.TabLayout>
 
     <LinearLayout
-        android:id="@+id/KeepButtonLinearLayout"
+        android:id="@+id/keepButtonLinearLayout"
         android:layout_width="264dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="56dp"
         android:layout_marginLeft="56dp"
         android:layout_marginEnd="52dp"
         android:layout_marginRight="52dp"
-        android:gravity="center"
+        android:gravity="center|top"
         android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/dots">
+
+        <ImageButton
+            android:id="@+id/dataButton"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="top"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/button"
+            android:foregroundGravity="fill"
+            android:onClick="data"
+            android:src="@drawable/data_icon"
+            android:textColor="#fff" />
 
         <Button
             android:id="@+id/discardButton"
             android:layout_width="60dp"
             android:layout_height="60dp"
+            android:layout_gravity="top"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:background="@drawable/button"
+            android:background="@drawable/red_button"
             android:onClick="discard"
-            android:text="delete"
-            android:textColor="#fff" />
+            android:text="@string/delete"
+            android:textColor="#fff"
+            android:textSize="30sp" />
 
-        <Button
-            android:id="@+id/dataButton"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:background="@drawable/button"
-            android:onClick="data"
-            android:text="data"
-            android:textColor="#fff" />
-
-        <Button
+        <ImageButton
             android:id="@+id/galleryButton"
             android:layout_width="60dp"
             android:layout_height="60dp"
+            android:layout_gravity="left"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:background="@drawable/button"
             android:onClick="goToGallery"
-            android:text="@string/gallery"
+            android:src="@drawable/gallery_icon"
             android:textColor="#fff" />
 
 
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="260dp"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginStart="103dp"
         android:layout_marginLeft="103dp"
         android:layout_marginEnd="103dp"
         android:layout_marginRight="103dp"
-        android:gravity="bottom|start"
+        android:gravity="center|top"
         android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -97,12 +121,13 @@
             android:id="@+id/keepButton"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_gravity="bottom|left"
+            android:layout_gravity="center|top"
             android:layout_marginLeft="5dp"
-            android:background="@drawable/button"
+            android:background="@drawable/green_button"
             android:onClick="save"
-            android:text="keep"
-            android:textColor="#fff" />
+            android:text="@string/save"
+            android:textColor="#fff"
+            android:textSize="30sp" />
     </LinearLayout>
 
     <ImageView

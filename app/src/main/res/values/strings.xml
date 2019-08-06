@@ -3,12 +3,12 @@
     <string name="title">Artist\nex Machina</string>
     <string name="location">location</string>
     <string name="temperature">temperature</string>
-    <string name="lightLevels">light levels</string>
-    <string name="lightVariable"></string>
-    <string name="tempVariable"></string>
-    <string name="loactionVariable"></string>
+    <string name="lightLevels">light levels : </string>
+    <string name="positionX">position x : </string>
+    <string name="positionY">position y : </string>
+    <string name="positionZ">position z : </string>
     <string name="buttonTitle">view image</string>
-    <string name="start">start</string>
+    <string name="start">go!</string>
     <string name="stop">stop</string>
     <string name="artistBusy1">Please hold still while I finish painting      </string>
     <string name="artistBusy2">Please hold still while I finish painting .    </string>
@@ -29,4 +29,8 @@
     <string name="abstract_shapes">Abstract Shapes</string>
     <string name="scroll_left">&lt;&lt; scroll left</string>
     <string name="scroll_right">scroll right &gt;&gt;</string>
+    <string name="image_not_saved">image not saved</string>
+    <string name="image_saved">image saved</string>
+    <string name="save">+</string>
+    <string name="delete">-</string>
 </resources>

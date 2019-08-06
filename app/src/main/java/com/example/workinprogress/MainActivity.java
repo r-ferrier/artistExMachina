@@ -66,6 +66,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         connectToAPIs(savedInstanceState);
         new ViewWeekStepCountTask().execute();
 
+        
+
+
+
     }
 
     private class ViewWeekStepCountTask extends AsyncTask<Void, Void, Void> {

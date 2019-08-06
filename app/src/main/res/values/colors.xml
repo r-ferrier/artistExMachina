@@ -13,4 +13,9 @@
     <color name="rosyBrown">#B29292</color>
     <color name="purpleNavy">#4D5382</color>
     <color name="purplePineapple">#514663</color>
+    <color name="grey">#9B9B9B</color>
+    <color name="darkGrey">#383838</color>
+    <color name="gradientPurple">#F137FF</color>
+    <color name="gradientBlue">#03A9F4</color>
+    <color name="gradientMiddle">#664EF6</color>
 </resources>

@@ -8,24 +8,30 @@
     android:orientation="vertical"
     tools:context=".ShortPortrait" >
 
-    <Button
-        android:id="@+id/startStopButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="314dp"
-        android:clickable="false"
-        android:onClick="startStopButtonPressed"
-        android:text="@string/start"
-        app:layout_constraintBottom_toTopOf="@+id/changeImage"
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="0dp"
+        android:layout_height="659dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_weight="0.25"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
+        <TextView
+            android:id="@+id/xValues"
+            android:layout_width="800dp"
+            android:layout_height="800dp"
+            android:layout_gravity="clip_horizontal|clip_vertical|start|top"
+            android:gravity="clip_horizontal|clip_vertical|top"
+            android:rotation="0"
+            android:text="0.000000000000"
+            android:textSize="20sp" />
+    </FrameLayout>
 
     <FrameLayout
         android:layout_width="119dp"
@@ -40,12 +46,53 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/accelerometerValues"
+            android:id="@+id/yValues"
             android:layout_width="800dp"
             android:layout_height="800dp"
             android:layout_gravity="clip_horizontal|clip_vertical|end"
             android:gravity="clip_horizontal|clip_vertical|top"
             android:rotation="90"
+            android:text="0.000000000000"
+            android:textSize="20sp" />
+    </FrameLayout>
+
+    <Button
+        android:id="@+id/startStopButton"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/gradient_button"
+        android:onClick="startStopButtonPressed"
+        android:text="@string/start"
+        android:textColor="#FFF"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="659dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_weight="0.25"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/zValues"
+            android:layout_width="800dp"
+            android:layout_height="800dp"
+            android:layout_gravity="bottom|clip_horizontal|clip_vertical|end"
+            android:gravity="clip_horizontal|clip_vertical|top"
+            android:rotation="180"
             android:text="0.000000000000"
             android:textSize="20sp" />
     </FrameLayout>
@@ -74,22 +121,4 @@
     </FrameLayout>
 
 
-
-
-    <Button
-        android:id="@+id/changeImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        android:onClick="changeImage"
-        android:text="@string/albers_image"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/startStopButton" />
 </androidx.constraintlayout.widget.ConstraintLayout>

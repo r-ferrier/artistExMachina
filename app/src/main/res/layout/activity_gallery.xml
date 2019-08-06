@@ -15,18 +15,18 @@
 
     </androidx.recyclerview.widget.RecyclerView>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <ImageButton
         android:id="@+id/fab"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_margin="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="70dp"
         android:layout_marginBottom="30dp"
-        android:background="@drawable/elipse"
+        android:background="@drawable/button"
         android:onClick="returnHome"
-        android:src="@drawable/elipse"
+        android:src="@drawable/home_logo"
         app:layout_constraintBottom_toBottomOf="@+id/gallery_recycler_view"
         app:layout_constraintEnd_toEndOf="@+id/gallery_recycler_view"
         app:layout_constraintTop_toTopOf="@+id/gallery_recycler_view"

@@ -26,7 +26,6 @@ import com.example.workinprogress.dataSetsAndComponents.PositionData;
 import com.example.workinprogress.dataSetsAndComponents.SensorSingularPointDataSet;
 import com.example.workinprogress.dataSetsAndComponents.PositionSensorThreePointsDataSet;
 import com.example.workinprogress.dataSetsAndComponents.UnscaledSingleEntryDataSet;
-import com.example.workinprogress.paintings.Painting;
 
 import java.util.ArrayList;
 
@@ -42,10 +41,12 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
     private String imageType = "Albers Image";
 
     public TextView lightText;
-    public TextView locationText;
-    private TextView accelerometerText;
-    private TextView distanceText;
-    private TextView stepsText;
+//    public TextView locationText;
+    private TextView xText;
+    private TextView yText;
+    private TextView zText;
+//    private TextView distanceText;
+//    private TextView stepsText;
     private boolean nightMode = false;
 
     private ArrayList<TextView> shortPortraitActivityTextViews = new ArrayList<>();
@@ -53,10 +54,10 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
     private ArrayList<DataSet> dataSets = new ArrayList<>();
 
     private LocationManager locationManager;
-    private android.location.Location location;
+//    private android.location.Location location;
 
-    private boolean GPSExists;
-    private boolean networkIsEnabled;
+//    private boolean GPSExists;
+//    private boolean networkIsEnabled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +109,9 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
         lightText = findViewById(R.id.lightValues);
 //        locationText = findViewById(R.id.locationValues);
-        accelerometerText = findViewById(R.id.accelerometerValues);
+        xText = findViewById(R.id.xValues);
+        yText = findViewById(R.id.yValues);
+        zText = findViewById(R.id.zValues);
 //        stepsText = findViewById(R.id.stepsValues);
 //        distanceText = findViewById(R.id.distanceValues);
 
@@ -135,7 +138,13 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
         if (!recordingData) {
             recordingData = true;
+
             ((Button) view).setText(R.string.stop);
+            view.setBackground(getResources().getDrawable(R.drawable.white_button));
+            ((Button) view).setTextColor(getResources().getColor(R.color.gradientMiddle));
+
+            findViewById(R.id.linearLayout2).setBackground(getResources().getDrawable(R.drawable.elipse));
+
 
             for(DataSet dataSet: dataSets){
                 if(dataSet.getDataTypeName()==getString(R.string.data_type_location)){
@@ -143,9 +152,11 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
                 }
             }
 
-            ((TextView)findViewById(R.id.lightValues)).setTextColor(Color.CYAN);
+            ((TextView)findViewById(R.id.lightValues)).setTextColor(Color.WHITE);
 //            ((TextView)findViewById(R.id.locationValues)).setTextColor(Color.CYAN);
-            ((TextView)findViewById(R.id.accelerometerValues)).setTextColor(Color.CYAN);
+            ((TextView)findViewById(R.id.xValues)).setTextColor(Color.WHITE);
+            ((TextView)findViewById(R.id.yValues)).setTextColor(Color.WHITE);
+            ((TextView)findViewById(R.id.zValues)).setTextColor(Color.WHITE);
         } else {
             stop(view);
         }
@@ -176,7 +187,8 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
     public void onSensorChanged(SensorEvent sensorEvent) {
 
         if (sensorEvent.sensor == lightSensor) {
-            lightText.setText(String.valueOf(sensorEvent.values[0]));
+            String light = getString(R.string.lightLevels)+"  "+String.valueOf(sensorEvent.values[0]);
+            lightText.setText(light);
             if (recordingData) {
                 for(DataSet dataSet: dataSets){
                     if(dataSet.getDataTypeName()==getString(R.string.data_type_light)){
@@ -190,9 +202,13 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
 //            System.out.println("number of position data collected-----------"+positionDataCount+"----------------");
 
-            String accelerometerTextString = " x: " + sensorEvent.values[0] + " y: " + sensorEvent.values[1] + " z: " + sensorEvent.values[2];
+            String xTextString = getString(R.string.positionX)+"  "+ sensorEvent.values[0];
+            String yTextString = getString(R.string.positionY)+"  "+ sensorEvent.values[1];
+            String zTextString = getString(R.string.positionZ)+"  "+ sensorEvent.values[2];
 
-            accelerometerText.setText(accelerometerTextString);
+            xText.setText(xTextString);
+            yText.setText(yTextString);
+            zText.setText(zTextString);
 
             if (recordingData) {
 
@@ -244,60 +260,60 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
     }
 
-    @SuppressLint("MissingPermission")
-    public android.location.Location getLocation() {
+//    @SuppressLint("MissingPermission")
+//    public android.location.Location getLocation() {
+//
+//        try {
+//            networkIsEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER); // check if it is network enabled
+//            GPSExists = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER); //check if it is GPS enabled
+//
+//            if (!GPSExists && !networkIsEnabled) {
+//                return null;
+//            } else if (!GPSExists) {
+//                location = null;
+//                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, this);
+//
+//                if (locationManager != null) {
+//                    location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+//                    if (location != null) {
+//                        return location;
+//                    }
+//                }
+//            } else {
+//                location = null;
+//                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1, this);
+//
+//                if (locationManager != null) {
+//                    location = locationManager
+//                            .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//                    if (location != null) {
+//                        return location;
+//                    }
+//                }
+//            }
+//
+//
+//        } catch (
+//                Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        return location;
+//
+//    }
 
-        try {
-            networkIsEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER); // check if it is network enabled
-            GPSExists = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER); //check if it is GPS enabled
-
-            if (!GPSExists && !networkIsEnabled) {
-                return null;
-            } else if (!GPSExists) {
-                location = null;
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, this);
-
-                if (locationManager != null) {
-                    location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                    if (location != null) {
-                        return location;
-                    }
-                }
-            } else {
-                location = null;
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1, this);
-
-                if (locationManager != null) {
-                    location = locationManager
-                            .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    if (location != null) {
-                        return location;
-                    }
-                }
-            }
-
-
-        } catch (
-                Exception e) {
-            e.printStackTrace();
-        }
-
-        return location;
-
-    }
-
-    public void changeImage(View view){
-        if(((TextView)view).getText()==getString(R.string.albers_image)){
-            ((TextView)view).setText(R.string.automatic_drawing);
-            imageType = getString(R.string.automatic_drawing);
-        }else if(((TextView)view).getText()==getString(R.string.automatic_drawing)){
-            ((TextView)view).setText(R.string.abstract_shapes);
-            imageType = getString(R.string.abstract_shapes);
-        }else{
-            ((TextView)view).setText(R.string.albers_image);
-            imageType = getString(R.string.albers_image);
-        }
-    }
+//    public void changeImage(View view){
+//        if(((TextView)view).getText()==getString(R.string.albers_image)){
+//            ((TextView)view).setText(R.string.automatic_drawing);
+//            imageType = getString(R.string.automatic_drawing);
+//        }else if(((TextView)view).getText()==getString(R.string.automatic_drawing)){
+//            ((TextView)view).setText(R.string.abstract_shapes);
+//            imageType = getString(R.string.abstract_shapes);
+//        }else{
+//            ((TextView)view).setText(R.string.albers_image);
+//            imageType = getString(R.string.albers_image);
+//        }
+//    }
 
 
 }

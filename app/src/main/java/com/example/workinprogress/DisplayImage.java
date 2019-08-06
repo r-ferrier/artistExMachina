@@ -12,11 +12,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -56,6 +58,7 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
     private ArrayList<String> dataStrings;
     private boolean[] saved;
     private boolean[] deleted;
+    private LinearLayoutManager linearLayoutManager;
 
     private ArrayList<DataSet> dataSets;
 
@@ -101,14 +104,28 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
         }
     }
 
+
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        int currentItem = vp.getCurrentItem();
+        createdImage = (Painting) (drawables.get(currentItem));
+
+        TextView text = findViewById(R.id.textView7);
+        Button keepButton = findViewById(R.id.keepButton);
+        Button deleteButton = findViewById(R.id.discardButton);
+
         if (saved[position]) {
-            findViewById(R.id.keepButton).setVisibility(View.INVISIBLE);
-            findViewById(R.id.discardButton).setVisibility(View.VISIBLE);
+            keepButton.setVisibility(View.INVISIBLE);
+            deleteButton.setVisibility(View.VISIBLE);
+            text.setText(R.string.image_saved);
+            text.setTextColor(getResources().getColor(R.color.iguanaGreen));
+
         } else {
-            findViewById(R.id.keepButton).setVisibility(View.VISIBLE);
-            findViewById(R.id.discardButton).setVisibility(View.INVISIBLE);
+            keepButton.setVisibility(View.VISIBLE);
+            deleteButton.setVisibility(View.INVISIBLE);
+            text.setText(R.string.image_not_saved);
+            text.setTextColor(getResources().getColor(R.color.darkGrey));
         }
 
     }
@@ -148,12 +165,14 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
             ((ImageView) page.findViewById(R.id.createdImage)).setImageDrawable(createdImage);
 //            ((ImageView)page.findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
 
-            if (saved[position]) {
-                ((ImageView) page.findViewById(R.id.createdImage2)).setImageDrawable(new ImageSavedorDeleted(true));
-            }
-            if (deleted[position]) {
-                ((ImageView) page.findViewById(R.id.createdImage2)).setImageDrawable(new ImageSavedorDeleted(false));
-            }
+//            if (saved[position]) {
+//                ((TextView)findViewById(R.id.textView7)).setText(R.string.image_saved);
+////                ((ImageView) page.findViewById(R.id.createdImage2)).setImageDrawable(new ImageSavedorDeleted(true));
+//            }
+//            if (deleted[position]) {
+//                ((TextView)findViewById(R.id.textView7)).setText(R.string.image_not_saved);
+////                ((ImageView) page.findViewById(R.id.createdImage2)).setImageDrawable(new ImageSavedorDeleted(false));
+//            }
 
             //Add the page to the front of the queue
             ((ViewPager) container).addView(page, 0);
@@ -332,6 +351,7 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
 
             // create an empty file for it in the correct location
             setCurrentImagePath(getString(R.string.album_storage_name));
+            createdImage = (Painting) (drawables.get(currentItem));
 
 
             // check if we can write to external storage
@@ -440,13 +460,15 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
         File file = new File(currentImagePath);
 
         if (file.exists()) {
-            if(file.delete()){
+            if (file.delete()) {
                 Toast.makeText(getApplicationContext(), "Deleted successfully", Toast.LENGTH_SHORT).show();
             }
         }
 
         if (imageCreated) {
 
+            findViewById(R.id.discardButton).setVisibility(View.INVISIBLE);
+            findViewById(R.id.keepButton).setVisibility(View.VISIBLE);
             deleted[vp.getCurrentItem()] = true;
             saved[vp.getCurrentItem()] = false;
             vp.getAdapter().notifyDataSetChanged();
