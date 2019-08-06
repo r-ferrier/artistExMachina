@@ -12,15 +12,12 @@ public class CircleShape extends LineShape {
 
     public CircleShape(int x1Start, int y1Start, int x2Start, int y2Start, int size, int[] aRGBColor) {
         super(x1Start, y1Start, x2Start, y2Start, size, aRGBColor);
+        findCentre();
     }
 
     @Override
     public void draw(Canvas canvas) {
-
-        findCentre();
         canvas.drawCircle(centreX,centreY,(float)(size/3),paint1);
-
-        System.out.println("centrex: "+centreX+" centreY: "+centreY);
 
     }
 

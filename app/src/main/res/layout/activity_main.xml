@@ -8,7 +8,7 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/titleText"
         android:layout_width="259dp"
         android:layout_height="138dp"
         android:layout_marginStart="16dp"
@@ -20,23 +20,25 @@
         android:textSize="48sp"
         android:textStyle="bold"
         android:typeface="normal"
-        app:layout_constraintBottom_toTopOf="@id/animation portion"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@id/animationPortion"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.48000002" />
 
-    <ImageView
-        android:id="@+id/animation portion"
-        android:layout_width="410dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+    <FrameLayout
+        android:id="@+id/animationPortion"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/buttonPanel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/titleText" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
+        android:id="@+id/buttonPanel"
         android:layout_width="285dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -47,7 +49,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/animation portion">
+        app:layout_constraintTop_toBottomOf="@id/animationPortion">
 
         <ImageButton
             android:id="@+id/galleryButton"

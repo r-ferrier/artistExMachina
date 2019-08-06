@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 public class BumpyShape extends LineShape {
 
+    private ArrayList<RectF> rectFS;
+
     public BumpyShape(int x1Start, int y1Start, int x2Start, int y2Start, int size, int[] aRGBColor) {
         super(x1Start, y1Start, x2Start, y2Start, size, aRGBColor);
     }
@@ -16,13 +18,8 @@ public class BumpyShape extends LineShape {
     @Override
     public void draw(Canvas canvas) {
 
-        ArrayList<RectF> rectFS = createRectFs(x1End,y1End);
+        rectFS = createRectFs(x1End,y1End);
 
-
-
-
-
-        Path path = new Path();
         paint1.setStyle(Paint.Style.FILL);
 //        paint1.setStrokeWidth(5);
 

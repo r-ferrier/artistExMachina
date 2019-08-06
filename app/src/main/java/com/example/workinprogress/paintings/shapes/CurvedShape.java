@@ -12,6 +12,10 @@ public class CurvedShape extends Shape {
     protected int size;
     protected int sweepingAngle;
     private boolean finishedCreatingEnds;
+    private Path path;
+    private RectF outerLine;
+    private RectF innerLine;
+    public Canvas canvas;
 
     protected boolean clockwiseOrientation;
 
@@ -39,29 +43,32 @@ public class CurvedShape extends Shape {
 
         // find out which orientation the coordinates are in
         setStartingDegree();
+
+        outerLine = createRectangle(size, this.x1Start, this.y1Start);
+        innerLine = createRectangle(size - width, this.x2Start, this.y2Start);
+
+        setEnds(outerLine);
     }
 
     @Override
     public void draw(Canvas canvas) {
 
-        Path path = new Path();
+        this.canvas = canvas;
+        path = new Path();
         paint1.setStyle(Paint.Style.FILL);
 //        paint1.setStrokeWidth(5);
 
 
-        RectF outerLine = createRectangle(size, x1Start, y1Start);
-        RectF innerLine = createRectangle(size - width, x2Start, y2Start);
-
-        setEnds(outerLine);
-
-
         path.moveTo(x1Start, y1Start);
+
         path.addArc(outerLine, startingDegree, sweepingAngle);
+
         if (clockwiseOrientation) {
             path.lineTo(x2End, y2End);
         } else {
             path.lineTo(x1End, y1End);
         }
+
         path.addArc(innerLine, startingDegree + sweepingAngle, sweepingAngle * -1);
         path.lineTo(x1Start, y1Start);
 

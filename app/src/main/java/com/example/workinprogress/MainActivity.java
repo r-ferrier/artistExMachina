@@ -1,23 +1,38 @@
 package com.example.workinprogress;
 
 import android.Manifest;
+import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.workinprogress.dataSetsAndComponents.UnscaledSingleEntryDataSet;
+import com.example.workinprogress.paintings.shapes.BumpyShape;
+import com.example.workinprogress.paintings.shapes.CurvedShape;
+import com.example.workinprogress.paintings.shapes.LineShape;
+import com.example.workinprogress.paintings.shapes.Shape;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -33,18 +48,19 @@ import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.result.DataReadResult;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static com.google.android.gms.fitness.data.DataType.*;
+import static com.google.android.gms.fitness.data.DataType.AGGREGATE_DISTANCE_DELTA;
+import static com.google.android.gms.fitness.data.DataType.AGGREGATE_STEP_COUNT_DELTA;
+import static com.google.android.gms.fitness.data.DataType.TYPE_DISTANCE_DELTA;
+import static com.google.android.gms.fitness.data.DataType.TYPE_STEP_COUNT_DELTA;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener{
-
+        GoogleApiClient.OnConnectionFailedListener {
 
     private static final int REQUEST_OAUTH = 1;
     private static final String AUTH_PENDING = "auth_state_pending";
@@ -54,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private GoogleApiClient mGoogleApiClient;
     private int steps;
     private float distance;
-
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
     @Override
@@ -66,9 +81,120 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         connectToAPIs(savedInstanceState);
         new ViewWeekStepCountTask().execute();
 
-        
+        runAnimations();
+    }
+
+    private void runAnimations() {
+
+        TextView titleText = findViewById(R.id.titleText);
+
+        ImageButton galleryButton = findViewById(R.id.galleryButton);
+        ImageButton aboutButton = findViewById(R.id.aboutButton);
+        ImageButton portraitButton = findViewById(R.id.sitForPortraitButton);
+
+        ObjectAnimator positionTextOffScreen = ObjectAnimator.ofFloat(titleText, "translationY", -600f);
+        ObjectAnimator moveTextDown = ObjectAnimator.ofFloat(titleText, "translationY", 0f);
+
+        positionTextOffScreen.setDuration(0);
+        positionTextOffScreen.start();
+        titleText.setVisibility(View.VISIBLE);
+
+        drawShapes();
+
+        moveTextDown.setDuration(3000);
+        moveTextDown.start();
+    }
+
+    private void drawShapes() {
+
+        FrameLayout animatedShapesDrawing = findViewById(R.id.animationPortion);
+        ViewTreeObserver observer= animatedShapesDrawing.getViewTreeObserver();
+
+        observer.addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+
+                        animatedShapesDrawing.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                        float height = animatedShapesDrawing.getHeight();
+
+                        ArrayList<Shape> shapes = new ArrayList<>();
+
+                        shapes.add(new CurvedShape(0, 0, 0, (int) (height / 4), true, new int[]{255, 230, 50, 20}, (int) (height / 2)));
+                        shapes.add(new CurvedShape(shapes.get(0).getX1End(), shapes.get(0).getY1End(), shapes.get(0).getX2End(), shapes.get(0).getY2End(), false, new int[]{255, 230, 150, 20}, (int) (height / 2)));
+                        shapes.add(new BumpyShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), (int) (height), new int[]{255, 230, 200, 20}));
+                        shapes.add(new CurvedShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), false, new int[]{255, 240, 220, 20}, (int) (height / 1.5)));
+                        shapes.add(new CurvedShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), false, new int[]{255, 200, 220, 20}, (int) (height / 3)));
+                        shapes.add(new CurvedShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), false, new int[]{255, 180, 220, 40}, (int) (height / 2.5)));
+                        shapes.add(new CurvedShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), false, new int[]{255, 180, 220, 70}, (int) (height / 3.5)));
+                        shapes.add(new LineShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), (int) (height), new int[]{155, 130, 200, 130}));
+
+                        LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+                        ArrayList<ImageView> imageViews = new ArrayList<>();
 
 
+                        for(Shape shape: shapes){
+
+                            imageViews.add((ImageView) inflater.inflate(R.layout.single_image, null));
+
+                        }
+
+
+
+
+                        Thread thread = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                for (int i = 0; i < shapes.size(); i++) {
+
+                                    try {
+                                        Thread.sleep(500);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    final ImageView imageView = imageViews.get(i);
+                                    final Shape shape = shapes.get(i);
+
+                                    new Handler(Looper.getMainLooper()).post(
+                                            new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    animatedShapesDrawing.addView(imageView);
+
+                                                    imageView.setImageDrawable(shape);
+                                                }
+                                            }
+                                    );
+
+
+//            image.setLayoutParams();
+
+
+//            ImageView imageView = new ImageView(this);
+//            imageView.setImageDrawable(shape);
+//
+//           animatedShapesDrawing.addView(imageView);
+
+
+                                }
+                            }
+                        });
+
+                        thread.start();
+
+
+
+                    }
+                });
+
+
+//        ImageView animatedShapesDrawing = findViewById(R.id.animationPortion);
+
+//        animatedShapesDrawing.setImageDrawable( new MainClassAnimation());
 
     }
 
@@ -96,8 +222,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             date.add(Calendar.DAY_OF_YEAR, -1);
             long startTime = date.getTimeInMillis();
 
-            Log.e("time", "\tStart: " + DateFormat.getDateInstance().format(startTime)+" "+ DateFormat.getTimeInstance().format(startTime));
-            Log.e("time", "\tEnd: " + DateFormat.getDateInstance().format(endTime)+" "+ DateFormat.getTimeInstance().format(endTime));
+            Log.e("time", "\tStart: " + DateFormat.getDateInstance().format(startTime) + " " + DateFormat.getTimeInstance().format(startTime));
+            Log.e("time", "\tEnd: " + DateFormat.getDateInstance().format(endTime) + " " + DateFormat.getTimeInstance().format(endTime));
 
             DataReadRequest stepsAndDistance = new DataReadRequest.Builder()
                     .aggregate(TYPE_STEP_COUNT_DELTA, AGGREGATE_STEP_COUNT_DELTA)
@@ -106,9 +232,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
                     .build();
 
-
             DataReadResult result = Fitness.HistoryApi.readData(mGoogleApiClient, stepsAndDistance).await(1, TimeUnit.MINUTES);
-
 
             if (result.getBuckets().size() > 0) {
 
@@ -118,13 +242,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 int i = 1;
 
                 for (DataSet dataSet : dataSets) {
-                    Log.i("dataset number",i+"");
+                    Log.i("dataset number", i + "");
                     showAndStoreDataSet(dataSet);
                     i++;
                 }
-
             }
-
         }
 
 
@@ -140,9 +262,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                 for (Field field : dp.getDataType().getFields()) {
 
-                    if(dp.getDataType().equals(TYPE_STEP_COUNT_DELTA)){
+                    if (dp.getDataType().equals(TYPE_STEP_COUNT_DELTA)) {
                         steps = dp.getValue(field).asInt();
-                    }else if(dp.getDataType().equals(TYPE_DISTANCE_DELTA)){
+                    } else if (dp.getDataType().equals(TYPE_DISTANCE_DELTA)) {
                         distance = dp.getValue(field).asFloat();
                     }
 
@@ -227,15 +349,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     }
 
-    public void beginShortPortraitActivity(View view){
+    public void beginShortPortraitActivity(View view) {
 
 //        ArrayList<Integer> stepsCount = new ArrayList<>();
 //        stepsCount.add(steps);
 
 //        System.out.println("steps: "+steps);
 
-        UnscaledSingleEntryDataSet<Integer> stepsData = new UnscaledSingleEntryDataSet<>(steps,getString(R.string.data_type_steps));
-        UnscaledSingleEntryDataSet<Float> distanceData = new UnscaledSingleEntryDataSet<>(distance,getString(R.string.data_type_distance));
+        UnscaledSingleEntryDataSet<Integer> stepsData = new UnscaledSingleEntryDataSet<>(steps, getString(R.string.data_type_steps));
+        UnscaledSingleEntryDataSet<Float> distanceData = new UnscaledSingleEntryDataSet<>(distance, getString(R.string.data_type_distance));
 
 
 //        ArrayList<Float> distanceCovered = new ArrayList<>();
@@ -248,8 +370,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         Intent intent = new Intent(this, ShortPortrait.class);
         Bundle bundle = new Bundle();
-        bundle.putSerializable(getString(R.string.data_type_steps),stepsData);
-        bundle.putSerializable(getString(R.string.data_type_distance),distanceData);
+        bundle.putSerializable(getString(R.string.data_type_steps), stepsData);
+        bundle.putSerializable(getString(R.string.data_type_distance), distanceData);
 //        bundle.putSerializable("steps", stepsSensorResult);
 //        bundle.putSerializable("distance",distanceSensorResult);
         intent.putExtras(bundle);
@@ -257,14 +379,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     }
 
-    public void beginGalleryActivity(View view){
+    public void beginGalleryActivity(View view) {
 
         Intent intent = new Intent(this, Gallery.class);
         startActivity(intent);
 
     }
 
-    public void beginAboutActivity(View view){
+    public void beginAboutActivity(View view) {
 
         Intent intent = new Intent(this, About.class);
         startActivity(intent);
@@ -274,14 +396,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode)
-        {
+        switch (requestCode) {
             case REQUEST_OAUTH: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                } else
-                {
+                } else {
                     Toast.makeText(MainActivity.this, "You must accept permissions.", Toast.LENGTH_LONG).show();
                 }
             }
@@ -289,16 +408,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     }
 
-    private void requestPermissions(){
+    private void requestPermissions() {
         if (ContextCompat.checkSelfPermission
                 (this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission
-                (this, Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED
+                (this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission
-                (this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED
+                (this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission
-                (this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-        {
+                (this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions
                     (this, new String[]{
                             Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -310,7 +428,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         initCallbacks();
     }
 
-    private void connectToAPIs(Bundle savedInstanceState){
+    private void connectToAPIs(Bundle savedInstanceState) {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Fitness.HISTORY_API).addApi(Fitness.RECORDING_API)
                 .addScope(new Scope(Scopes.FITNESS_ACTIVITY_READ))
@@ -324,9 +442,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
 
 
-
     }
-
 
 
 }
