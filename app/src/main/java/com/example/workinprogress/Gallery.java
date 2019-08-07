@@ -71,17 +71,9 @@ public class Gallery extends AppCompatActivity {
 
     }
 
-    public void returnHome(View view){
-
-        Intent intent = new Intent(this, MainActivity.class);
-
-        startActivity(intent);
-    }
-
     @Override
     public void onBackPressed()
     {
-        super.onBackPressed();
         startActivity(new Intent(this,MainActivity.class));
         finish();
 

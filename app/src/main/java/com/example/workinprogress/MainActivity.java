@@ -52,6 +52,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.Inflater;
 
 import static com.google.android.gms.fitness.data.DataType.AGGREGATE_DISTANCE_DELTA;
 import static com.google.android.gms.fitness.data.DataType.AGGREGATE_STEP_COUNT_DELTA;
@@ -89,14 +90,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         TextView titleText = findViewById(R.id.titleText);
         View buttonsLayout = findViewById(R.id.buttonPanel);
 
-        ObjectAnimator moveButtons = ObjectAnimator.ofFloat(buttonsLayout, "translationY", 600f, 0f, 40f);
-        ObjectAnimator moveText = ObjectAnimator.ofFloat(titleText, "translationY", -600f, 0f, -40f);
+        ObjectAnimator moveButtons = ObjectAnimator.ofFloat(buttonsLayout, "translationY", 1000f, 0f, 30f);
+        ObjectAnimator moveText = ObjectAnimator.ofFloat(titleText, "translationY", -1000f, 0f, -30f);
 
         buttonsLayout.setVisibility(View.VISIBLE);
         titleText.setVisibility(View.VISIBLE);
 
-        moveText.setDuration(5000);
-        moveButtons.setDuration(5000);
+        moveText.setDuration(6000);
+        moveButtons.setDuration(6000);
         moveText.start();
         moveButtons.start();
 
@@ -107,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private void drawShapes() {
 
         FrameLayout animatedShapesDrawing = findViewById(R.id.animationPortion);
+        LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         ViewTreeObserver observer = animatedShapesDrawing.getViewTreeObserver();
 
         observer.addOnGlobalLayoutListener(
@@ -116,97 +118,53 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                         animatedShapesDrawing.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
-                        float height = animatedShapesDrawing.getHeight();
+                        MainClassAnimation mainClassAnimation = new MainClassAnimation(animatedShapesDrawing.getWidth(),animatedShapesDrawing.getHeight());
 
-                        ArrayList<Shape> shapes = new ArrayList<>();
-                        ArrayList<Shape> thinShapes = new ArrayList<>();
+                        ArrayList<Shape> shapes = mainClassAnimation.getShapes();
+                        ArrayList<Shape> thinShapes = mainClassAnimation.getThinShapes();
+                        ArrayList<Shape> thinnestShapes = mainClassAnimation.getThinnestShapes();
 
-                        shapes.add(new CurvedShape(0, 0, 0, (int) (height / 4), true, new int[]{255, 230, 50, 20}, (int) (height / 2)));
-                        shapes.add(new CurvedShape(shapes.get(0).getX1End(), shapes.get(0).getY1End(), shapes.get(0).getX2End(), shapes.get(0).getY2End(), false, new int[]{255, 230, 150, 20}, (int) (height / 2)));
-                        shapes.add(new BumpyShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), (int) (height), new int[]{255, 230, 200, 20}));
-                        shapes.add(new CurvedShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), false, new int[]{255, 240, 220, 20}, (int) (height / 1.5)));
-                        shapes.add(new CurvedShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), false, new int[]{255, 200, 220, 20}, (int) (height / 3)));
-                        shapes.add(new CurvedShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), false, new int[]{255, 180, 220, 40}, (int) (height / 2.5)));
-                        shapes.add(new CurvedShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), false, new int[]{255, 180, 220, 70}, (int) (height / 3.5)));
-                        shapes.add(new LineShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), (int) (height), new int[]{155, 130, 200, 130}));
-                        shapes.add(new LineShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), (int) (height), new int[]{155, 130, 200, 130}));
-                        shapes.add(new LineShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), (int) (height), new int[]{155, 130, 200, 130}));
-                        shapes.add(new LineShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), (int) (height), new int[]{155, 130, 200, 130}));
-                        shapes.add(new LineShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), (int) (height), new int[]{155, 130, 200, 130}));
-                        shapes.add(new LineShape(shapes.get(shapes.size() - 1).getX1End(), shapes.get(shapes.size() - 1).getY1End(), shapes.get(shapes.size() - 1).getX2End(), shapes.get(shapes.size() - 1).getY2End(), (int) (height), new int[]{155, 130, 200, 130}));
-
-                        thinShapes.add(new LineShape(0, (int) ((height / 16) * 6), 0, (int) ((height / 16) * 7), (int) (height), new int[]{155, 130, 200, 130}));
-                        thinShapes.add(new CurvedShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), false, new int[]{100, 200, 220, 20}, (int) (height / 5)));
-                        thinShapes.add(new CurvedShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), false, new int[]{100, 200, 100, 50}, (int) (height / 6)));
-                        thinShapes.add(new CurvedShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), false, new int[]{100, 200, 220, 20}, (int) (height / 2)));
-                        thinShapes.add(new CurvedShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), false, new int[]{100, 200, 20, 100}, (int) (height / 6)));
-                        thinShapes.add(new CurvedShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), true, new int[]{100, 10, 220, 20}, (int) (height / 5)));
-                        thinShapes.add(new CurvedShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), true, new int[]{100, 150, 50, 90}, (int) (height / 8)));
-                        thinShapes.add(new CurvedShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), true, new int[]{100, 80, 100, 40}, (int) (height / 5)));
-                        thinShapes.add(new CurvedShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), true, new int[]{100, 200, 220, 20}, (int) (height / 3.5)));
-                        thinShapes.add(new BumpyShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), (int) (height / 3), new int[]{100, 200, 220, 20}));
-                        thinShapes.add(new CircleShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), (int) (height / 5), new int[]{100, 200, 20, 220}));
-                        thinShapes.add(new LineShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), (int) (height), new int[]{100,220, 20, 150}));
-                        thinShapes.add(new CurvedShape(thinShapes.get(thinShapes.size() - 1).getX1End(), thinShapes.get(thinShapes.size() - 1).getY1End(), thinShapes.get(thinShapes.size() - 1).getX2End(), thinShapes.get(thinShapes.size() - 1).getY2End(), false, new int[]{100, 20, 70, 180}, (int) (height / 2)));
-
-                        LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-                        ArrayList<ImageView> imageViews = new ArrayList<>();
+                        ArrayList<ImageView> shapeImageViews = inflateViewsForAnimation(inflater,shapes);
+                        ArrayList<ImageView> thinShapeImageViews = inflateViewsForAnimation(inflater,thinShapes);
+                        ArrayList<ImageView> thinnestShapeImageViews = inflateViewsForAnimation(inflater,thinnestShapes);
 
 
-                        for (Shape shape : shapes) {
-                            imageViews.add((ImageView) inflater.inflate(R.layout.single_image, null));
-                            imageViews.add((ImageView) inflater.inflate(R.layout.single_image, null));
-                        }
-
-
-                        Thread thread = new Thread(new Runnable() {
+                        Thread shapesThread = new Thread(new Runnable() {
                             @Override
                             public void run() {
-
-                                for (int i = 0; i < shapes.size(); i++) {
-
-                                    try {
-                                        Thread.sleep(200);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-
-                                    final ImageView imageView = imageViews.get(i);
-                                    final Shape shape = shapes.get(i);
-
-                                    final ImageView imageView2 = imageViews.get(i + shapes.size());
-                                    final Shape shape2 = thinShapes.get(i);
-
-                                    new Handler(Looper.getMainLooper()).post(
-                                            new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    animatedShapesDrawing.addView(imageView);
-                                                    imageView.setImageDrawable(shape);
-                                                    animatedShapesDrawing.addView(imageView2);
-                                                    imageView2.setImageDrawable(shape2);
-                                                }
-                                            }
-                                    );
-
-
-//            image.setLayoutParams();
-
-
-//            ImageView imageView = new ImageView(this);
-//            imageView.setImageDrawable(shape);
-//
-//           animatedShapesDrawing.addView(imageView);
-
-
+                                try{
+                                    Thread.sleep(3000);
+                                }catch(InterruptedException e){
+                                    e.printStackTrace();
                                 }
+                                runnableTask(shapes,shapeImageViews,animatedShapesDrawing);
                             }
                         });
 
-                        thread.start();
+                        Thread thinShapesThread = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try{
+                                    Thread.sleep(2000);
+                                }catch(InterruptedException e){
+                                    e.printStackTrace();
+                                }
+                                runnableTask(thinShapes,thinShapeImageViews,animatedShapesDrawing);
+
+                            }
+                        });
+
+                        Thread thinnestShapesThread = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                runnableTask(thinnestShapes,thinnestShapeImageViews,animatedShapesDrawing);
+                            }
+                        });
 
 
+                        shapesThread.start();
+                        thinShapesThread.start();
+                        thinnestShapesThread.start();
                     }
                 });
 
@@ -215,6 +173,40 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 //        animatedShapesDrawing.setImageDrawable( new MainClassAnimation());
 
+    }
+
+
+    private void runnableTask(ArrayList<Shape> shapes, ArrayList<ImageView> shapeImageViews, FrameLayout animatedShapesDrawing){
+        for (int i = 0; i < shapes.size(); i++) {
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            final ImageView imageView = shapeImageViews.get(i);
+            final Shape shape = shapes.get(i);
+
+            new Handler(Looper.getMainLooper()).post(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            animatedShapesDrawing.addView(imageView);
+                            imageView.setImageDrawable(shape);
+                        }
+                    }
+            );
+        }
+    }
+
+    private ArrayList<ImageView> inflateViewsForAnimation(LayoutInflater inflater, ArrayList<Shape> shapes){
+        ArrayList<ImageView> shapeImageViews = new ArrayList<>();
+
+        for (Shape shape : shapes) {
+            shapeImageViews.add((ImageView) inflater.inflate(R.layout.single_image, null));
+        }
+        return shapeImageViews;
     }
 
     private class ViewWeekStepCountTask extends AsyncTask<Void, Void, Void> {

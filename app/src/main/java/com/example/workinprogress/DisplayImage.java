@@ -83,8 +83,8 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
 
             if (!createNewImage) {
                 currentImagePath = getIntent().getStringExtra("imageLocation");
-                findViewById(R.id.galleryButton).setVisibility(View.INVISIBLE);
                 findViewById(R.id.keepButton).setVisibility(View.INVISIBLE);
+                findViewById(R.id.imageSavedText).setVisibility(View.INVISIBLE);
                 displayExistingImage();
             } else {
                 findViewById(R.id.discardButton).setVisibility(View.INVISIBLE);
@@ -111,7 +111,7 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
         int currentItem = vp.getCurrentItem();
         createdImage = (Painting) (drawables.get(currentItem));
 
-        TextView text = findViewById(R.id.textView7);
+        TextView text = findViewById(R.id.imageSavedText);
         Button keepButton = findViewById(R.id.keepButton);
         Button deleteButton = findViewById(R.id.discardButton);
 
