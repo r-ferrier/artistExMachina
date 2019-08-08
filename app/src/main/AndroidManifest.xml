@@ -28,8 +28,10 @@
 
         <activity
             android:name=".DisplayImage"
-            android:parentActivityName=".MainActivity"></activity>
-        <activity android:name=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,16 +39,21 @@
             </intent-filter>
         </activity>
         <activity android:name=".ShortPortrait"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name=".About"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name=".Gallery"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
         </activity>
         <activity android:name=".DataDisplay"
-            android:parentActivityName=".DisplayImage">
+            android:parentActivityName=".DisplayImage"
+            android:screenOrientation="portrait"
+            >
         </activity>
     </application>
 

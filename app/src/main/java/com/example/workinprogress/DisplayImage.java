@@ -1,6 +1,5 @@
 package com.example.workinprogress;
 
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -85,9 +84,13 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
                 currentImagePath = getIntent().getStringExtra("imageLocation");
                 findViewById(R.id.keepButton).setVisibility(View.INVISIBLE);
                 findViewById(R.id.imageSavedText).setVisibility(View.INVISIBLE);
+                findViewById(R.id.shareButton).setVisibility(View.VISIBLE);
+                findViewById(R.id.invisiButton3).setVisibility(View.INVISIBLE);
                 displayExistingImage();
             } else {
                 findViewById(R.id.discardButton).setVisibility(View.INVISIBLE);
+                findViewById(R.id.shareButton).setVisibility(View.GONE);
+                findViewById(R.id.invisiButton3).setVisibility(View.GONE);
                 inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 //Reference ViewPager defined in activity
                 vp = (ViewPager) findViewById(R.id.pager);
@@ -118,12 +121,16 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
         if (saved[position]) {
             keepButton.setVisibility(View.INVISIBLE);
             deleteButton.setVisibility(View.VISIBLE);
+            findViewById(R.id.shareButton).setVisibility(View.VISIBLE);
+            findViewById(R.id.invisiButton3).setVisibility(View.INVISIBLE);
             text.setText(R.string.image_saved);
             text.setTextColor(getResources().getColor(R.color.iguanaGreen));
 
         } else {
             keepButton.setVisibility(View.VISIBLE);
             deleteButton.setVisibility(View.INVISIBLE);
+            findViewById(R.id.shareButton).setVisibility(View.GONE);
+            findViewById(R.id.invisiButton3).setVisibility(View.GONE);
             text.setText(R.string.image_not_saved);
             text.setTextColor(getResources().getColor(R.color.darkGrey));
         }
@@ -280,6 +287,8 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
     public void save(View view) {
 
         if (imageCreated) {
+
+            findViewById(R.id.shareButton).setVisibility(View.VISIBLE);
 
             //find the currently viewed drawable
             int currentItem = vp.getCurrentItem();
@@ -442,42 +451,17 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
 
     public void share(View view) {
 
-        if(createNewImage) {
-
-            setCurrentImagePath(getString(R.string.album_storage_name));
-        }
 
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 
         File file = new File(currentImagePath);
 
-        boolean fileAlreadySaved = true;
-
-        if(!file.exists()){
-
-            fileAlreadySaved = false;
-
-            try {
-                FileOutputStream out = new FileOutputStream(file);
-
-                Bitmap bitmap = createdImage.createBitmap();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-                out.flush();
-                out.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
         Uri uri = FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".provider", file);
 
         sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         sharingIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         sharingIntent.setDataAndType(uri,"image/jpeg");
-
 
         startActivity(Intent.createChooser(sharingIntent, "Share via"));
 
