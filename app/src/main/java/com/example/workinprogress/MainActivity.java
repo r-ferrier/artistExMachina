@@ -1,6 +1,8 @@
 package com.example.workinprogress;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.transition.Fade;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,10 +30,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.workinprogress.dataSetsAndComponents.UnscaledSingleEntryDataSet;
-import com.example.workinprogress.paintings.shapes.BumpyShape;
-import com.example.workinprogress.paintings.shapes.CircleShape;
-import com.example.workinprogress.paintings.shapes.CurvedShape;
-import com.example.workinprogress.paintings.shapes.LineShape;
 import com.example.workinprogress.paintings.shapes.Shape;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
@@ -87,18 +86,52 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void runAnimations() {
 
-        TextView titleText = findViewById(R.id.titleText);
+
         View buttonsLayout = findViewById(R.id.buttonPanel);
 
         ObjectAnimator moveButtons = ObjectAnimator.ofFloat(buttonsLayout, "translationY", 1000f, 0f, 30f);
-        ObjectAnimator moveText = ObjectAnimator.ofFloat(titleText, "translationY", -1000f, 0f, -30f);
 
-        buttonsLayout.setVisibility(View.VISIBLE);
+//        ObjectAnimator fadeText = AnimObjectAnimator.ofFloat(titleText,"")
+
+//        Fade fade = new Fade(Fade.IN);
+//
+//        fade.addTarget(titleText);
+//        fade.setDuration(6000);
+
+//        ObjectAnimator moveText = ObjectAnimator.ofFloat(titleText, "translationY", -1000f, 0f, -30f);
+
+
+        TextView titleText = findViewById(R.id.titleText);
+        TextView titleText2 = findViewById(R.id.titleText2);
+
+        // Initially hide the content view.
+        titleText.setVisibility(View.GONE);
+
+        // Retrieve and cache the system's default "short" animation time.
+        int longAnimationDuration = 5000;
+
+
+        titleText.setAlpha(0f);
         titleText.setVisibility(View.VISIBLE);
 
-        moveText.setDuration(6000);
+        titleText.animate().alpha(1f).setDuration(longAnimationDuration).setListener(null);
+
+        titleText2.animate().alpha(0f).setDuration(longAnimationDuration).setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        titleText2.setVisibility(View.GONE);
+                    }
+                });
+
+
+
+
+
+        buttonsLayout.setVisibility(View.VISIBLE);
+
+//        moveText.setDuration(6000);
         moveButtons.setDuration(6000);
-        moveText.start();
+//        moveText.start();
         moveButtons.start();
 
         drawShapes();

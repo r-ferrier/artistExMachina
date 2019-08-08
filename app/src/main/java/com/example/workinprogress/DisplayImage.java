@@ -1,10 +1,12 @@
 package com.example.workinprogress;
 
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,13 +14,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.core.content.FileProvider;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -58,7 +60,6 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
     private ArrayList<String> dataStrings;
     private boolean[] saved;
     private boolean[] deleted;
-    private LinearLayoutManager linearLayoutManager;
 
     private ArrayList<DataSet> dataSets;
 
@@ -66,7 +67,6 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
     private ViewPager vp;
 
     private ArrayList<Drawable> drawables;
-    private ArrayList<Bitmap> bitmaps;
 
 
     @Override
@@ -112,8 +112,8 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
         createdImage = (Painting) (drawables.get(currentItem));
 
         TextView text = findViewById(R.id.imageSavedText);
-        Button keepButton = findViewById(R.id.keepButton);
-        Button deleteButton = findViewById(R.id.discardButton);
+        ImageButton keepButton = findViewById(R.id.keepButton);
+        ImageButton deleteButton = findViewById(R.id.discardButton);
 
         if (saved[position]) {
             keepButton.setVisibility(View.INVISIBLE);
@@ -163,16 +163,6 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
             createdImage = (Painting) drawables.get(position);
 
             ((ImageView) page.findViewById(R.id.createdImage)).setImageDrawable(createdImage);
-//            ((ImageView)page.findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
-
-//            if (saved[position]) {
-//                ((TextView)findViewById(R.id.textView7)).setText(R.string.image_saved);
-////                ((ImageView) page.findViewById(R.id.createdImage2)).setImageDrawable(new ImageSavedorDeleted(true));
-//            }
-//            if (deleted[position]) {
-//                ((TextView)findViewById(R.id.textView7)).setText(R.string.image_not_saved);
-////                ((ImageView) page.findViewById(R.id.createdImage2)).setImageDrawable(new ImageSavedorDeleted(false));
-//            }
 
             //Add the page to the front of the queue
             ((ViewPager) container).addView(page, 0);
@@ -201,7 +191,6 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
 
 
     }
-
 
     private void animateWaitingScreen(TextView animationText) {
         try {
@@ -288,60 +277,6 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
 
     }
 
-//    private void createImage(){
-    //
-//        if(imageType.equals(getString(R.string.albers_image))){
-//            createNewAlbersImage();
-//        }else if(imageType.equals(getString(R.string.abstract_shapes))){
-//            createNewAbstractShapesImage();
-//        }else{
-//            createNewAutomaticDrawingImage();
-//        }
-//    }
-
-//    public void createNewAbstractShapesImage(){
-//        createdImage = new AbstractShapes(this,  dataSets);
-//        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
-//        //   ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
-//        imageCreated = true;
-//    }
-//
-//    public void createNewTextImage(){
-//        createdImage = new TextImage(this,  dataSets);
-//        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
-//     //   ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
-//        imageCreated = true;
-//    }
-//
-//    public void createNewAlbersImage(){
-//        createdImage = new AlbersImage(this, dataSets);
-//        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
-//  //      ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
-//        imageCreated = true;
-//    }
-//
-//    public void createNewAutomaticDrawingImage(){
-//        createdImage = new AutomaticDrawing(this,dataSets);
-//        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
-//        //      ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
-//        imageCreated = true;
-//    }
-//
-//    public void createNewLandscapeImage(){
-//        createdImage = new Landscape(this,dataSets);
-//        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
-//        //      ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
-//        imageCreated = true;
-//    }
-//
-//    public void createNewKineticImage(){
-//        createdImage = new KineticArt(this,dataSets);
-//        ((ImageView) findViewById(R.id.createdImage)).setImageDrawable(createdImage);
-//        //      ((ImageView) findViewById(R.id.createdImage)).setImageBitmap(createdImage.createBitmap());
-//        imageCreated = true;
-//    }
-
-
     public void save(View view) {
 
         if (imageCreated) {
@@ -377,6 +312,20 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
                     vp.getAdapter().notifyDataSetChanged();
 
 
+                    final ExifInterface exif = new ExifInterface(currentImagePath);
+
+                    String exifString = "";
+
+                    for(String dataString: dataStrings){
+                        exifString+= dataString;
+                        exifString+="\n";
+                    }
+
+
+                    exif.setAttribute(ExifInterface.TAG_IMAGE_DESCRIPTION, exifString);
+                    exif.saveAttributes();
+
+
                     galleryAddPic();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -405,18 +354,6 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
 
         String imageFileName = timeStamp + "_" + createdImage.getClass().getSimpleName();
 
-        // create a temporary file using the directory, created filename and a jpg suffix
-//        File image = null;
-//        try {
-//            image = File.createTempFile(
-//                    imageFileName,  /* prefix */
-//                    ".jpg",         /* suffix */
-//                    file      /* directory */
-//            );
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
         //store the path to use for this image as currentImagePath
         currentImagePath = file + "/" + imageFileName + ".jpg";
         System.out.println("file: " + currentImagePath);
@@ -432,7 +369,6 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
         return false;
     }
 
-
     // helper method to enable the android system to recognise a new file has been added to an external folder
     private void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
@@ -442,16 +378,25 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
         this.sendBroadcast(mediaScanIntent);
     }
 
-
     public void data(View view) {
 
+        String data = "";
+
+        if(!imageCreated) {
+            try {
+                ExifInterface exifInterface = new ExifInterface(currentImagePath);
+                data = exifInterface.getAttribute(ExifInterface.TAG_IMAGE_DESCRIPTION);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         Intent intent = new Intent(this, DataDisplay.class);
-
         intent.putStringArrayListExtra("dataStrings", dataStrings);
-
+        intent.putExtra("data",data);
+        intent.putExtra("newImageCreated",createNewImage);
         startActivity(intent);
-
         //share image using other applications? Investigate possibilities
     }
 
@@ -488,8 +433,58 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        startActivity(new Intent(this, MainActivity.class));
-        finish();
+        if(imageCreated) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        }
+
+    }
+
+    public void share(View view) {
+
+        if(createNewImage) {
+
+            setCurrentImagePath(getString(R.string.album_storage_name));
+        }
+
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+
+        File file = new File(currentImagePath);
+
+        boolean fileAlreadySaved = true;
+
+        if(!file.exists()){
+
+            fileAlreadySaved = false;
+
+            try {
+                FileOutputStream out = new FileOutputStream(file);
+
+                Bitmap bitmap = createdImage.createBitmap();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                out.flush();
+                out.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        Uri uri = FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".provider", file);
+
+        sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        sharingIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        sharingIntent.setDataAndType(uri,"image/jpeg");
+
+
+        startActivity(Intent.createChooser(sharingIntent, "Share via"));
+
+//        if(!fileAlreadySaved){
+//            file.delete();
+//        }
+
 
     }
 

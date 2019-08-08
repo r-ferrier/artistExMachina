@@ -50,9 +50,7 @@ public class AbstractShapes extends Painting {
         height = getBounds().height();
 
         setFirstStartingPosition();
-
         getDataForDrawingShapes();
-
 
         if (shapes.size() < 1) {
             if (numberOfShapes < 50) {
@@ -360,7 +358,6 @@ public class AbstractShapes extends Painting {
         for (int i = 0; i < numberOfShapes; i++) {
 
 //            for (int i = 0; i < 1; i++) {
-
 
             int j = i;
             int[] coloursForThisLoop;

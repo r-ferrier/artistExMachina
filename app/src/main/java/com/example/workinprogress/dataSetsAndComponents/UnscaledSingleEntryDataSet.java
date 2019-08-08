@@ -36,7 +36,7 @@ public class UnscaledSingleEntryDataSet<e extends Number> extends SingularPointD
 
     @Override
     public String toString() {
-        return getDataTypeName()+"\n"+scaledResults1.get(0).toString();
+        return getDataTypeName()+"\n"+scaledResults1.get(0).toString()+"\n";
     }
 
 }

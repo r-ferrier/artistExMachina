@@ -42,6 +42,31 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.48000002" />
 
+    <TextView
+        android:id="@+id/titleText2"
+        android:layout_width="259dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="150dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:gravity="top"
+        android:text="@string/title"
+        android:textColor="@android:color/black"
+        android:textColorHighlight="@android:color/white"
+        android:textColorHint="@android:color/white"
+        android:textColorLink="@android:color/white"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        android:typeface="normal"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@id/buttonPanel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.48000002" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/buttonPanel"
         android:layout_width="219dp"

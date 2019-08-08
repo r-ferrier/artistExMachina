@@ -33,4 +33,5 @@
     <string name="image_saved">image saved</string>
     <string name="save">+</string>
     <string name="delete">-</string>
+    <string name="data_title">Data used to create this artwork: </string>
 </resources>
