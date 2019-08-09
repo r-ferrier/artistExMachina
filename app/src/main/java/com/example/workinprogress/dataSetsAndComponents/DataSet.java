@@ -24,8 +24,6 @@ public abstract class DataSet implements Serializable {
      */
     public void addResult(DataSetPoint dataSetPoint){
 
-        System.out.println("dataset added "+dataTypeName + dataSetPoint.toString());
-
         if (dataSetPoint.getNumberOfDataPointsInSet()==numberOfDataPointsInEachSet&&dataSetPoint.getDataTypeName()==dataTypeName) {
             results.add(dataSetPoint);
             System.out.println(dataSetPoint);

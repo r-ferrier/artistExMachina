@@ -47,16 +47,20 @@ public class AbstractShapes extends Painting {
         width = getBounds().width();
         height = getBounds().height();
 
-        setFirstStartingPosition();
-        getDataForDrawingShapes();
-
         if (shapes.size() < 1) {
+
+            setFirstStartingPosition();
+            getDataForDrawingShapes();
+
             if (numberOfShapes < 50) {
                 setStartingPositions(0);
                 drawALoadOfShapes();
                 drawALoadOfShapes();
             } else {
                 setStartingPositions(0);
+                drawALoadOfShapes();
+                drawALoadOfShapes();
+                drawALoadOfShapes();
                 drawALoadOfShapes();
             }
         } else {
@@ -343,7 +347,7 @@ public class AbstractShapes extends Painting {
                 if (startX1 > width || startX1 < 0 || startY1 > height || startY1 < 0 || startX2 > width || startX2 < 0 || startY2 > height || startY2 < 0)
                     break;
             }
-            shapes.add(shapeInLoop);
+          //  shapes.add(shapeInLoop);
         }
     }
 }

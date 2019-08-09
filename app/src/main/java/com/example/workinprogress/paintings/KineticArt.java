@@ -33,22 +33,20 @@ public class KineticArt extends AbstractShapes {
     ArrayList<Integer> highestPositionValues;
     ArrayList<Integer> lowestPositionValues;
     private int increment;
+    private int manyMovements = 200;
 
 
     private int averageLightValue;
     private int averageSize;
     private int canvasColor;
 
-    private int[] positionsForPlotting = new int[10];
+    private int[] positionsForPlotting = new int[20];
 
 
     public KineticArt(Context context, ArrayList<DataSet> dataSets) {
         super(context, dataSets);
         random = new Random();
-
-
     }
-
 
     private void setData() {
 
@@ -67,18 +65,17 @@ public class KineticArt extends AbstractShapes {
         averageLightValue = getAverage(lightValues);
         averageSize = getAverage(sizes);
 
-
         System.out.println("average light: " + averageLightValue);
         System.out.println("average size: " + averageSize);
 
         if (sizes.size() <= 50) {
-            numberOfLoops = 12;
+            numberOfLoops = 8;
         } else if (sizes.size() <= 100) {
+            numberOfLoops = 12;
+        } else if (sizes.size() <= manyMovements) {
             numberOfLoops = 24;
-        } else if (sizes.size() <= 200) {
-            numberOfLoops = 32;
         } else {
-            numberOfLoops = 64;
+            numberOfLoops = 32;
         }
 
         setHighestAndLowestValueArrays();
@@ -90,18 +87,50 @@ public class KineticArt extends AbstractShapes {
         highestPositionValues = (ArrayList<Integer>) sizes.clone();
 
         Collections.sort(highestPositionValues, Collections.reverseOrder());
-        setUniqueValueArrays(highestPositionValues);
+        highestPositionValues = setUniqueValueArrays(highestPositionValues);
 
-        positionsForPlotting[0] = (int)(width/2)-(highestPositionValues.get(0)*2);
-        positionsForPlotting[1] = (int)(height/2)-(highestPositionValues.get(1)*2);
-        positionsForPlotting[2] = (int)(width/2)+(highestPositionValues.get(2)*2);
-        positionsForPlotting[3] = (int)(height/2)-(highestPositionValues.get(3)*2);
-        positionsForPlotting[4] = (int)(width/2)+(highestPositionValues.get(4)*2);
-        positionsForPlotting[5] = (int)(height/2)+(highestPositionValues.get(5)*2);
-        positionsForPlotting[6] = (int)(width/2)-(highestPositionValues.get(6)*2);
-        positionsForPlotting[7] = (int)(height/2)+(highestPositionValues.get(7)*2);
-        positionsForPlotting[8] = (int)(width/2)-(highestPositionValues.get(0)*2);
-        positionsForPlotting[9] = (int)(height/2)-(highestPositionValues.get(1)*2);
+        int possibleWidthValues = (int)(width/2);
+        int possibleHeightValues = (int)(height/2);
+
+        positionsForPlotting[0] = possibleWidthValues-(highestPositionValues.get(0)*2);
+        positionsForPlotting[1] = possibleHeightValues-(highestPositionValues.get(highestPositionValues.size()-1)*2);
+        positionsForPlotting[2] = possibleWidthValues+(highestPositionValues.get(1)*2);
+        positionsForPlotting[3] = possibleHeightValues-(highestPositionValues.get(highestPositionValues.size()-2)*2);
+        positionsForPlotting[4] = possibleWidthValues+(highestPositionValues.get(2)*2);
+        positionsForPlotting[5] = possibleHeightValues+(highestPositionValues.get(highestPositionValues.size()-3)*2);
+        positionsForPlotting[6] = possibleWidthValues-(highestPositionValues.get(3)*2);
+        positionsForPlotting[7] = possibleHeightValues+(highestPositionValues.get(highestPositionValues.size()-4)*2);
+        positionsForPlotting[8] = positionsForPlotting[0];
+        positionsForPlotting[9] = positionsForPlotting[1];
+
+        positionsForPlotting[10] = possibleHeightValues-(highestPositionValues.get(highestPositionValues.size()-1)*2);
+        positionsForPlotting[11] = possibleWidthValues-(highestPositionValues.get(0)*2);
+        positionsForPlotting[12] = possibleHeightValues-(highestPositionValues.get(highestPositionValues.size()-2)*2);
+        positionsForPlotting[13] = possibleWidthValues+(highestPositionValues.get(1)*2);
+        positionsForPlotting[14] = possibleHeightValues+(highestPositionValues.get(highestPositionValues.size()-3)*2);
+        positionsForPlotting[15] = possibleWidthValues+(highestPositionValues.get(2)*2);
+        positionsForPlotting[16] = possibleHeightValues+(highestPositionValues.get(highestPositionValues.size()-4)*2);
+        positionsForPlotting[17] = possibleWidthValues-(highestPositionValues.get(3)*2);
+        positionsForPlotting[18] = positionsForPlotting[10];
+        positionsForPlotting[19] = positionsForPlotting[11];
+
+
+        for(int i = 0; i<positionsForPlotting.length;i++){
+            if(positionsForPlotting[i]%2==0){
+                if(positionsForPlotting[i]>possibleWidthValues) {
+                    positionsForPlotting[i] -= random.nextInt(500);
+                }else{
+                    positionsForPlotting[i] += random.nextInt(500);
+                }
+            }
+            else{
+                if(positionsForPlotting[i]>possibleHeightValues) {
+                    positionsForPlotting[i] += random.nextInt(500);
+                }else{
+                    positionsForPlotting[i] -= random.nextInt(500);
+                }
+            }
+        }
 
         System.out.println("xy values: "+ Arrays.toString(positionsForPlotting));
     }
@@ -113,7 +142,6 @@ public class KineticArt extends AbstractShapes {
         for (int i = 0; i < values.size(); i++) {
             total += values.get(i);
         }
-
         return total / values.size();
     }
 
@@ -148,8 +176,10 @@ public class KineticArt extends AbstractShapes {
 
         int numberOfOptions;
 
-        if (averageLightValue < 2500) {
-            if (averageLightValue < 10) {
+        System.out.println("averagelightvalue "+averageLightValue);
+
+        if (averageLightValue < 1500) {
+            if (averageLightValue < 200) {
                 numberOfOptions = 0;
                 increment = 5;
             } else {
@@ -161,8 +191,17 @@ public class KineticArt extends AbstractShapes {
                 numberOfOptions = 6;
                 increment = 10;
             } else {
-                numberOfOptions = 7;
+                numberOfOptions = 9;
                 increment = 20;
+            }
+        }
+
+        for(Paint paint:paintsOptions){
+            int color = paint.getColor();
+            if(random.nextBoolean()) {
+                paint.setColor(color + averageLightValue);
+            }else{
+                paint.setColor(color - averageLightValue);
             }
         }
 
@@ -186,8 +225,10 @@ public class KineticArt extends AbstractShapes {
 
     @Override
     public void draw(Canvas canvas) {
+
         this.canvas = canvas;
         this.canvas.drawColor(canvasColor);
+
         width = getBounds().width();
         height = getBounds().height();
 
@@ -220,8 +261,6 @@ public class KineticArt extends AbstractShapes {
 
     private void setUpDrawing() {
 
-
-
         for (int[] control : controls) {
             paths.add(new Path());
             paints.addAll(paintsOptions);
@@ -234,13 +273,19 @@ public class KineticArt extends AbstractShapes {
 
 //        Collections.shuffle(paints);
 
-        int newAverage = (int)((double)(highestPositionValues.get(0)+highestPositionValues.get(1)+highestPositionValues.get(2)+highestPositionValues.get(3))/4);
-        int combiAverage = (newAverage+averageSize)/2;
-        System.out.println("new average: "+newAverage+" old average: "+averageSize+" comnbi average: "+(newAverage+averageSize)/2);
+        int loopSize;
 
-        for (int i = 0; i < controls.size(); i++) {
+        if(sizes.size()<manyMovements){
+            loopSize = controls.size()/2;
+        }else{
+            loopSize = controls.size();
+        }
 
-            int numberOfLines = random.nextInt(combiAverage/5);
+
+
+        for (int i = 0; i < loopSize; i++) {
+
+            int numberOfLines = random.nextInt(numberOfLoops);
             if(numberOfLines>40){
                 numberOfLines = 40;
             }
@@ -250,6 +295,7 @@ public class KineticArt extends AbstractShapes {
         }
 
         System.out.println("number of controls: " + controls.size());
+
 
     }
 
@@ -264,9 +310,6 @@ public class KineticArt extends AbstractShapes {
 
             path.moveTo(controls[0], controls[1]);
             path.cubicTo(controls[2], controls[3], controls[4], controls[5], controls[6], controls[7]);
-
-
-
 
             controls[3] -= increment;
             controls[5] -= increment;
@@ -301,6 +344,39 @@ public class KineticArt extends AbstractShapes {
             int controlY1 = y1 + (random.nextInt((int) ((height / 2)-50)))+50;
             int controlX2 = x1 - (random.nextInt((int) ((width / 2)-50)))+50;
             int controlY2 = y1 - (random.nextInt((int) ((height / 2)-50)))+50;
+
+            // check controls do not go over border if final point is within border
+//            if(x3<width){
+                if(controlX1>width-30){
+                    controlX1=(int)width-30;
+                }
+                if(controlX2>width-30){
+                    controlX2=(int)width-30;
+                }
+//            }else if(x3>0){
+                if(controlX1<30){
+                    controlX1=30;
+                }
+                if(controlX2<30){
+                    controlX2=30;
+                }
+//            }
+
+//            if(y3<height){
+                if(controlY1>height-30){
+                    controlY1=(int)height-30;
+                }
+                if(controlY2>height-30){
+                    controlY2=(int)height-30;
+                }
+//            }else if(y3>0){
+                if(controlY1<30){
+                    controlY1=30;
+                }
+                if(controlY2<30){
+                    controlY2=30;
+                }
+//            }
 
 
             controls.add(new int[]{x1, y1, controlX1, controlY1, controlX2, controlY2, x3, y3});
