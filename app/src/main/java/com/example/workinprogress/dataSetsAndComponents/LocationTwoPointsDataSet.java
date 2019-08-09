@@ -4,6 +4,10 @@ import com.example.workinprogress.DisplayImage;
 
 import java.util.ArrayList;
 
+/**
+ * Extends the TwoPointsDataSet and has maximum and minimum values preset. The results are not scaled
+ * at the datapoint, but final scaling is applied to ensure the range is within the bounds of the image.
+ */
 public class LocationTwoPointsDataSet extends TwoPointsDataSet {
 
     private final int maxValueLongitude = 180;

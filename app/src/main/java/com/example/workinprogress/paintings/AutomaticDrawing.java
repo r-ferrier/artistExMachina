@@ -394,29 +394,9 @@ public class AutomaticDrawing extends Painting {
             startX = (int) stopX;
             startY = (int) stopY;
 
-
-//            System.out.println("length = " + length + ", angle = " + originalAngle + ", height = " + height + " width = " + width);
-//            System.out.println("start x = " + startX + ", start y = " + startY + ", stop x = " + stopX + ", stop y = " + stopY);
-
         }
 
 
     }
-
-//    private void drawLine() {
-//
-//
-//        for (int[] positions : positionsToBeDrawn) {
-//
-//            canvas.drawLine(positions[0], positions[1], positions[2], positions[3], paint1);
-//
-//            if (paint1.getStrokeWidth() < 20) {
-//                paint1.setStrokeWidth(paint1.getStrokeWidth() + 1);
-//
-//            } else {
-//                paint1.setStrokeWidth(1);
-//            }
-//        }
-//    }
 
 }

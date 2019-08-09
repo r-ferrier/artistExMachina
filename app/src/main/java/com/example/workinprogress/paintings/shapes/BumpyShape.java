@@ -17,12 +17,7 @@ public class BumpyShape extends LineShape {
 
     @Override
     public void draw(Canvas canvas) {
-
         rectFS = createRectFs(x1End,y1End);
-
-        paint1.setStyle(Paint.Style.FILL);
-//        paint1.setStrokeWidth(5);
-
         path.moveTo(x1Start, y1Start);
 
         path.lineTo(x2Start,y2Start);
@@ -34,16 +29,7 @@ public class BumpyShape extends LineShape {
         path.addArc(rectFS.get(2),startingDegree-90,180);
         path.addArc(rectFS.get(3),startingDegree-90,180);
 
-
-//        path.lineTo(x1Start,y1Start);
-
         canvas.drawPath(path, paint1);
-
-//        System.out.println("starting points: x1 = " + x1Start + ", x2 = " + x2Start + ", y1 = " + y1Start + ", y2 = " + y2Start);
-//        System.out.println("ending points: x1 = " + x1End + ", x2 = " + x2End + ", y1 = " + y1End + ", y2 = " + y2End);
-//        System.out.println("width: "+width);
-//        System.out.println("starting degree: "+startingDegree);
-
     }
 
     protected ArrayList<RectF> createRectFs(float startingX, float startingY){

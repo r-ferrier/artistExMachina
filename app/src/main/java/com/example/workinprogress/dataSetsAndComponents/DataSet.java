@@ -17,7 +17,11 @@ public abstract class DataSet implements Serializable {
     protected float max;
     protected float min;
 
-    //result can only be added if it is for the same type of data and has the same number of data points
+
+    /**
+     * result can only be added if it is for the same type of data and has the same number of data points
+     * @param dataSetPoint piece of data to be added to the collection
+     */
     public void addResult(DataSetPoint dataSetPoint){
 
         System.out.println("dataset added "+dataTypeName + dataSetPoint.toString());
@@ -30,6 +34,12 @@ public abstract class DataSet implements Serializable {
 
     public abstract void setScaledResults();
 
+    //
+
+    /**
+     * @return string for every dataset includes its name and the full dataset printed as a string
+     * with lines between each point.
+     */
     public String toString() {
 
         String string = getDataTypeName()+"\n";

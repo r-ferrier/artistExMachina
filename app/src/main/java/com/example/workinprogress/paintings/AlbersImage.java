@@ -6,9 +6,7 @@ import android.graphics.Paint;
 import com.example.workinprogress.DisplayImage;
 import com.example.workinprogress.dataSetsAndComponents.DataSet;
 import com.example.workinprogress.dataSetsAndComponents.SingularPointDataSet;
-import com.example.workinprogress.dataSetsAndComponents.UnscaledSingleEntryDataSet;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
@@ -30,10 +28,6 @@ public class AlbersImage extends Painting {
         super(context, dataSets);
         paint1 = new Paint();
         paint1.setARGB(10, 255, 200, 90);
-//        System.out.println("in the albers image -------------------------------------------------");
-//        System.out.println(positions.get(0).getScaledResults1());
-//        System.out.println(positions.get(0).getScaledResults2());
-//        System.out.println(positions.get(0).getScaledResults3());
         setColoursValues();
         numberOfSquares = lightDistanceAndSteps.get(0).getScaledResults1().get(0);
     }
@@ -137,7 +131,6 @@ public class AlbersImage extends Painting {
                 for (int i = 0; i < coloursValues.length; i++) {
                     coloursValues[i][0] = dataSet.getScaledResults1().get(i);
                     coloursValues[i][0] = (int) ((coloursValues[i][0] * colourScalar) + minimumValue);
-                    System.out.println("scaled colours" + Arrays.toString(coloursValues[i]));
                 }
 //                System.out.println("length of colours"+coloursValues.length);
                 //populate all four position with colours found at previous position and one channel changed at random
@@ -146,7 +139,6 @@ public class AlbersImage extends Painting {
                     int newValue = coloursValues[i][0];
                     // create new array using array found at last position and insert value into one of its slots at random
                     int[] colourArray = coloursValues[i - 1].clone();
-                    System.out.println("i-1: " + Arrays.toString(coloursValues[i - 1]));
                     colourArray[random.nextInt(4)] = newValue;
                     colourArray[0] -= minimumValue;
                     // ensure alpha channel is visible
@@ -156,7 +148,6 @@ public class AlbersImage extends Painting {
                     colourArray = invisibleColours(colourArray.clone());
                     //store array again at position i
                     coloursValues[i] = colourArray;
-                    System.out.println("i: " + Arrays.toString(coloursValues[i]));
                 }
                 break;
             }
@@ -193,13 +184,8 @@ public class AlbersImage extends Painting {
             canvasPositions[i][0] = Math.round(xSize);
             canvasPositions[i][1] = Math.round(ySize);
         }
-
 //       shuffleCanvasPositions();
-
-
 //        setNewCanvasPositions();
-
-
     }
 
     private void shuffleCanvasPositions() {
@@ -287,24 +273,5 @@ public class AlbersImage extends Painting {
 
         }
 
-    }
-
-    private void printOutInfo(){
-        String canvasPositionsString = "";
-        String coloursString = "";
-        for (int i = 0; i < canvasPositions.length; i++) {
-            canvasPositionsString += "[x: " + canvasPositions[i][0] + ", y: " + canvasPositions[i][1] + "], ";
-        }
-
-        for (int i = 0; i < newCanvasPositions.length; i++) {
-            canvasPositionsString += "[x: " + newCanvasPositions[i][0] + ", y: " + newCanvasPositions[i][1] + "], ";
-        }
-
-        for (int i = 0; i < coloursValues.length; i++) {
-            coloursString += "[A: " + coloursValues[i][0] + ", R: " + coloursValues[i][1] + ",G: " + coloursValues[i][2] + ",B: " + coloursValues[i][3] + "], ";
-        }
-        System.out.println("shape positions" + canvasPositionsString);
-        System.out.println("shape sizes scaled" + shapeSize.toString());
-        System.out.println(" colours" + coloursString);
     }
 }

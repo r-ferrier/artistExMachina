@@ -52,7 +52,7 @@ public class KineticArt extends AbstractShapes {
 
     private void setData() {
 
-        ArrayList<Integer> lightValues = (ArrayList<Integer>)((SensorSingularPointDataSet) lightDistanceAndSteps.get(2)).getScaledResults2().clone();
+        ArrayList<Integer> lightValues = (ArrayList<Integer>)((SensorSingularPointDataSet) lightDistanceAndSteps.get(2)).getScaledResults1().clone();
         sizes = (ArrayList<Integer>)positions.get(0).getScaledResults1().clone();
         sizes.addAll((ArrayList<Integer>)positions.get(0).getScaledResults2().clone());
         sizes.addAll((ArrayList<Integer>)positions.get(0).getScaledResults3().clone());

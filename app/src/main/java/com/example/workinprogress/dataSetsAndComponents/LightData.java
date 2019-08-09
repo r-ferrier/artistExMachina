@@ -16,6 +16,17 @@ public class LightData implements DataSetPoint {
     private float max;
     private float min;
 
+    /**
+     * LightData constructor will store all of the parameters and then scale the datapoint and add it
+     * to a scaled dataPoints arraylist. Datapoints are stored in lists because other classes they must interact
+     * with do not necessarily know how many individual datapoints are held for each datasetpoint.
+     * @param dataTypeName references the type of data this data point will be
+     * @param dataPoint the numeric datapoint to be stored
+     * @param max the maximum possible value this datapoint could have
+     * @param min the minimum possible value
+     * @param nightMode boolean to state whether the data point is likely to have come from a darker
+     *                  or lighter range
+     */
     public LightData (String dataTypeName, Float dataPoint, float max, float min, boolean nightMode){
 
         this.numberOfDataPoints = 1;
@@ -23,12 +34,16 @@ public class LightData implements DataSetPoint {
         this.max = max;
         this.min = min;
         this.nightMode = nightMode;
-        Random r = new Random();
-//        dataPoints.add((float)r.nextInt(500)+500);
+
         scaledDataPoints.add(scale(dataPoint));
         dataPoints.add(dataPoint);
     }
 
+    /**
+     * Scaling aims to redistribute values to increase the value of lower light values and squish up higher values.
+     * @param datapoint actual value of data
+     * @return scaled version of the original datapoint, scaled according to range available.
+     */
     private Float scale(Float datapoint){
 
         float range = max - min;
@@ -41,9 +56,6 @@ public class LightData implements DataSetPoint {
             datapoint *= (float) (Math.log(datapoint));
             datapoint *= scalar;
         }
-
-        System.out.println("max light value: "+((20*max/Math.log(max))*Math.log(20*max/Math.log(max)))*scalar);
-
         return datapoint;
     }
 
@@ -68,10 +80,6 @@ public class LightData implements DataSetPoint {
     }
 
     public ArrayList getScaledResults(){
-
-        System.out.println("light values: "+scaledDataPoints.toString());
-
-
         return scaledDataPoints;
     }
 }

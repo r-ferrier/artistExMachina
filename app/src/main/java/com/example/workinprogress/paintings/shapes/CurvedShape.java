@@ -54,13 +54,8 @@ public class CurvedShape extends Shape {
     public void draw(Canvas canvas) {
 
         this.canvas = canvas;
-        path = new Path();
-        paint1.setStyle(Paint.Style.FILL);
-//        paint1.setStrokeWidth(5);
-
 
         path.moveTo(x1Start, y1Start);
-
         path.addArc(outerLine, startingDegree, sweepingAngle);
 
         if (clockwiseOrientation) {
@@ -73,9 +68,6 @@ public class CurvedShape extends Shape {
         path.lineTo(x1Start, y1Start);
 
         canvas.drawPath(path, paint1);
-
-
-//        System.out.println("ending points: x1 = " + x1End + ", x2 = " + x2End + ", y1 = " + y1End + ", y2 = " + y2End);
     }
 
     @Override
@@ -191,9 +183,7 @@ public class CurvedShape extends Shape {
                 rectf.bottom = y1Start + size + size;
                 break;
         }
-//        System.out.println("Rectangle: "+rectCoordinatesLeft+", "+rectCoordinatesTop+", "+rectCoordinatesRight+", "+rectCoordinatesBottom);
         return rectf;
-
     }
 
 }

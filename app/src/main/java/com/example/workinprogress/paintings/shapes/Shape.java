@@ -20,12 +20,12 @@ public abstract class Shape extends Drawable {
     protected int width;
 
     protected Path path;
-
     protected Paint paint1;
 
     public Shape(int[] aRGBColor){
 
         paint1 = new Paint();
+        paint1.setStyle(Paint.Style.FILL);
         paint1.setARGB(aRGBColor[0],aRGBColor[1],aRGBColor[2],aRGBColor[3]);
         path = new Path();
 

@@ -47,7 +47,7 @@ public class Landscape extends Painting {
 
     private void setData() {
 
-        ArrayList<Integer> lightValues = ((SensorSingularPointDataSet) lightDistanceAndSteps.get(2)).getScaledResults2();
+        ArrayList<Integer> lightValues = ((SensorSingularPointDataSet) lightDistanceAndSteps.get(2)).getScaledResults1();
         sizes = (ArrayList<Integer>)(positions.get(0).getScaledResults1()).clone();
         sizes.addAll((ArrayList<Integer>)positions.get(0).getScaledResults2().clone());
         sizes.addAll((ArrayList<Integer>)positions.get(0).getScaledResults3().clone());
