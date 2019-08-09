@@ -1,23 +1,28 @@
 package com.example.workinprogress.paintings;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+
 import com.example.workinprogress.DisplayImage;
 import com.example.workinprogress.dataSetsAndComponents.DataSet;
 import com.example.workinprogress.dataSetsAndComponents.SingularPointDataSet;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
 public class AlbersImage extends Painting {
+
     private Paint paint1;
     private Canvas canvas;
     private float range = DisplayImage.IMAGE_SIZE_SCALAR;
-    private int maximumSquareSize = 800;
+    private int maximumSquareSize = 2000;
     private int[][] coloursValues;
     private float colourRange = 255;
-    private float positionsSquareSizeRange = maximumSquareSize;
+    private float positionsSquareSizeRange = 1000;
     private ArrayList<Integer> shapeSize;
     private int[][] canvasPositions;
     private int[][] newCanvasPositions;
@@ -26,11 +31,16 @@ public class AlbersImage extends Painting {
 
     public AlbersImage(Context context, ArrayList<DataSet> dataSets) {
         super(context, dataSets);
+
         paint1 = new Paint();
+
         paint1.setARGB(10, 255, 200, 90);
+
         setColoursValues();
-        numberOfSquares = lightDistanceAndSteps.get(0).getScaledResults1().get(0);
+        numberOfSquares = positions.get(0).getScaledResults1().size()*10;
+
     }
+
 
     public void draw(Canvas canvas) {
 
@@ -42,19 +52,25 @@ public class AlbersImage extends Painting {
         if(canvasPositions==null) {
             setCanvasPositions();
             setSquareSizes();
-//            printOutInfo();
         }
 
-        drawImage();
+        firstEverythingExperiment();
     }
 
-    private void drawImage() {
+    private void firstEverythingExperiment() {
+
+        drawImage(newCanvasPositions, coloursValues, newShapeSize);
+
+    }
+
+    private void drawImage(int[][] canvasPositions, int[][] coloursValues, ArrayList<Integer> shapeSize) {
         for (int i = 0; i < canvasPositions.length; i++) {
 //
             int j = i;
             while (j >= coloursValues.length) {
                 j -= coloursValues.length;
             }
+
             paint1.setARGB(coloursValues[j][0], coloursValues[j][1], coloursValues[j][2], coloursValues[j][3]);
 
             //set canvas positions so image sits centrally
@@ -67,23 +83,34 @@ public class AlbersImage extends Painting {
         }
     }
 
+
+
     private void setSquareSizes() {
         shapeSize = new ArrayList<>();
+
+        //add a list of all scaled results to shapeSizes
         for (float f : positions.get(0).getScaledResults3()) {
             float zSize = f;
             shapeSize.add(Math.round(zSize));
         }
+
+//        set results to be >0, <500
         for (int i = 0; i < shapeSize.size(); i++) {
+
             shapeSize.set(i, shapeSize.get(i) - 500);
+
             if (shapeSize.get(i) < 0) {
                 shapeSize.set(i, shapeSize.get(i) * -1);
             }
+
             if (shapeSize.get(i) > positionsSquareSizeRange) {
                 positionsSquareSizeRange = i;
             }
         }
+
         int biggestShape = 0;
         int smallestShape = 1000;
+
         //find biggest and smallest value in shape sizes
         for (Integer i : shapeSize) {
             if (i > biggestShape) {
@@ -92,62 +119,96 @@ public class AlbersImage extends Painting {
                 smallestShape = i;
             }
         }
+
         float currentRange = biggestShape - smallestShape;
         float newRange = biggestShape;
-        float scalar = (newRange/currentRange);
+
+        float scalar = currentRange / newRange;
+
+//        System.out.println("scalar: "+scalar);
+
+        //multiply sizes by scalar
         for (int i = 0; i < shapeSize.size(); i++) {
-            shapeSize.set(i, (int)(shapeSize.get(i) * scalar) - smallestShape);
+            shapeSize.set(i, (int)((shapeSize.get(i) * scalar) - smallestShape));
         }
-//        System.out.println("shape sizes unscaled"+Arrays.toString(shapeSize));
+
+        System.out.println("shape sizes unscaled"+shapeSize.toString());
+
         float sizeScalar = maximumSquareSize / positionsSquareSizeRange;
+        System.out.println("sizescalar: "+sizeScalar);
+
         for (int i = 0; i < shapeSize.size(); i++) {
             shapeSize.set(i, (int) (sizeScalar * shapeSize.get(i)) + 10);
         }
+
+        System.out.println("shape sizes scaled"+shapeSize.toString());
+
         Collections.sort(shapeSize, Collections.reverseOrder());
 //        Collections.shuffle(shapeSize);
+
         newShapeSize = (ArrayList<Integer>) shapeSize.clone();
+
         for (int i = 0; i < numberOfSquares; i++) {
+
             int j;
             for (j = 0; j < shapeSize.size(); j++) {
-                newShapeSize.add(shapeSize.get(j) + 10);
+                newShapeSize.add(shapeSize.get(j) + 50);
             }
             i += j - 1;
         }
 
+
+
     }
 
     private void setColoursValues() {
+
         //create new random + minimum colour value
         Random random = new Random();
         int minimumValue = 55;
+
         //create colour range
         float colourScalar = (colourRange - minimumValue) / DisplayImage.IMAGE_SIZE_SCALAR;
+
         //get correct array
         for (SingularPointDataSet dataSet : lightDistanceAndSteps) {
             if (dataSet.getScaledResults1().size() > 1) {
+
                 //instantiate array to correct length
                 coloursValues = new int[dataSet.getScaledResults1().size()][4];
+
                 //populate 1st position in each array with scaled values
                 for (int i = 0; i < coloursValues.length; i++) {
                     coloursValues[i][0] = dataSet.getScaledResults1().get(i);
                     coloursValues[i][0] = (int) ((coloursValues[i][0] * colourScalar) + minimumValue);
+                    System.out.println("scaled colours" + Arrays.toString(coloursValues[i]));
                 }
 //                System.out.println("length of colours"+coloursValues.length);
+
                 //populate all four position with colours found at previous position and one channel changed at random
                 for (int i = 1; i < coloursValues.length; i++) {
+
                     //take value from current position
                     int newValue = coloursValues[i][0];
+
                     // create new array using array found at last position and insert value into one of its slots at random
                     int[] colourArray = coloursValues[i - 1].clone();
+                    System.out.println("i-1: " + Arrays.toString(coloursValues[i - 1]));
+
                     colourArray[random.nextInt(4)] = newValue;
+
                     colourArray[0] -= minimumValue;
+
                     // ensure alpha channel is visible
                     if (colourArray[0] < 20) {
                         colourArray[0] = 20;
                     }
+
                     colourArray = invisibleColours(colourArray.clone());
+
                     //store array again at position i
                     coloursValues[i] = colourArray;
+                    System.out.println("i: " + Arrays.toString(coloursValues[i]));
                 }
                 break;
             }
@@ -156,6 +217,7 @@ public class AlbersImage extends Painting {
 
     private int[] invisibleColours(int[] colourArray) {
         int numberOfInvisibleChannels = 0;
+
         for (int j = 1; j < 4; j++) {
             if (colourArray[j] < 20) {
                 numberOfInvisibleChannels++;
@@ -175,33 +237,64 @@ public class AlbersImage extends Painting {
     }
 
     private void setCanvasPositions() {
-        canvasPositions = new int[positions.get(0).getScaledResults1().size()][2];
+
+        Random random = new Random();
+
+        canvasPositions = new int[positions.get(0).getScaledResults1().size()*8][2];
+
         float xScalar = width / range;
         float yScalar = height / range;
-        for (int i = 0; i < positions.get(0).getScaledResults1().size(); i++) {
-            float xSize = (positions.get(0).getScaledResults1().get(i) * xScalar);
-            float ySize = (positions.get(0).getScaledResults2().get(i) * yScalar);
-            canvasPositions[i][0] = Math.round(xSize);
-            canvasPositions[i][1] = Math.round(ySize);
+        int j = 0;
+
+        for (int i = 0; i < canvasPositions.length; i+=8) {
+
+            float xSize = (positions.get(0).getScaledResults1().get(j) * xScalar);
+            float ySize = (positions.get(0).getScaledResults2().get(j) * yScalar);
+            j++;
+
+            int a1 = Math.round(xSize);
+            int a2 = Math.round(ySize);
+            int b1 = a1+random.nextInt(50);
+            int b2 = a2+random.nextInt(50);
+            int c1 = a1-random.nextInt(50);
+            int c2 = a2-random.nextInt(50);
+            int d1 = b1+random.nextInt(50);
+            int d2 = b2+random.nextInt(50);
+            int e1 = c1-random.nextInt(100);
+            int e2 = c2-random.nextInt(100);
+            int f1 = d1+random.nextInt(100);
+            int f2 = d2+random.nextInt(100);
+            int g1 = e1-random.nextInt(150);
+            int g2 = e2-random.nextInt(150);
+            int h1 = f1+random.nextInt(200);
+            int h2 = f2+random.nextInt(200);
+
+
+
+            canvasPositions[i][0] = h1;
+            canvasPositions[i][1] = h2;
+            canvasPositions[i+1][0] = g1;
+            canvasPositions[i+1][1] =  g2;
+            canvasPositions[i+2][0] =  f1;
+            canvasPositions[i+2][1] =  f2;
+            canvasPositions[i+3][0] =  e1;
+            canvasPositions[i+3][1] =  e2;
+            canvasPositions[i+4][0] =  d1;
+            canvasPositions[i+4][1] =  d2;
+            canvasPositions[i+5][0] =  c1;
+            canvasPositions[i+5][1] =  c2;
+            canvasPositions[i+6][0] =  b1;
+            canvasPositions[i+6][1] =  b2;
+            canvasPositions[i+7][0] =  a1;
+            canvasPositions[i+7][1] =  a2;
+
+
+
         }
-//       shuffleCanvasPositions();
-//        setNewCanvasPositions();
+
+        setNewCanvasPositions();
     }
 
-    private void shuffleCanvasPositions() {
-        ArrayList<int[]> canvasPositions2 = new ArrayList<>();
-
-        for (int[] intArray : canvasPositions) {
-            canvasPositions2.add(intArray.clone());
-        }
-
-        Collections.shuffle(canvasPositions2);
-
-        for (int i = 0; i < canvasPositions2.size(); i++) {
-            canvasPositions[i][0] = canvasPositions2.get(i)[0];
-            canvasPositions[i][1] = canvasPositions2.get(i)[1];
-        }
-    }
 
 
     private void setNewCanvasPositions() {
@@ -210,6 +303,8 @@ public class AlbersImage extends Painting {
         int loopNumber = 0;
 
         for (int i = 0; i < numberOfSquares; i++) {
+
+            System.out.println("loop number: "+i);
 
             if (loopNumber == 0) {
 
@@ -274,4 +369,6 @@ public class AlbersImage extends Painting {
         }
 
     }
+
+
 }
