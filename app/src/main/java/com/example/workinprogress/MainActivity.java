@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -23,7 +22,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -50,7 +48,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.Inflater;
 
 import static com.google.android.gms.fitness.data.DataType.AGGREGATE_DISTANCE_DELTA;
 import static com.google.android.gms.fitness.data.DataType.AGGREGATE_STEP_COUNT_DELTA;
@@ -69,72 +66,49 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private int steps;
     private float distance;
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
 
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        requestPermissions();
-        connectToAPIs(savedInstanceState);
-        new ViewWeekStepCountTask().execute();
+
+//        requestPermissions();
+//        connectToAPIs(savedInstanceState);
+//        new ViewWeekStepCountTask().execute();
 
         runAnimations();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void runAnimations() {
+        crossfadeText();
+        moveButtonsUpFromBottom();
+        drawShapes();
+    }
 
-
+    private void moveButtonsUpFromBottom() {
         View buttonsLayout = findViewById(R.id.buttonPanel);
-
         ObjectAnimator moveButtons = ObjectAnimator.ofFloat(buttonsLayout, "translationY", 1000f, 0f, 30f);
+        buttonsLayout.setVisibility(View.VISIBLE);
+        moveButtons.setDuration(6000);
+        moveButtons.start();
 
-//        ObjectAnimator fadeText = AnimObjectAnimator.ofFloat(titleText,"")
+    }
 
-//        Fade fade = new Fade(Fade.IN);
-//
-//        fade.addTarget(titleText);
-//        fade.setDuration(6000);
-
-//        ObjectAnimator moveText = ObjectAnimator.ofFloat(titleText, "translationY", -1000f, 0f, -30f);
-
-
+    private void crossfadeText() {
         TextView titleText = findViewById(R.id.titleText);
         TextView titleText2 = findViewById(R.id.titleText2);
 
-        // Initially hide the content view.
         titleText.setVisibility(View.GONE);
-
-        // Retrieve and cache the system's default "short" animation time.
         int longAnimationDuration = 5000;
-
 
         titleText.setAlpha(0f);
         titleText.setVisibility(View.VISIBLE);
-
         titleText.animate().alpha(1f).setDuration(longAnimationDuration).setListener(null);
-
         titleText2.animate().alpha(0f).setDuration(longAnimationDuration).setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        titleText2.setVisibility(View.GONE);
-                    }
-                });
-
-
-
-
-
-        buttonsLayout.setVisibility(View.VISIBLE);
-
-//        moveText.setDuration(6000);
-        moveButtons.setDuration(6000);
-//        moveText.start();
-        moveButtons.start();
-
-        drawShapes();
-
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                titleText2.setVisibility(View.GONE);
+            }
+        });
     }
 
     private void drawShapes() {
@@ -150,38 +124,37 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                         animatedShapesDrawing.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
-                        MainClassAnimation mainClassAnimation = new MainClassAnimation(animatedShapesDrawing.getWidth(),animatedShapesDrawing.getHeight());
+                        MainClassAnimation mainClassAnimation = new MainClassAnimation(animatedShapesDrawing.getWidth(), animatedShapesDrawing.getHeight());
 
                         ArrayList<Shape> shapes = mainClassAnimation.getShapes();
                         ArrayList<Shape> thinShapes = mainClassAnimation.getThinShapes();
                         ArrayList<Shape> thinnestShapes = mainClassAnimation.getThinnestShapes();
 
-                        ArrayList<ImageView> shapeImageViews = inflateViewsForAnimation(inflater,shapes);
-                        ArrayList<ImageView> thinShapeImageViews = inflateViewsForAnimation(inflater,thinShapes);
-                        ArrayList<ImageView> thinnestShapeImageViews = inflateViewsForAnimation(inflater,thinnestShapes);
-
+                        ArrayList<ImageView> shapeImageViews = inflateViewsForAnimation(inflater, shapes);
+                        ArrayList<ImageView> thinShapeImageViews = inflateViewsForAnimation(inflater, thinShapes);
+                        ArrayList<ImageView> thinnestShapeImageViews = inflateViewsForAnimation(inflater, thinnestShapes);
 
                         Thread shapesThread = new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                try{
+                                try {
                                     Thread.sleep(3000);
-                                }catch(InterruptedException e){
+                                } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
-                                runnableTask(shapes,shapeImageViews,animatedShapesDrawing);
+                                runnableTask(shapes, shapeImageViews, animatedShapesDrawing,100);
                             }
                         });
 
                         Thread thinShapesThread = new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                try{
+                                try {
                                     Thread.sleep(2000);
-                                }catch(InterruptedException e){
+                                } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
-                                runnableTask(thinShapes,thinShapeImageViews,animatedShapesDrawing);
+                                runnableTask(thinShapes, thinShapeImageViews, animatedShapesDrawing,100);
 
                             }
                         });
@@ -189,30 +162,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         Thread thinnestShapesThread = new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                runnableTask(thinnestShapes,thinnestShapeImageViews,animatedShapesDrawing);
+                                runnableTask(thinnestShapes, thinnestShapeImageViews, animatedShapesDrawing, 120);
                             }
                         });
-
 
                         shapesThread.start();
                         thinShapesThread.start();
                         thinnestShapesThread.start();
                     }
                 });
-
-
-//        ImageView animatedShapesDrawing = findViewById(R.id.animationPortion);
-
-//        animatedShapesDrawing.setImageDrawable( new MainClassAnimation());
-
     }
 
-
-    private void runnableTask(ArrayList<Shape> shapes, ArrayList<ImageView> shapeImageViews, FrameLayout animatedShapesDrawing){
+    private void runnableTask(ArrayList<Shape> shapes, ArrayList<ImageView> shapeImageViews, FrameLayout animatedShapesDrawing, int sleepDuration) {
         for (int i = 0; i < shapes.size(); i++) {
 
             try {
-                Thread.sleep(100);
+                Thread.sleep(sleepDuration);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -232,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
-    private ArrayList<ImageView> inflateViewsForAnimation(LayoutInflater inflater, ArrayList<Shape> shapes){
+    private ArrayList<ImageView> inflateViewsForAnimation(LayoutInflater inflater, ArrayList<Shape> shapes) {
         ArrayList<ImageView> shapeImageViews = new ArrayList<>();
 
         for (Shape shape : shapes) {
@@ -241,84 +206,107 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         return shapeImageViews;
     }
 
-    private class ViewWeekStepCountTask extends AsyncTask<Void, Void, Void> {
+    public void beginShortPortraitActivity(View view) {
 
+        UnscaledSingleEntryDataSet<Integer> stepsData = new UnscaledSingleEntryDataSet<>(steps, getString(R.string.data_type_steps));
+        UnscaledSingleEntryDataSet<Float> distanceData = new UnscaledSingleEntryDataSet<>(distance, getString(R.string.data_type_distance));
 
-        protected Void doInBackground(Void... params) {
-//            displayLastWeeksData();
-            displayYesterdaysData();
-            return null;
-        }
+        ArrayList<Float> distanceCovered = new ArrayList<>();
+        distanceCovered.add(distance);
 
-        private void displayYesterdaysData() {
-
-
-            Calendar date = new GregorianCalendar();
-// reset hour, minutes, seconds and millis
-            date.set(Calendar.HOUR_OF_DAY, 0);
-            date.set(Calendar.MINUTE, 0);
-            date.set(Calendar.SECOND, 0);
-            date.set(Calendar.MILLISECOND, 0);
-
-
-            long endTime = date.getTimeInMillis();
-            date.add(Calendar.DAY_OF_YEAR, -1);
-            long startTime = date.getTimeInMillis();
-
-            Log.e("time", "\tStart: " + DateFormat.getDateInstance().format(startTime) + " " + DateFormat.getTimeInstance().format(startTime));
-            Log.e("time", "\tEnd: " + DateFormat.getDateInstance().format(endTime) + " " + DateFormat.getTimeInstance().format(endTime));
-
-            DataReadRequest stepsAndDistance = new DataReadRequest.Builder()
-                    .aggregate(TYPE_STEP_COUNT_DELTA, AGGREGATE_STEP_COUNT_DELTA)
-                    .aggregate(TYPE_DISTANCE_DELTA, AGGREGATE_DISTANCE_DELTA)
-                    .bucketByTime(1, TimeUnit.DAYS)
-                    .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
-                    .build();
-
-            DataReadResult result = Fitness.HistoryApi.readData(mGoogleApiClient, stepsAndDistance).await(1, TimeUnit.MINUTES);
-
-            if (result.getBuckets().size() > 0) {
-
-                Log.e("History", "Number of buckets: " + result.getBuckets().size());
-                List<DataSet> dataSets = result.getBuckets().get(0).getDataSets();
-
-                int i = 1;
-
-                for (DataSet dataSet : dataSets) {
-                    Log.i("dataset number", i + "");
-                    showAndStoreDataSet(dataSet);
-                    i++;
-                }
-            }
-        }
-
-
-        private void showAndStoreDataSet(DataSet dataSet) {
-            Log.e("History", "Data returned for Data type: " + dataSet.getDataType().getName());
-
-            DateFormat dateFormat = DateFormat.getDateInstance();
-            DateFormat timeFormat = DateFormat.getTimeInstance();
-
-            for (DataPoint dp : dataSet.getDataPoints()) {
-                Log.e("History", "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
-                Log.e("History", "\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)));
-
-                for (Field field : dp.getDataType().getFields()) {
-
-                    if (dp.getDataType().equals(TYPE_STEP_COUNT_DELTA)) {
-                        steps = dp.getValue(field).asInt();
-                    } else if (dp.getDataType().equals(TYPE_DISTANCE_DELTA)) {
-                        distance = dp.getValue(field).asFloat();
-                    }
-
-                    Log.e("History", "\tField: " + field.getName());
-                    Log.e("History", "\tValue: " + dp.getValue(field));
-                }
-            }
-        }
+        Intent intent = new Intent(this, ShortPortrait.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(getString(R.string.data_type_steps), stepsData);
+        bundle.putSerializable(getString(R.string.data_type_distance), distanceData);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
+    public void beginGalleryActivity(View view) {
+        Intent intent = new Intent(this, Gallery.class);
+        startActivity(intent);
+    }
 
+    public void beginAboutActivity(View view) {
+        Intent intent = new Intent(this, About.class);
+        startActivity(intent);
+    }
+
+//
+//    private class ViewWeekStepCountTask extends AsyncTask<Void, Void, Void> {
+//
+//        protected Void doInBackground(Void... params) {
+////            displayLastWeeksData();
+//            displayYesterdaysData();
+//            return null;
+//        }
+//
+//        private void displayYesterdaysData() {
+//
+//            Calendar date = new GregorianCalendar();
+//// reset hour, minutes, seconds and millis
+//            date.set(Calendar.HOUR_OF_DAY, 0);
+//            date.set(Calendar.MINUTE, 0);
+//            date.set(Calendar.SECOND, 0);
+//            date.set(Calendar.MILLISECOND, 0);
+//
+//
+//            long endTime = date.getTimeInMillis();
+//            date.add(Calendar.DAY_OF_YEAR, -1);
+//            long startTime = date.getTimeInMillis();
+//
+//            Log.e("time", "\tStart: " + DateFormat.getDateInstance().format(startTime) + " " + DateFormat.getTimeInstance().format(startTime));
+//            Log.e("time", "\tEnd: " + DateFormat.getDateInstance().format(endTime) + " " + DateFormat.getTimeInstance().format(endTime));
+//
+//            DataReadRequest stepsAndDistance = new DataReadRequest.Builder()
+//                    .aggregate(TYPE_STEP_COUNT_DELTA, AGGREGATE_STEP_COUNT_DELTA)
+//                    .aggregate(TYPE_DISTANCE_DELTA, AGGREGATE_DISTANCE_DELTA)
+//                    .bucketByTime(1, TimeUnit.DAYS)
+//                    .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
+//                    .build();
+//
+//            DataReadResult result = Fitness.HistoryApi.readData(mGoogleApiClient, stepsAndDistance).await(1, TimeUnit.MINUTES);
+//
+//            if (result.getBuckets().size() > 0) {
+//
+//                Log.e("History", "Number of buckets: " + result.getBuckets().size());
+//                List<DataSet> dataSets = result.getBuckets().get(0).getDataSets();
+//
+//                int i = 1;
+//
+//                for (DataSet dataSet : dataSets) {
+//                    Log.i("dataset number", i + "");
+//                    showAndStoreDataSet(dataSet);
+//                    i++;
+//                }
+//            }
+//        }
+//
+//        private void showAndStoreDataSet(DataSet dataSet) {
+//            Log.e("History", "Data returned for Data type: " + dataSet.getDataType().getName());
+//
+//            DateFormat dateFormat = DateFormat.getDateInstance();
+//            DateFormat timeFormat = DateFormat.getTimeInstance();
+//
+//            for (DataPoint dp : dataSet.getDataPoints()) {
+//                Log.e("History", "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
+//                Log.e("History", "\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)));
+//
+//                for (Field field : dp.getDataType().getFields()) {
+//
+//                    if (dp.getDataType().equals(TYPE_STEP_COUNT_DELTA)) {
+//                        steps = dp.getValue(field).asInt();
+//                    } else if (dp.getDataType().equals(TYPE_DISTANCE_DELTA)) {
+//                        distance = dp.getValue(field).asFloat();
+//                    }
+//
+//                    Log.e("History", "\tField: " + field.getName());
+//                    Log.e("History", "\tValue: " + dp.getValue(field));
+//                }
+//            }
+//        }
+//    }
+//
     @Override
     public void onConnected(Bundle bundle) {
         Fitness.RecordingApi.subscribe(mGoogleApiClient, TYPE_STEP_COUNT_DELTA)
@@ -326,9 +314,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         Fitness.RecordingApi.subscribe(mGoogleApiClient, TYPE_DISTANCE_DELTA)
                 .setResultCallback(distanceSubscribeResultCallback);
-
     }
-
 
     @Override
     public void onConnectionSuspended(int i) {
@@ -354,7 +340,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
     }
-
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -392,50 +377,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     }
 
-    public void beginShortPortraitActivity(View view) {
-
-//        ArrayList<Integer> stepsCount = new ArrayList<>();
-//        stepsCount.add(steps);
-
-//        System.out.println("steps: "+steps);
-
-        UnscaledSingleEntryDataSet<Integer> stepsData = new UnscaledSingleEntryDataSet<>(steps, getString(R.string.data_type_steps));
-        UnscaledSingleEntryDataSet<Float> distanceData = new UnscaledSingleEntryDataSet<>(distance, getString(R.string.data_type_distance));
-
-
-//        ArrayList<Float> distanceCovered = new ArrayList<>();
-//        distanceCovered.add(distance);
-//
-//        System.out.println("steps: "+distance);
-
-//        SensorResult<Integer,ResultValuesAppendable> stepsSensorResult = new SensorResult<>(false,stepsCount,"steps");
-//        SensorResult<Float,ResultValuesAppendable> distanceSensorResult = new SensorResult<>(false, distanceCovered,"distance");
-
-        Intent intent = new Intent(this, ShortPortrait.class);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable(getString(R.string.data_type_steps), stepsData);
-        bundle.putSerializable(getString(R.string.data_type_distance), distanceData);
-//        bundle.putSerializable("steps", stepsSensorResult);
-//        bundle.putSerializable("distance",distanceSensorResult);
-        intent.putExtras(bundle);
-        startActivity(intent);
-
-    }
-
-    public void beginGalleryActivity(View view) {
-
-        Intent intent = new Intent(this, Gallery.class);
-        startActivity(intent);
-
-    }
-
-    public void beginAboutActivity(View view) {
-
-        Intent intent = new Intent(this, About.class);
-        startActivity(intent);
-
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -448,7 +389,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 }
             }
         }
-
     }
 
     private void requestPermissions() {
@@ -483,9 +423,5 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (savedInstanceState != null) {
             authInProgress = savedInstanceState.getBoolean(AUTH_PENDING);
         }
-
-
     }
-
-
 }

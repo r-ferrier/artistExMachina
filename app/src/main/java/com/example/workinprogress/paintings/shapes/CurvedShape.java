@@ -11,8 +11,6 @@ public class CurvedShape extends Shape {
 
     protected int size;
     protected int sweepingAngle;
-    private boolean finishedCreatingEnds;
-    private Path path;
     private RectF outerLine;
     private RectF innerLine;
     public Canvas canvas;
@@ -147,9 +145,6 @@ public class CurvedShape extends Shape {
                 }
                 return new int[]{x1End, y1End, x2End, y2End};
         }
-
-        finishedCreatingEnds = true;
-
         return new int[]{0, 0, 0, 0};
     }
 
