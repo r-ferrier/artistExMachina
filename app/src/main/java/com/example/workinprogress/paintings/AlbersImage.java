@@ -270,7 +270,6 @@ public class AlbersImage extends Painting {
             int h2 = f2+random.nextInt(200);
 
 
-
             canvasPositions[i][0] = h1;
             canvasPositions[i][1] = h2;
             canvasPositions[i+1][0] = g1;
@@ -287,8 +286,6 @@ public class AlbersImage extends Painting {
             canvasPositions[i+6][1] =  b2;
             canvasPositions[i+7][0] =  a1;
             canvasPositions[i+7][1] =  a2;
-
-
 
         }
 

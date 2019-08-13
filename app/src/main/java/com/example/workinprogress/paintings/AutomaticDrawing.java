@@ -10,12 +10,11 @@ import com.example.workinprogress.DisplayImage;
 import com.example.workinprogress.dataSetsAndComponents.DataSet;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class AutomaticDrawing extends Painting {
 
     private Canvas canvas;
-    private int steps;
-    private int distance;
     private int[][] anglesAndDirections;
     private Paint paint1;
     private Paint paint3;
@@ -27,12 +26,10 @@ public class AutomaticDrawing extends Painting {
     public AutomaticDrawing(Context context, ArrayList<DataSet> dataSets) {
         super(context, dataSets);
 
-        System.out.println(positions.get(0).getResults());
-        System.out.println(locations.get(0).getResults());
-
-        System.out.println(lightDistanceAndSteps.get(0).getResults());
-        System.out.println(lightDistanceAndSteps.get(1).getResults());
-        System.out.println(lightDistanceAndSteps.get(2).getResults());
+//        System.out.println(positions.get(0).getResults());
+//        System.out.println(locations.get(0).getResults());
+//
+//        System.out.println(lightDistanceAndSteps.get(2).getResults());
 
 //        testPositionsToBeDrawn = new int[][]{{50, 50, 300, 300}, {300, 300, 150, 400}, {150, 400, 600, 800}, {600, 800, 200, 1000}};
 
@@ -257,29 +254,30 @@ public class AutomaticDrawing extends Painting {
             paint3.setAlpha(200);
         }
 
-        steps = lightDistanceAndSteps.get(0).getScaledResults1().get(0);
-        distance = lightDistanceAndSteps.get(1).getScaledResults1().get(0);
+//        steps = lightDistanceAndSteps.get(0).getScaledResults1().get(0);
+//        distance = lightDistanceAndSteps.get(1).getScaledResults1().get(0);
 
-        if (steps < width) {
-            xPosition = steps;
-        } else {
-            xPosition = steps % (int) width;
-        }
+//        if (steps < width) {
+//            xPosition = steps;
+//        } else {
+//            xPosition = steps % (int) width;
+//        }
+//
+//        if (distance < height) {
+//            yPosition = distance;
+//        } else {
+//            yPosition = distance % (int) height;
+//        }
+//
+//        if (steps >= 10000) {
+//            circleSize = 600;
+//        } else {
+//            circleSize = (int) ((600.0 / 10000) * steps);
+//        }
 
-        if (distance < height) {
-            yPosition = distance;
-        } else {
-            yPosition = distance % (int) height;
-        }
 
-        if (steps >= 10000) {
-            circleSize = 600;
-        } else {
-            circleSize = (int) ((600.0 / 10000) * steps);
-        }
-
-
-        canvas.drawCircle((float) xPosition, (float) yPosition, (float) (newColour+20), paint3);
+        Random random = new Random();
+        canvas.drawCircle((float) random.nextInt((int)width), (float) random.nextInt((int)height), (float) (newColour+20), paint3);
 
 
     }
