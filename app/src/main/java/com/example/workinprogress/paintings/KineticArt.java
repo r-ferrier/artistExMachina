@@ -11,7 +11,6 @@ import com.example.workinprogress.dataSetsAndComponents.DataSet;
 import com.example.workinprogress.dataSetsAndComponents.SensorSingularPointDataSet;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
@@ -50,10 +49,11 @@ public class KineticArt extends AbstractShapes {
 
     private void setData() {
 
-        ArrayList<Integer> lightValues = (ArrayList<Integer>)((SensorSingularPointDataSet) lightDistanceAndSteps.get(2)).getScaledResults1().clone();
-        sizes = (ArrayList<Integer>)positions.get(0).getScaledResults1().clone();
-        sizes.addAll((ArrayList<Integer>)positions.get(0).getScaledResults2().clone());
-        sizes.addAll((ArrayList<Integer>)positions.get(0).getScaledResults3().clone());
+
+        ArrayList<Integer> lightValues = (ArrayList<Integer>)((SensorSingularPointDataSet) singularPointDataSets.get(2)).getScaledResults1().clone();
+        sizes = (ArrayList<Integer>) threePointsDataSets.get(0).getScaledResults1().clone();
+        sizes.addAll((ArrayList<Integer>) threePointsDataSets.get(0).getScaledResults2().clone());
+        sizes.addAll((ArrayList<Integer>) threePointsDataSets.get(0).getScaledResults3().clone());
 
         for (int i = 0; i < sizes.size(); i++) {
             sizes.set(i, sizes.get(i) - 500);
@@ -65,8 +65,6 @@ public class KineticArt extends AbstractShapes {
         averageLightValue = getAverage(lightValues);
         averageSize = getAverage(sizes);
 
-        System.out.println("average light: " + averageLightValue);
-        System.out.println("average size: " + averageSize);
 
         if (sizes.size() <= 50) {
             numberOfLoops = 8;
@@ -132,7 +130,6 @@ public class KineticArt extends AbstractShapes {
             }
         }
 
-        System.out.println("xy values: "+ Arrays.toString(positionsForPlotting));
     }
 
     //helper method to return average of any array of Integers
@@ -165,7 +162,6 @@ public class KineticArt extends AbstractShapes {
         paintsOptions.get(7).setColor(context.getResources().getColor(R.color.purpleNavy));
         paintsOptions.get(8).setColor(context.getResources().getColor(R.color.purplePineapple));
 
-
         choosePaints();
     }
 
@@ -176,7 +172,6 @@ public class KineticArt extends AbstractShapes {
 
         int numberOfOptions;
 
-        System.out.println("averagelightvalue "+averageLightValue);
 
         if (averageLightValue < 1500) {
             if (averageLightValue < 200) {
@@ -234,32 +229,28 @@ public class KineticArt extends AbstractShapes {
 
         setData();
 
-
         if (paths == null) {
-
-            controls = new ArrayList<>();
-            paths = new ArrayList<>();
-            paints = new ArrayList<>();
-            setPaints();
-
-            setUpForOriginalIdea();
             setUpDrawing();
         }
 
         for (int i = 0; i < paths.size(); i++) {
-
             canvas.drawPath(paths.get(i), paints.get(paintsCounter++));
-
             if (paintsCounter > paints.size() - 1) {
                 paintsCounter = 0;
             }
-
         }
-
-
     }
 
     private void setUpDrawing() {
+
+        controls = new ArrayList<>();
+        paths = new ArrayList<>();
+        paints = new ArrayList<>();
+        setPaints();
+
+        for(int i = 0; i<4;i++){
+            createPaths();
+        }
 
         for (int[] control : controls) {
             paths.add(new Path());
@@ -270,9 +261,6 @@ public class KineticArt extends AbstractShapes {
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(2);
         }
-
-//        Collections.shuffle(paints);
-
         int loopSize;
 
         if(sizes.size()<manyMovements){
@@ -281,10 +269,7 @@ public class KineticArt extends AbstractShapes {
             loopSize = controls.size();
         }
 
-
-
         for (int i = 0; i < loopSize; i++) {
-
             int numberOfLines = random.nextInt(numberOfLoops);
             if(numberOfLines>40){
                 numberOfLines = 40;
@@ -293,18 +278,12 @@ public class KineticArt extends AbstractShapes {
             paths.add(drawRibbon(controls.get(i).clone(), increment, numberOfLines, new Path()));
             paths.set(i, drawRibbon(controls.get(i).clone(), increment * -1, numberOfLines, paths.get(i)));
         }
-
-        System.out.println("number of controls: " + controls.size());
-
-
     }
-
 
     private Path drawRibbon(int[] controls, int increment, int numberOfLines, Path path) {
 
         path.moveTo(controls[0], controls[1]);
         path.cubicTo(controls[2], controls[3], controls[4], controls[5], controls[6], controls[7]);
-
 
         for (int i = 0; i < numberOfLines; i++) {
 
@@ -318,14 +297,6 @@ public class KineticArt extends AbstractShapes {
         }
 
         return path;
-    }
-
-    private void setUpForOriginalIdea() {
-
-        createPaths();
-        createPaths();
-        createPaths();
-        createPaths();
     }
 
     private void createPaths(){
@@ -346,43 +317,31 @@ public class KineticArt extends AbstractShapes {
             int controlY2 = y1 - (random.nextInt((int) ((height / 2)-50)))+50;
 
             // check controls do not go over border if final point is within border
-//            if(x3<width){
                 if(controlX1>width-30){
                     controlX1=(int)width-30;
                 }
                 if(controlX2>width-30){
                     controlX2=(int)width-30;
                 }
-//            }else if(x3>0){
                 if(controlX1<30){
                     controlX1=30;
                 }
                 if(controlX2<30){
                     controlX2=30;
                 }
-//            }
-
-//            if(y3<height){
                 if(controlY1>height-30){
                     controlY1=(int)height-30;
                 }
                 if(controlY2>height-30){
                     controlY2=(int)height-30;
                 }
-//            }else if(y3>0){
                 if(controlY1<30){
                     controlY1=30;
                 }
                 if(controlY2<30){
                     controlY2=30;
                 }
-//            }
-
-
             controls.add(new int[]{x1, y1, controlX1, controlY1, controlX2, controlY2, x3, y3});
-
-            System.out.println("coords: "+x1+" "+y1+" "+x3+" "+y3);
-
         }
     }
 

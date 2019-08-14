@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -19,10 +20,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.microsoft.appcenter.AppCenter;
-import com.microsoft.appcenter.analytics.Analytics;
-import com.microsoft.appcenter.crashes.Crashes;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,6 +41,9 @@ import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.result.DataReadResult;
+import com.microsoft.appcenter.AppCenter;
+import com.microsoft.appcenter.analytics.Analytics;
+import com.microsoft.appcenter.crashes.Crashes;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -77,9 +77,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         AppCenter.start(getApplication(), "ab058df6-1a45-4393-9d26-e0e62056f7a2",
                 Analytics.class, Crashes.class);
 
-//        requestPermissions();
-//        connectToAPIs(savedInstanceState);
-//        new ViewWeekStepCountTask().execute();
+        requestPermissions();
+        connectToAPIs(savedInstanceState);
+        new ViewWeekStepCountTask().execute();
 
         runAnimations();
     }
@@ -214,16 +214,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     public void beginShortPortraitActivity(View view) {
 
-        UnscaledSingleEntryDataSet<Integer> stepsData = new UnscaledSingleEntryDataSet<>(steps, getString(R.string.data_type_steps));
-        UnscaledSingleEntryDataSet<Float> distanceData = new UnscaledSingleEntryDataSet<>(distance, getString(R.string.data_type_distance));
-
         ArrayList<Float> distanceCovered = new ArrayList<>();
         distanceCovered.add(distance);
 
+        ArrayList<com.example.workinprogress.dataSetsAndComponents.DataSet> dataSets = new ArrayList<>();
+        dataSets.add(new UnscaledSingleEntryDataSet<>(steps, getString(R.string.data_type_steps)));
+        dataSets.add(new UnscaledSingleEntryDataSet<>(distance, getString(R.string.data_type_distance)));
+
         Intent intent = new Intent(this, ShortPortrait.class);
         Bundle bundle = new Bundle();
-        bundle.putSerializable(getString(R.string.data_type_steps), stepsData);
-        bundle.putSerializable(getString(R.string.data_type_distance), distanceData);
+        bundle.putSerializable("dataSet_Array",dataSets);
         intent.putExtras(bundle);
         startActivity(intent);
     }
@@ -238,81 +238,81 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         startActivity(intent);
     }
 
-//
-//    private class ViewWeekStepCountTask extends AsyncTask<Void, Void, Void> {
-//
-//        protected Void doInBackground(Void... params) {
-////            displayLastWeeksData();
-//            displayYesterdaysData();
-//            return null;
-//        }
-//
-//        private void displayYesterdaysData() {
-//
-//            Calendar date = new GregorianCalendar();
-//// reset hour, minutes, seconds and millis
-//            date.set(Calendar.HOUR_OF_DAY, 0);
-//            date.set(Calendar.MINUTE, 0);
-//            date.set(Calendar.SECOND, 0);
-//            date.set(Calendar.MILLISECOND, 0);
-//
-//
-//            long endTime = date.getTimeInMillis();
-//            date.add(Calendar.DAY_OF_YEAR, -1);
-//            long startTime = date.getTimeInMillis();
-//
-//            Log.e("time", "\tStart: " + DateFormat.getDateInstance().format(startTime) + " " + DateFormat.getTimeInstance().format(startTime));
-//            Log.e("time", "\tEnd: " + DateFormat.getDateInstance().format(endTime) + " " + DateFormat.getTimeInstance().format(endTime));
-//
-//            DataReadRequest stepsAndDistance = new DataReadRequest.Builder()
-//                    .aggregate(TYPE_STEP_COUNT_DELTA, AGGREGATE_STEP_COUNT_DELTA)
-//                    .aggregate(TYPE_DISTANCE_DELTA, AGGREGATE_DISTANCE_DELTA)
-//                    .bucketByTime(1, TimeUnit.DAYS)
-//                    .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
-//                    .build();
-//
-//            DataReadResult result = Fitness.HistoryApi.readData(mGoogleApiClient, stepsAndDistance).await(1, TimeUnit.MINUTES);
-//
-//            if (result.getBuckets().size() > 0) {
-//
-//                Log.e("History", "Number of buckets: " + result.getBuckets().size());
-//                List<DataSet> dataSets = result.getBuckets().get(0).getDataSets();
-//
-//                int i = 1;
-//
-//                for (DataSet dataSet : dataSets) {
-//                    Log.i("dataset number", i + "");
-//                    showAndStoreDataSet(dataSet);
-//                    i++;
-//                }
-//            }
-//        }
-//
-//        private void showAndStoreDataSet(DataSet dataSet) {
-//            Log.e("History", "Data returned for Data type: " + dataSet.getDataType().getName());
-//
-//            DateFormat dateFormat = DateFormat.getDateInstance();
-//            DateFormat timeFormat = DateFormat.getTimeInstance();
-//
-//            for (DataPoint dp : dataSet.getDataPoints()) {
-//                Log.e("History", "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
-//                Log.e("History", "\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)));
-//
-//                for (Field field : dp.getDataType().getFields()) {
-//
-//                    if (dp.getDataType().equals(TYPE_STEP_COUNT_DELTA)) {
-//                        steps = dp.getValue(field).asInt();
-//                    } else if (dp.getDataType().equals(TYPE_DISTANCE_DELTA)) {
-//                        distance = dp.getValue(field).asFloat();
-//                    }
-//
-//                    Log.e("History", "\tField: " + field.getName());
-//                    Log.e("History", "\tValue: " + dp.getValue(field));
-//                }
-//            }
-//        }
-//    }
-//
+
+    private class ViewWeekStepCountTask extends AsyncTask<Void, Void, Void> {
+
+        protected Void doInBackground(Void... params) {
+//            displayLastWeeksData();
+            displayYesterdaysData();
+            return null;
+        }
+
+        private void displayYesterdaysData() {
+
+            Calendar date = new GregorianCalendar();
+// reset hour, minutes, seconds and millis
+            date.set(Calendar.HOUR_OF_DAY, 0);
+            date.set(Calendar.MINUTE, 0);
+            date.set(Calendar.SECOND, 0);
+            date.set(Calendar.MILLISECOND, 0);
+
+
+            long endTime = date.getTimeInMillis();
+            date.add(Calendar.DAY_OF_YEAR, -1);
+            long startTime = date.getTimeInMillis();
+
+            Log.e("time", "\tStart: " + DateFormat.getDateInstance().format(startTime) + " " + DateFormat.getTimeInstance().format(startTime));
+            Log.e("time", "\tEnd: " + DateFormat.getDateInstance().format(endTime) + " " + DateFormat.getTimeInstance().format(endTime));
+
+            DataReadRequest stepsAndDistance = new DataReadRequest.Builder()
+                    .aggregate(TYPE_STEP_COUNT_DELTA, AGGREGATE_STEP_COUNT_DELTA)
+                    .aggregate(TYPE_DISTANCE_DELTA, AGGREGATE_DISTANCE_DELTA)
+                    .bucketByTime(1, TimeUnit.DAYS)
+                    .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
+                    .build();
+
+            DataReadResult result = Fitness.HistoryApi.readData(mGoogleApiClient, stepsAndDistance).await(1, TimeUnit.MINUTES);
+
+            if (result.getBuckets().size() > 0) {
+
+                Log.e("History", "Number of buckets: " + result.getBuckets().size());
+                List<DataSet> dataSets = result.getBuckets().get(0).getDataSets();
+
+                int i = 1;
+
+                for (DataSet dataSet : dataSets) {
+                    Log.i("dataset number", i + "");
+                    showAndStoreDataSet(dataSet);
+                    i++;
+                }
+            }
+        }
+
+        private void showAndStoreDataSet(DataSet dataSet) {
+            Log.e("History", "Data returned for Data type: " + dataSet.getDataType().getName());
+
+            DateFormat dateFormat = DateFormat.getDateInstance();
+            DateFormat timeFormat = DateFormat.getTimeInstance();
+
+            for (DataPoint dp : dataSet.getDataPoints()) {
+                Log.e("History", "\tStart: " + dateFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getStartTime(TimeUnit.MILLISECONDS)));
+                Log.e("History", "\tEnd: " + dateFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)) + " " + timeFormat.format(dp.getEndTime(TimeUnit.MILLISECONDS)));
+
+                for (Field field : dp.getDataType().getFields()) {
+
+                    if (dp.getDataType().equals(TYPE_STEP_COUNT_DELTA)) {
+                        steps = dp.getValue(field).asInt();
+                    } else if (dp.getDataType().equals(TYPE_DISTANCE_DELTA)) {
+                        distance = dp.getValue(field).asFloat();
+                    }
+
+                    Log.e("History", "\tField: " + field.getName());
+                    Log.e("History", "\tValue: " + dp.getValue(field));
+                }
+            }
+        }
+    }
+
     @Override
     public void onConnected(Bundle bundle) {
         Fitness.RecordingApi.subscribe(mGoogleApiClient, TYPE_STEP_COUNT_DELTA)

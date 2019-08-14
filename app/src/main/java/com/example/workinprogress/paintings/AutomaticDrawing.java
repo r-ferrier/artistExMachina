@@ -26,10 +26,10 @@ public class AutomaticDrawing extends Painting {
     public AutomaticDrawing(Context context, ArrayList<DataSet> dataSets) {
         super(context, dataSets);
 
-//        System.out.println(positions.get(0).getResults());
-//        System.out.println(locations.get(0).getResults());
+//        System.out.println(threePointsDataSets.get(0).getResults());
+//        System.out.println(twoPointsDataSets.get(0).getResults());
 //
-//        System.out.println(lightDistanceAndSteps.get(2).getResults());
+//        System.out.println(singularPointDataSets.get(2).getResults());
 
 //        testPositionsToBeDrawn = new int[][]{{50, 50, 300, 300}, {300, 300, 150, 400}, {150, 400, 600, 800}, {600, 800, 200, 1000}};
 
@@ -79,16 +79,16 @@ public class AutomaticDrawing extends Painting {
 
 //        path.moveTo(testPositionsToBeDrawn[0][0], testPositionsToBeDrawn[0][1]);
 //
-//        for (int[] positions : testPositionsToBeDrawn) {
+//        for (int[] threePointsDataSets : testPositionsToBeDrawn) {
 //
-//            path.moveTo(positions[0], positions[1]);
-//            path.cubicTo(positions[2], positions[1], positions[0], positions[3], positions[2], positions[3]);
+//            path.moveTo(threePointsDataSets[0], threePointsDataSets[1]);
+//            path.cubicTo(threePointsDataSets[2], threePointsDataSets[1], threePointsDataSets[0], threePointsDataSets[3], threePointsDataSets[2], threePointsDataSets[3]);
 //            canvas.drawPath(path, paint1);
 //
-//            path2.moveTo(positions[0], positions[1]);
-//            path2.lineTo(positions[2], positions[1]);
-//            path2.lineTo(positions[0], positions[3]);
-//            path2.lineTo(positions[2], positions[3]);
+//            path2.moveTo(threePointsDataSets[0], threePointsDataSets[1]);
+//            path2.lineTo(threePointsDataSets[2], threePointsDataSets[1]);
+//            path2.lineTo(threePointsDataSets[0], threePointsDataSets[3]);
+//            path2.lineTo(threePointsDataSets[2], threePointsDataSets[3]);
 //            canvas.drawPath(path2, paint2);
 //        }
 
@@ -99,8 +99,6 @@ public class AutomaticDrawing extends Painting {
 
         int lastControlX2 = positionsToBeDrawn[0][0];
         int lastControlY2 = positionsToBeDrawn[0][1];
-
-        System.out.println("number of lines to draw = "+positionsToBeDrawn.length);
 
         for (int i = 0; i < positionsToBeDrawn.length; i++) {
 
@@ -221,7 +219,7 @@ public class AutomaticDrawing extends Painting {
 
     private void convertLightValuesToColour() {
 
-        ArrayList<Integer> lightValues = lightDistanceAndSteps.get(2).getScaledResults1();
+        ArrayList<Integer> lightValues = singularPointDataSets.get(2).getScaledResults1();
 
         int totalValue = 0;
         int totalNumberofValues = (lightValues.size()) - 1;
@@ -254,8 +252,8 @@ public class AutomaticDrawing extends Painting {
             paint3.setAlpha(200);
         }
 
-//        steps = lightDistanceAndSteps.get(0).getScaledResults1().get(0);
-//        distance = lightDistanceAndSteps.get(1).getScaledResults1().get(0);
+//        steps = singularPointDataSets.get(0).getScaledResults1().get(0);
+//        distance = singularPointDataSets.get(1).getScaledResults1().get(0);
 
 //        if (steps < width) {
 //            xPosition = steps;
@@ -284,13 +282,9 @@ public class AutomaticDrawing extends Painting {
 
     private void convertPositionsToXYValues() {
 
-//        steps = lightDistanceAndSteps.get(0).getScaledResults1().get(0);
+//        steps = singularPointDataSets.get(0).getScaledResults1().get(0);
 
-        anglesAndDirections = new int[positions.get(0).getScaledResults1().size()][2];
-
-        System.out.println("size 1: "+positions.get(0).getScaledResults1().size());
-        System.out.println("size 2: "+positions.get(0).getScaledResults2().size());
-        System.out.println("size 3: "+positions.get(0).getScaledResults3().size());
+        anglesAndDirections = new int[threePointsDataSets.get(0).getScaledResults1().size()][2];
 
         // this is where we will store all the x/y coordinates, as x1, y1, x2, y2
         positionsToBeDrawn = new int[anglesAndDirections.length][4];
@@ -298,7 +292,7 @@ public class AutomaticDrawing extends Painting {
         for (int i = 0; i < anglesAndDirections.length; i++) {
 
             // multiply position by 0.1 to get the length of the line and %360 to get the angle
-            anglesAndDirections[i][0] = (int) ((positions.get(0).getScaledResults1().get(i)) * 0.5);
+            anglesAndDirections[i][0] = (int) ((threePointsDataSets.get(0).getScaledResults1().get(i)) * 0.5);
 
             // normalise line lengths by removing 50 from values larger than 50 and converting subsequently negative
             //values back to positives
@@ -308,7 +302,7 @@ public class AutomaticDrawing extends Painting {
                 anglesAndDirections[i][0] *= -1;
             }
 
-            anglesAndDirections[i][1] = (positions.get(0).getScaledResults2().get(i)) % 360;
+            anglesAndDirections[i][1] = (threePointsDataSets.get(0).getScaledResults2().get(i)) % 360;
 
 //            System.out.println("increment" + anglesAndDirections[i][0]);
 //            System.out.println("angle" + anglesAndDirections[i][1]);

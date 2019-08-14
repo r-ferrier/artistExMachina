@@ -163,8 +163,8 @@ public class AbstractShapes extends Painting {
 
     private void getDataForDrawingShapes() {
 
-        lightValues = lightDistanceAndSteps.get(2).getScaledResults1();
-        ArrayList<Integer> sizes = positions.get(0).getScaledResults1();
+        lightValues = singularPointDataSets.get(2).getScaledResults1();
+        ArrayList<Integer> sizes = threePointsDataSets.get(0).getScaledResults1();
 
         Collections.shuffle(lightValues);
 

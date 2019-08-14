@@ -5,17 +5,18 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.util.Log;
 
 import com.example.workinprogress.R;
 import com.example.workinprogress.dataSetsAndComponents.DataSet;
-import com.example.workinprogress.dataSetsAndComponents.SensorSingularPointDataSet;
+import com.example.workinprogress.dataSetsAndComponents.SingularPointDataSet;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
 
-public class Landscape extends Painting {
+public class Landscape extends PositionAndLightPainting {
 
     private Canvas canvas;
     private ArrayList<Path> paths;
@@ -28,6 +29,7 @@ public class Landscape extends Painting {
     private ArrayList<Integer> sizes;
     private int sizeRange = 500;
     private int sizeCounter = 0;
+    private String TAG = "Landscape class info";
 
 
     private int averageLightValue;
@@ -39,18 +41,17 @@ public class Landscape extends Painting {
         super(context, dataSets);
 
         random = new Random();
-        setData();
+        manipulateData();
         setPaints();
-
     }
 
-
-    private void setData() {
-
-        ArrayList<Integer> lightValues = ((SensorSingularPointDataSet) lightDistanceAndSteps.get(2)).getScaledResults1();
-        sizes = (ArrayList<Integer>)(positions.get(0).getScaledResults1()).clone();
-        sizes.addAll((ArrayList<Integer>)positions.get(0).getScaledResults2().clone());
-        sizes.addAll((ArrayList<Integer>)positions.get(0).getScaledResults3().clone());
+    /**
+     * manipulates and reformats the existing datasets for this image
+     */
+    private void manipulateData() {
+        sizes = (ArrayList<Integer>)positionValues1.clone();
+        sizes.addAll((ArrayList<Integer>)positionValues2.clone());
+        sizes.addAll((ArrayList<Integer>)positionValues3.clone());
 
         for(int i = 0; i<sizes.size();i++){
             sizes.set(i,sizes.get(i)-500);
@@ -61,10 +62,6 @@ public class Landscape extends Painting {
 
         averageLightValue = getAverage(lightValues);
         averageSize = getAverage(sizes);
-
-
-        System.out.println("average light: " + averageLightValue);
-        System.out.println("average size: " + averageSize);
 
         if(sizes.size()<=20) {
             numberOfLoops = 3;
@@ -77,8 +74,6 @@ public class Landscape extends Painting {
         }else{
             numberOfLoops = 64;
         }
-
-
     }
 
     //helper method to return average of any array of Integers
@@ -123,13 +118,8 @@ public class Landscape extends Painting {
     // method to decide which and how many colours to use from the available options
     private void choosePaints() {
 
-//        int lightValueForARGB = 255-(int)((double)averageLightValue/(1000.0/255));
-
         Paint opaquePaint = new Paint();
         int numberOfOptions;
-//        canvasColor = Color.argb(255,lightValueForARGB,lightValueForARGB,lightValueForARGB);
-//        opaquePaint.setColor(canvasColor);
-
         if (averageLightValue < 2500) {
 
             canvasColor = Color.BLACK;
@@ -150,22 +140,16 @@ public class Landscape extends Painting {
                numberOfOptions = 8;
             }
         }
-
         removePaintsFromOptions(opaquePaint,numberOfOptions);
     }
 
     // helper method to remove paints from choices and set one colour opaque
     private void removePaintsFromOptions(Paint opaquePaint, int numberOfOptions){
-
         for(int i = numberOfPaintOptions; i>numberOfOptions; i--){
             paintsOptions.remove(random.nextInt(i));
         }
-
-//        paintsOptions.get(random.nextInt(paintsOptions.size())).setAlpha(255);
         paintsOptions.add(opaquePaint);
     }
-
-
 
     @Override
     public void draw(Canvas canvas) {
@@ -180,66 +164,37 @@ public class Landscape extends Painting {
             paths = new ArrayList<>();
             paints = new ArrayList<>();
 
-//            setUpForOriginalIdea();
-            setUpForLandscapeIdea();
-//            setUpForOriginalIdea();
+            setUpForLandscape();
             setUpDrawing();
         }
 
         for (int i = 0; i < paths.size(); i++) {
             canvas.drawPath(paths.get(i), paints.get(i));
         }
-
-
     }
 
     private void setUpDrawing() {
-        int increment = 10;
 
         for(int[] control: controls){
             paths.add(new Path());
             paints.addAll(paintsOptions);
         }
-
         Collections.shuffle(paints);
 
         for (int i = 0; i < controls.size(); i++) {
-
-            int numberOfLines = random.nextInt(20) + 10;
-            paths.set(i, drawRibbon(controls.get(i).clone(), increment, numberOfLines, paths.get(i)));
-//                paths.set(i,drawRibbon(controls.get(i).clone(), increment*-1, numberOfLines, paths.get(i)));
+            paths.set(i, drawRibbon(controls.get(i).clone(), paths.get(i)));
         }
-
-        System.out.println("number of controls: "+controls.size());
-
     }
 
-
-    private Path drawRibbon(int[] controls, int increment, int numberOfLines, Path path) {
-
+    private Path drawRibbon(int[] controls, Path path) {
         path.moveTo(controls[0], controls[1]);
         path.cubicTo(controls[2], controls[3], controls[4], controls[5], controls[6], controls[7]);
-
-
-//        for (int i = 0; i < numberOfLines; i++) {
-//
-//            path.moveTo(controls[0], controls[1]);
-//            path.cubicTo(controls[2], controls[3], controls[4], controls[5], controls[6], controls[7]);
-//
-//            controls[2] += increment;
-//            controls[4] += increment;
-//        }
-
         return path;
     }
-
-
-
 
     private ArrayList<int[]> fillOutNewMountainRange(ArrayList<int[]> controls, int heightLimit) {
 
         Random random = new Random();
-
 
         for (int i = controls.size(); i < controls.size() + 1; i++) {
 
@@ -257,14 +212,13 @@ public class Landscape extends Painting {
 
             int potentialLength = x3 - x1;
 
-            int controlY1 = y1 - (getheightLimitedSizeForMountain(heightLimit));
+            int controlY1 = y1 - (getHeightLimitedSizeForMountain(heightLimit));
             int controlX1 = random.nextInt(potentialLength) + x1;
-            int controlY2 = y1 - (getheightLimitedSizeForMountain(heightLimit));
+            int controlY2 = y1 - (getHeightLimitedSizeForMountain(heightLimit));
             int controlX2 = random.nextInt(potentialLength) + x1;
 
 
             controls.add(new int[]{x1, y1, controlX1, controlY1, controlX2, controlY2, x3, y1});
-
         }
 
         return controls;
@@ -278,7 +232,7 @@ public class Landscape extends Painting {
         return end;
     }
 
-    private int getheightLimitedSizeForMountain(int heightLimit){
+    private int getHeightLimitedSizeForMountain(int heightLimit){
 
         int sizeToUse = (int)((sizes.get(sizeCounter++))*((float)heightLimit/sizeRange));
         sizeToUse *= 2;
@@ -286,128 +240,30 @@ public class Landscape extends Painting {
         if(sizeCounter>=sizes.size()){
             sizeCounter = 0;
         }
-        System.out.println("sizeToUse: "+sizeToUse);
         return sizeToUse;
     }
 
     private void addMountainRange(int start, int centre, int end, int heightLimit) {
-
         controls.add(new int[]{start, centre, start + random.nextInt(end),
-                centre - getheightLimitedSizeForMountain(heightLimit), start + random.nextInt(end),
-                centre - getheightLimitedSizeForMountain(heightLimit), end, centre});
-
+                centre - getHeightLimitedSizeForMountain(heightLimit), start + random.nextInt(end),
+                centre - getHeightLimitedSizeForMountain(heightLimit), end, centre});
         fillOutNewMountainRange(controls, heightLimit);
     }
 
-
-    private void setUpForLandscapeIdea() {
-
+    private void setUpForLandscape() {
         int start;
         int end;
         int centre;
         int heightLimit = (int) (height / numberOfLoops)*6;
 
         for (int i = 0; i < numberOfLoops; i++) {
-
-
                 centre = (int) ((height / (numberOfLoops) * (i+1)));
-
                 start = 0 - (random.nextInt(100));
-
                 end = getEnd(start, heightLimit);
 
                 for(int j = 0; j<4;j++) {
-
                     addMountainRange(start, centre, end, heightLimit);
-
                 }
         }
-
     }
-
-//    private void setUpForOriginalIdea() {
-//        int widthLimit = (int) (width / 2);
-//        int heightStart = 50;
-//        int heightEnd = (int) ((height) - 50);
-//        int centre = (int) (width / 2);
-//
-//
-//        controls.add(new int[]{centre, heightStart, centre + (random.nextInt(widthLimit)),
-//                random.nextInt(heightEnd), centre + (random.nextInt(widthLimit)),
-//                random.nextInt(heightEnd), centre, heightEnd});
-//        paths.add(new Path());
-//        Paint paint4 = new Paint();
-//        paint4.setColor(context.getResources().getColor(R.color.yellowOchre));
-//        paints.add(paint4);
-////            newControls(controls,paint4);
-//
-//        controls.add(new int[]{centre, heightStart, centre + (random.nextInt(widthLimit)),
-//                random.nextInt(heightEnd), centre + (random.nextInt(widthLimit)),
-//                random.nextInt(heightEnd), centre, heightEnd});
-//        paths.add(new Path());
-//        Paint paint2 = new Paint();
-//        paint2.setColor(context.getResources().getColor(R.color.coralRed));
-//        paints.add(paint2);
-////            newControls(controls,paint2);
-//
-//
-//        controls.add(new int[]{centre, heightStart, centre + (random.nextInt(widthLimit)),
-//                random.nextInt(heightEnd), centre + (random.nextInt(widthLimit)),
-//                random.nextInt(heightEnd), centre, heightEnd});
-//        paths.add(new Path());
-//        Paint paint3 = new Paint();
-//        paint3.setColor(context.getResources().getColor(R.color.coralRed));
-//        paints.add(paint3);
-////            newControls(controls,paint3);
-//
-//        controls.add(new int[]{centre, heightStart, centre + (random.nextInt(widthLimit)),
-//                random.nextInt(heightEnd), centre + (random.nextInt(widthLimit)),
-//                random.nextInt(heightEnd), centre, heightEnd});
-//        paths.add(new Path());
-//        Paint paint5 = new Paint();
-//        paint5.setColor(context.getResources().getColor(R.color.imperialBlue));
-//        paints.add(paint5);
-////            newControls(controls,paint5);
-//
-//
-////            controls.add(new int[]{centre, heightStart, centre - (random.nextInt(widthLimit)), random.nextInt(heightEnd), centre + (random.nextInt(widthLimit)), random.nextInt(heightEnd), centre,heightEnd, Color.GREEN});
-////
-////
-////            controls.add(new int[]{centre, heightStart, centre - (random.nextInt(widthLimit)), random.nextInt(heightEnd), centre + (random.nextInt(widthLimit)), random.nextInt(heightEnd),centre, heightEnd, Color.BLUE});
-////
-////
-////            controls.add(new int[]{centre, heightStart, centre - (random.nextInt(widthLimit)), random.nextInt(heightEnd),centre + (random.nextInt(widthLimit)), random.nextInt(heightEnd), centre, heightEnd, Color.RED});
-//
-//
-//    }
-//
-//    private ArrayList<int[]> newControls(ArrayList<int[]> controls, Paint paint) {
-//
-//        Random random = new Random();
-//
-//        for (int i = 1; i < 3; i++) {
-//
-//            int x1 = controls.get(i - 1)[6];
-//            int y1 = controls.get(i - 1)[7];
-//
-//            int y3 = y1 + (int) ((height - 50) / 3);
-//
-//            int potentialLength = y3 - y1;
-//
-//            int controlX1 = x1 + (random.nextInt((int) (width / 2)));
-//            int controlY1 = random.nextInt(potentialLength) + y1;
-//            int controlX2 = x1 - (random.nextInt((int) (width / 2)));
-//            int controlY2 = random.nextInt(potentialLength) + y1;
-//
-//
-//            controls.add(new int[]{x1, y1, controlX1, controlY1, controlX2, controlY2, x1, y3});
-//            paints.add(paint);
-//            paths.add(new Path());
-//
-//        }
-//
-//        return controls;
-//    }
-
-
 }

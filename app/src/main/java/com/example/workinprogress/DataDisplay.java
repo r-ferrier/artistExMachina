@@ -1,6 +1,7 @@
 package com.example.workinprogress;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
@@ -8,8 +9,9 @@ import java.util.ArrayList;
 public class DataDisplay extends AppCompatActivity {
 
     private ArrayList<String> dataStrings;
-    private String data;
+    private String data = "";
     private boolean newImageCreated;
+    private String TAG = "DataDisplay information: ";
 
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -38,6 +40,11 @@ public class DataDisplay extends AppCompatActivity {
             ((TextView)findViewById(R.id.dataTextView)).setText(dataString);
         }else {
             ((TextView) findViewById(R.id.dataTextView)).setText(data);
+        }
+
+        if(data.equals("")) {
+
+            Log.e(TAG,"data not saved correctly");
         }
 
     }

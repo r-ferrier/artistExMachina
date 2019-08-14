@@ -14,28 +14,37 @@ import com.example.workinprogress.dataSetsAndComponents.TwoPointsDataSet;
 
 import java.util.ArrayList;
 
-public class Painting extends Drawable {
+/**
+ * Painting class should be extended to create different types of painting. It implements drawable
+ * so any painting will return a drawable object. The abstract parent class will take care of storing
+ * the data into arrays that the child classes can then access, and provide them with a method to
+ * use to convert their outputs into bitmaps.
+ */
+public abstract class Painting extends Drawable {
 
-    protected ArrayList<SingularPointDataSet> lightDistanceAndSteps = new ArrayList<>();
-    protected ArrayList<TwoPointsDataSet> locations = new ArrayList<>();
-    protected ArrayList<ThreePointsDataSet> positions = new ArrayList<>();
+    protected ArrayList<SingularPointDataSet> singularPointDataSets = new ArrayList<>();
+    protected ArrayList<TwoPointsDataSet> twoPointsDataSets = new ArrayList<>();
+    protected ArrayList<ThreePointsDataSet> threePointsDataSets = new ArrayList<>();
     protected Context context;
 
     protected float width;
     protected float height;
 
+    /**
+     * stores datasets in their own datapolint specific arraylists.
+     * @param context context is required to enable this class to access view elements. Must be passed
+     *                as a variable because the class needs to extend drawable.
+     * @param dataSets arrayList of any data to be used by the application to draw images
+     */
     public Painting(Context context, ArrayList<DataSet> dataSets){
 
         for(DataSet dataSet: dataSets){
-
-            System.out.println(dataSet.getNumberOfDataPointsInEachSet()+dataSet.getDataTypeName()+"-----------------------");
             if(dataSet.getNumberOfDataPointsInEachSet()==1){
-                lightDistanceAndSteps.add((SingularPointDataSet)dataSet);
+                singularPointDataSets.add((SingularPointDataSet)dataSet);
             }else if(dataSet.getNumberOfDataPointsInEachSet()==2){
-                locations.add((TwoPointsDataSet)dataSet);
+                twoPointsDataSets.add((TwoPointsDataSet)dataSet);
             }else if(dataSet.getNumberOfDataPointsInEachSet()==3){
-                positions.add((ThreePointsDataSet)dataSet);
-
+                threePointsDataSets.add((ThreePointsDataSet)dataSet);
             }
         }
 
@@ -74,6 +83,10 @@ public class Painting extends Drawable {
         return (int)height;
     }
 
+    /**
+     * creates a bitmap of the draw() method
+     * @return bitmap version of output created when draw() is called
+     */
     public Bitmap createBitmap(){
 
         Bitmap  bitmap = Bitmap.createBitmap(this.getWidth(), this.getHeight(), Bitmap.Config.ARGB_8888);

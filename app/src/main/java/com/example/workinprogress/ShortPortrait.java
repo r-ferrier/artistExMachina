@@ -59,6 +59,12 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 //    private boolean GPSExists;
 //    private boolean networkIsEnabled;
 
+    /**
+     * sets short portrait activity as the view and then sets up sensors and sensor managers.
+     * Retrieves any aggregate data set information from the intent if existing, and adds new
+     * datasets for information to be gathered while the app is open.
+     * @param savedInstanceState instantiated by mainactivity
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,9 +74,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         assignSensorTextAndManagers();
 
         if (getIntent().getExtras() != null) {
-
-            dataSets.add((UnscaledSingleEntryDataSet)getIntent().getSerializableExtra(getString(R.string.data_type_steps)));
-            dataSets.add((UnscaledSingleEntryDataSet)getIntent().getSerializableExtra(getString(R.string.data_type_distance)));
+            dataSets = (ArrayList<DataSet>)(getIntent().getSerializableExtra("dataSet_Array"));
         }
 
         SensorSingularPointDataSet lightData = new SensorSingularPointDataSet(getString(R.string.data_type_light), lightSensor);
@@ -125,7 +129,6 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
             if(dataset.getDataTypeName().equals(getString(R.string.data_type_steps))){
       //          stepsText.setText(dataset.toString());
-                System.out.println("distance"+((UnscaledSingleEntryDataSet)dataset).getScaledResults1().get(0));
             }
             if(dataset.getDataTypeName().equals(getString(R.string.data_type_distance))){
      //           distanceText.setText(dataset.toString());
@@ -232,7 +235,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
 //        location = getLocation();
         String locationTextString = "lat: " + location.getLatitude() + " long: " + location.getLongitude();
-        Log.i("location", locationTextString);
+//        Log.i("location", locationTextString);
 //        locationText.setText(locationTextString);
         if (recordingData) {
 

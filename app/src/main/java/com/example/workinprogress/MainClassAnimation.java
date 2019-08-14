@@ -8,6 +8,9 @@ import com.example.workinprogress.paintings.shapes.Shape;
 
 import java.util.ArrayList;
 
+/**
+ * Used solely to create the drawables used in the animation shown on the main activity.
+ */
 public class MainClassAnimation {
 
     private ArrayList<Shape> shapes;

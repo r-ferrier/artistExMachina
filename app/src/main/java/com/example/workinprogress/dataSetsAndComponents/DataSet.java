@@ -26,7 +26,6 @@ public abstract class DataSet implements Serializable {
 
         if (dataSetPoint.getNumberOfDataPointsInSet()==numberOfDataPointsInEachSet&&dataSetPoint.getDataTypeName()==dataTypeName) {
             results.add(dataSetPoint);
-            System.out.println(dataSetPoint);
         }
     }
 
@@ -66,7 +65,6 @@ public abstract class DataSet implements Serializable {
     public float getMax(){
         return max;
     }
-
 
     public float getMin(){
         return min;
