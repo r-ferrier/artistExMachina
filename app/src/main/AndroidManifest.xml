@@ -17,7 +17,7 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
         <provider
-            android:name="androidx.core.content.FileProvider"
+            android:name=".GenericFileProvider"
             android:authorities="com.example.workinprogress.provider"
             android:exported="false"
             android:grantUriPermissions="true">

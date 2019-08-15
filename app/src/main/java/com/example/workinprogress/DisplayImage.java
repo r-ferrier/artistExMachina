@@ -549,7 +549,8 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
         // grant read and write permission to the sharing intent and then add the uri and datatype
         sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         sharingIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        sharingIntent.setDataAndType(uri,"image/jpeg");
+        sharingIntent.setDataAndType(uri,"image/*");
+        sharingIntent.putExtra(Intent.EXTRA_STREAM,uri);
 
         // begin the sharingintent
         startActivity(Intent.createChooser(sharingIntent, "Share via"));
