@@ -57,11 +57,14 @@ public class PositionData implements DataSetPoint {
      */
     private float scaleResults(float f) {
 
+        // create two temporary places to store new highest and lowest points in range while scaling
         float newMax = max;
         float newMin;
 
+        //convert f to float d
         double d = (double)f;
 
+        // if d is negative, temporarily convert it to positive to scale it, then convert it back
         if (d < 0) {
             d *= -1;
             d =(-0.0554*d*d) + (14.634*d) + 29.85;
@@ -70,14 +73,19 @@ public class PositionData implements DataSetPoint {
             d =(-0.0554*d*d) + (14.634*d) + 29.85;
         }
 
+        // work out the new possible range by applying same scaling to largest possible number + saving new smallest number
         newMax = (float)((-0.0554*newMax*newMax) + (14.634*newMax) + 29.85);
-        newMin = (newMax*-1)+1;
+        newMin = (newMax*-1)-1;
         float range = newMax - newMin;
 
+        // work out the scalar by taking the final permitted range and scaling to fit this
         float scalar = DisplayImage.IMAGE_SIZE_SCALAR / range;
 
+        // add the newMax value onto d to redistribute values along the full range, then multiply by scalar
         d += newMax;
         d *= scalar;
+
+        System.out.println("d after second amount of rescaling: "+d);
 
         return (float)d;
     }

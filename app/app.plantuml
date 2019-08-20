@@ -39,7 +39,19 @@ title __APP's Class Diagram__\n
   
 
   namespace com.example.workinprogress {
+    class com.example.workinprogress.GenericFileProvider {
+    }
+  }
+  
+
+  namespace com.example.workinprogress {
     class com.example.workinprogress.MainActivity {
+    }
+  }
+  
+
+  namespace com.example.workinprogress {
+    class com.example.workinprogress.MainClassAnimation {
     }
   }
   
@@ -100,7 +112,7 @@ title __APP's Class Diagram__\n
 
   namespace com.example.workinprogress {
     namespace dataSetsAndComponents {
-      class com.example.workinprogress.dataSetsAndComponents.SensorSingularPointDataSet {
+      class com.example.workinprogress.dataSetsAndComponents.PositionSensorThreePointsDataSet {
       }
     }
   }
@@ -108,7 +120,7 @@ title __APP's Class Diagram__\n
 
   namespace com.example.workinprogress {
     namespace dataSetsAndComponents {
-      class com.example.workinprogress.dataSetsAndComponents.SensorThreePointsDataSet {
+      class com.example.workinprogress.dataSetsAndComponents.SensorSingularPointDataSet {
       }
     }
   }
@@ -148,6 +160,14 @@ title __APP's Class Diagram__\n
 
   namespace com.example.workinprogress {
     namespace paintings {
+      class com.example.workinprogress.paintings.AbstractShapes {
+      }
+    }
+  }
+  
+
+  namespace com.example.workinprogress {
+    namespace paintings {
       class com.example.workinprogress.paintings.AlbersImage {
       }
     }
@@ -156,7 +176,7 @@ title __APP's Class Diagram__\n
 
   namespace com.example.workinprogress {
     namespace paintings {
-      class com.example.workinprogress.paintings.Painting {
+      class com.example.workinprogress.paintings.AutomaticDrawing {
       }
     }
   }
@@ -164,7 +184,91 @@ title __APP's Class Diagram__\n
 
   namespace com.example.workinprogress {
     namespace paintings {
-      class com.example.workinprogress.paintings.TextImage {
+      class com.example.workinprogress.paintings.KineticArt {
+      }
+    }
+  }
+  
+
+  namespace com.example.workinprogress {
+    namespace paintings {
+      class com.example.workinprogress.paintings.Landscape {
+      }
+    }
+  }
+  
+
+  namespace com.example.workinprogress {
+    namespace paintings {
+      abstract class com.example.workinprogress.paintings.Painting {
+      }
+    }
+  }
+  
+
+  namespace com.example.workinprogress {
+    namespace paintings {
+      class com.example.workinprogress.paintings.PositionAndLightPainting {
+      }
+    }
+  }
+  
+
+  namespace com.example.workinprogress {
+    namespace paintings {
+      namespace shapes {
+        class com.example.workinprogress.paintings.shapes.BumpyShape {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.example.workinprogress {
+    namespace paintings {
+      namespace shapes {
+        class com.example.workinprogress.paintings.shapes.CircleShape {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.example.workinprogress {
+    namespace paintings {
+      namespace shapes {
+        class com.example.workinprogress.paintings.shapes.CurvedShape {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.example.workinprogress {
+    namespace paintings {
+      namespace shapes {
+        class com.example.workinprogress.paintings.shapes.LineShape {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.example.workinprogress {
+    namespace paintings {
+      namespace shapes {
+        abstract class com.example.workinprogress.paintings.shapes.Shape {
+        }
+      }
+    }
+  }
+  
+
+  namespace com.example.workinprogress {
+    namespace paintings {
+      namespace shapes {
+        class com.example.workinprogress.paintings.shapes.SquiggleShape {
+        }
       }
     }
   }
@@ -172,11 +276,13 @@ title __APP's Class Diagram__\n
 
   com.example.workinprogress.About -up-|> androidx.appcompat.app.AppCompatActivity
   com.example.workinprogress.DataDisplay -up-|> androidx.appcompat.app.AppCompatActivity
+  com.example.workinprogress.DisplayImage .up.|> androidx.viewpager.widget.ViewPager.OnPageChangeListener
   com.example.workinprogress.DisplayImage -up-|> androidx.appcompat.app.AppCompatActivity
   com.example.workinprogress.DisplayImage o-- com.example.workinprogress.paintings.Painting : createdImage
   com.example.workinprogress.Gallery -up-|> androidx.appcompat.app.AppCompatActivity
   com.example.workinprogress.Gallery o-- com.example.workinprogress.GalleryRecyclerViewAdapter : galleryRecyclerViewAdapter
   com.example.workinprogress.GalleryRecyclerViewAdapter -up-|> androidx.recyclerview.widget.RecyclerView.Adapter
+  com.example.workinprogress.GenericFileProvider -up-|> androidx.core.content.FileProvider
   com.example.workinprogress.MainActivity .up.|> com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks
   com.example.workinprogress.MainActivity .up.|> com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener
   com.example.workinprogress.MainActivity -up-|> androidx.appcompat.app.AppCompatActivity
@@ -188,15 +294,25 @@ title __APP's Class Diagram__\n
   com.example.workinprogress.dataSetsAndComponents.LocationData .up.|> com.example.workinprogress.dataSetsAndComponents.DataSetPoint
   com.example.workinprogress.dataSetsAndComponents.LocationTwoPointsDataSet -up-|> com.example.workinprogress.dataSetsAndComponents.TwoPointsDataSet
   com.example.workinprogress.dataSetsAndComponents.PositionData .up.|> com.example.workinprogress.dataSetsAndComponents.DataSetPoint
+  com.example.workinprogress.dataSetsAndComponents.PositionSensorThreePointsDataSet -up-|> com.example.workinprogress.dataSetsAndComponents.ThreePointsDataSet
   com.example.workinprogress.dataSetsAndComponents.SensorSingularPointDataSet -up-|> com.example.workinprogress.dataSetsAndComponents.SingularPointDataSet
-  com.example.workinprogress.dataSetsAndComponents.SensorThreePointsDataSet -up-|> com.example.workinprogress.dataSetsAndComponents.ThreePointsDataSet
   com.example.workinprogress.dataSetsAndComponents.SingularPointDataSet -up-|> com.example.workinprogress.dataSetsAndComponents.DataSet
   com.example.workinprogress.dataSetsAndComponents.ThreePointsDataSet -up-|> com.example.workinprogress.dataSetsAndComponents.DataSet
   com.example.workinprogress.dataSetsAndComponents.TwoPointsDataSet -up-|> com.example.workinprogress.dataSetsAndComponents.DataSet
   com.example.workinprogress.dataSetsAndComponents.UnscaledSingleEntryDataSet -up-|> com.example.workinprogress.dataSetsAndComponents.SingularPointDataSet
+  com.example.workinprogress.paintings.AbstractShapes -up-|> com.example.workinprogress.paintings.Painting
   com.example.workinprogress.paintings.AlbersImage -up-|> com.example.workinprogress.paintings.Painting
+  com.example.workinprogress.paintings.AutomaticDrawing -up-|> com.example.workinprogress.paintings.Painting
+  com.example.workinprogress.paintings.KineticArt -up-|> com.example.workinprogress.paintings.AbstractShapes
+  com.example.workinprogress.paintings.Landscape -up-|> com.example.workinprogress.paintings.PositionAndLightPainting
   com.example.workinprogress.paintings.Painting -up-|> android.graphics.drawable.Drawable
-  com.example.workinprogress.paintings.TextImage -up-|> com.example.workinprogress.paintings.Painting
+  com.example.workinprogress.paintings.PositionAndLightPainting -up-|> com.example.workinprogress.paintings.Painting
+  com.example.workinprogress.paintings.shapes.BumpyShape -up-|> com.example.workinprogress.paintings.shapes.LineShape
+  com.example.workinprogress.paintings.shapes.CircleShape -up-|> com.example.workinprogress.paintings.shapes.LineShape
+  com.example.workinprogress.paintings.shapes.CurvedShape -up-|> com.example.workinprogress.paintings.shapes.Shape
+  com.example.workinprogress.paintings.shapes.LineShape -up-|> com.example.workinprogress.paintings.shapes.Shape
+  com.example.workinprogress.paintings.shapes.Shape -up-|> android.graphics.drawable.Drawable
+  com.example.workinprogress.paintings.shapes.SquiggleShape -up-|> com.example.workinprogress.paintings.shapes.LineShape
 
 
 right footer

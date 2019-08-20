@@ -28,6 +28,7 @@ public class PositionAndLightPainting extends Painting {
      */
     public PositionAndLightPainting(Context context, ArrayList<DataSet> dataSets) {
         super(context, dataSets);
+        setData();
     }
 
     public void setData(){

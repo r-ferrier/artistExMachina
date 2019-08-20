@@ -29,6 +29,7 @@ import com.example.workinprogress.dataSetsAndComponents.DataSet;
 import com.example.workinprogress.paintings.AbstractShapes;
 import com.example.workinprogress.paintings.AlbersImage;
 import com.example.workinprogress.paintings.AutomaticDrawing;
+import com.example.workinprogress.paintings.ColoursExperiment;
 import com.example.workinprogress.paintings.KineticArt;
 import com.example.workinprogress.paintings.Landscape;
 import com.example.workinprogress.paintings.Painting;
@@ -87,6 +88,8 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
                 findViewById(R.id.invisiButton3).setVisibility(View.INVISIBLE);
                 displayExistingImage();
             } else {
+                createAndDisplayImages();
+
                 findViewById(R.id.discardButton).setVisibility(View.INVISIBLE);
                 findViewById(R.id.shareButton).setVisibility(View.GONE);
                 findViewById(R.id.invisiButton3).setVisibility(View.GONE);
@@ -101,7 +104,7 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
 
 
                 viewPager.addOnPageChangeListener(this);
-                createAndDisplayImages();
+
             }
         }
     }
@@ -170,7 +173,7 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
         @Override
         public int getCount() {
             //Return total pages, one for each image type
-            return 5;
+            return drawables.size();
         }
 
         //Create the given page (indicated by position)
@@ -325,6 +328,10 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
         }
     }
 
+    /**
+     * This list must contain every type of painting that the app is going to draw. No other parameters
+     * in this class need to be changed to add a new type of painting
+     */
     private void createDrawables() {
         drawables = new ArrayList<>();
 
@@ -333,6 +340,7 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
         drawables.add(new AlbersImage(this, dataSets));
         drawables.add(new Landscape(this, dataSets));
         drawables.add(new KineticArt(this, dataSets));
+        drawables.add(new ColoursExperiment(this,dataSets));
 
     }
 

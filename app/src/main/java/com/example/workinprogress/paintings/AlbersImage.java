@@ -36,7 +36,7 @@ public class AlbersImage extends Painting {
         paint1.setARGB(10, 255, 200, 90);
 
         setColoursValues();
-        numberOfSquares = threePointsDataSets.get(0).getScaledResults1().size()*10;
+        numberOfSquares = threePointsDataSets.get(0).getScaledResults1().size()*8;
 
     }
 
@@ -134,7 +134,7 @@ public class AlbersImage extends Painting {
         float sizeScalar = maximumSquareSize / positionsSquareSizeRange;
 
         for (int i = 0; i < shapeSize.size(); i++) {
-            shapeSize.set(i, (int) (sizeScalar * shapeSize.get(i)) + 10);
+            shapeSize.set(i, (int) (sizeScalar * shapeSize.get(i))+10);
         }
 
         Collections.sort(shapeSize, Collections.reverseOrder());
@@ -146,7 +146,7 @@ public class AlbersImage extends Painting {
 
             int j;
             for (j = 0; j < shapeSize.size(); j++) {
-                newShapeSize.add(shapeSize.get(j) + 50);
+                newShapeSize.add(shapeSize.get(j));
             }
             i += j - 1;
         }
@@ -286,7 +286,6 @@ public class AlbersImage extends Painting {
 
     private void setNewCanvasPositions() {
         newCanvasPositions = new int[numberOfSquares][2];
-        int increment = 100;
         int loopNumber = 0;
 
         for (int i = 0; i < numberOfSquares; i++) {
@@ -303,7 +302,7 @@ public class AlbersImage extends Painting {
                 i += j - 1;
                 loopNumber++;
 
-                //on the second loop increase values on the right hand side by 100 and decrease left hand side by 100
+                //on the second loop increase x values by 1.5
             } else if (loopNumber == 1) {
 
                 int j;
@@ -314,8 +313,9 @@ public class AlbersImage extends Painting {
                     }
                 }
                 i += j - 1;
-                increment += 100;
                 loopNumber++;
+
+                // on the third loop increase y values by 1.5
             } else if (loopNumber == 2) {
                 int j;
                 for (j = 0; j < canvasPositions.length; j++) {
@@ -325,8 +325,8 @@ public class AlbersImage extends Painting {
                     }
                 }
                 i += j - 1;
-                increment += 100;
                 loopNumber++;
+                //on the fourth loop decrease x values by 1.5
             } else if (loopNumber == 3) {
                 int j;
                 for (j = 0; j < canvasPositions.length; j++) {
@@ -336,8 +336,8 @@ public class AlbersImage extends Painting {
                     }
                 }
                 i += j - 1;
-                increment += 100;
                 loopNumber++;
+                // on the fifth loop decrease y values by 1.5 then return loop counter to 1 to begin again at 2nd loop
             } else if (loopNumber == 4) {
                 int j;
                 for (j = 0; j < canvasPositions.length; j++) {
@@ -347,7 +347,6 @@ public class AlbersImage extends Painting {
                     }
                 }
                 i += j - 1;
-                increment += 100;
                 loopNumber = 1;
             }
 
