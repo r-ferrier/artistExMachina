@@ -68,11 +68,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private GoogleApiClient mGoogleApiClient;
     private int steps;
     private float distance;
+    private int animationDuration1 = 100;
+    private int animationDuration2 = 120;
+    private int animationDuration3 = 5000;
+    private int animationDuration4 = 6000;
+    private int animationPause1 = 3000;
+    private int animationPause2 = 2000;
+    private ObjectAnimator moveButtons;
 
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         AppCenter.start(getApplication(), "ab058df6-1a45-4393-9d26-e0e62056f7a2",
                 Analytics.class, Crashes.class);
@@ -84,6 +92,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         runAnimations();
     }
 
+    public void stopAnimation(View view){
+        moveButtons.cancel();
+        View buttonsLayout = findViewById(R.id.buttonPanel);
+        buttonsLayout.setTranslationY(0);
+    }
+
+
+
+
     private void runAnimations() {
         crossfadeText();
         moveButtonsUpFromBottom();
@@ -92,19 +109,22 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     private void moveButtonsUpFromBottom() {
         View buttonsLayout = findViewById(R.id.buttonPanel);
-        ObjectAnimator moveButtons = ObjectAnimator.ofFloat(buttonsLayout, "translationY", 1000f, 0f, 30f);
+        moveButtons = ObjectAnimator.ofFloat(buttonsLayout, "translationY", 1000f, 0f, 30f);
         buttonsLayout.setVisibility(View.VISIBLE);
-        moveButtons.setDuration(6000);
+        moveButtons.setDuration(animationDuration4);
         moveButtons.start();
-
     }
+
+
+
+
 
     private void crossfadeText() {
         TextView titleText = findViewById(R.id.titleText);
         TextView titleText2 = findViewById(R.id.titleText2);
 
         titleText.setVisibility(View.GONE);
-        int longAnimationDuration = 5000;
+        int longAnimationDuration = animationDuration3;
 
         titleText.setAlpha(0f);
         titleText.setVisibility(View.VISIBLE);
@@ -144,11 +164,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                             @Override
                             public void run() {
                                 try {
-                                    Thread.sleep(3000);
+                                    Thread.sleep(animationPause1);
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
-                                runnableTask(shapes, shapeImageViews, animatedShapesDrawing,100);
+                                runnableTask(shapes, shapeImageViews, animatedShapesDrawing,animationDuration1);
                             }
                         });
 
@@ -156,11 +176,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                             @Override
                             public void run() {
                                 try {
-                                    Thread.sleep(2000);
+                                    Thread.sleep(animationPause2);
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
-                                runnableTask(thinShapes, thinShapeImageViews, animatedShapesDrawing,100);
+                                runnableTask(thinShapes, thinShapeImageViews, animatedShapesDrawing,animationDuration1);
 
                             }
                         });
@@ -168,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                         Thread thinnestShapesThread = new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                runnableTask(thinnestShapes, thinnestShapeImageViews, animatedShapesDrawing, 120);
+                                runnableTask(thinnestShapes, thinnestShapeImageViews, animatedShapesDrawing, animationDuration2);
                             }
                         });
 

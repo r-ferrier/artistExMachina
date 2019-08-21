@@ -340,7 +340,6 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
         drawables.add(new AlbersImage(this, dataSets));
         drawables.add(new Landscape(this, dataSets));
         drawables.add(new KineticArt(this, dataSets));
-        drawables.add(new ColoursExperiment(this,dataSets));
 
     }
 

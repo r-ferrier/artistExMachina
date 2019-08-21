@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 
+import com.example.workinprogress.R;
 import com.example.workinprogress.dataSetsAndComponents.DataSet;
 import com.example.workinprogress.paintings.shapes.BumpyShape;
 import com.example.workinprogress.paintings.shapes.CircleShape;
@@ -15,13 +16,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
-public class AbstractShapes extends Painting {
+public class AbstractShapes extends PositionAndLightPainting {
 
 
     private Canvas canvas;
     private ArrayList<Shape> shapes  = new ArrayList<>();
     private ArrayList<int[]> colourValuesArray = new ArrayList<>();
-    private ArrayList<Integer> lightValues;
     private int numberOfShapes;
     private int averageSize;
     private Random random = new Random();
@@ -163,20 +163,47 @@ public class AbstractShapes extends Painting {
 
     private void getDataForDrawingShapes() {
 
-        lightValues = singularPointDataSets.get(2).getScaledResults1();
-        ArrayList<Integer> sizes = threePointsDataSets.get(0).getScaledResults1();
+        //create new list for sizes
+        ArrayList<Integer> sizes = (ArrayList<Integer>)positionValues1.clone();
 
-        Collections.shuffle(lightValues);
-
-        int[] yellow = new int[]{150, 237, 174, 73};
-        int[] red = new int[]{150, 209, 73, 91};
-        int[] darkBlue = new int[]{150, 0, 121, 140};
-        int[] blue = new int[]{150, 48, 99, 142};
-
+        //create a new random and set the number of shapes
         Random random = new Random();
-
         numberOfShapes = (sizes.size());
 
+        //shuffle lightvalues
+        Collections.shuffle(lightValues);
+
+        //create Arraylist of possible colours
+        ArrayList<Integer> colours = new ArrayList<>();
+        colours.add(context.getResources().getColor(R.color.juneBudYellow));
+        colours.add(context.getResources().getColor(R.color.yellowOchre));
+        colours.add(context.getResources().getColor(R.color.iguanaGreen));
+        colours.add(context.getResources().getColor(R.color.imperialBlue));
+        colours.add(context.getResources().getColor(R.color.dustyBlue));
+        colours.add(context.getResources().getColor(R.color.coralRed));
+        colours.add(context.getResources().getColor(R.color.metallicSeaweed));
+        colours.add(context.getResources().getColor(R.color.purplePineapple));
+        colours.add(context.getResources().getColor(R.color.rosyBrown));
+        colours.add(context.getResources().getColor(R.color.purpleNavy));
+
+        //create Arraylist of int[] containing colours broken down into their numbers
+        ArrayList<int[]> coloursAsNumbers = new ArrayList<>();
+
+        for(int i = 0; i<colours.size();i++){
+
+            int alpha = 150;
+            int red = Color.red(colours.get(i));
+            int green = Color.green(colours.get(i));
+            int blue = Color.blue(colours.get(i));
+
+            coloursAsNumbers.add(new int[]{alpha,red,green,blue});
+        }
+
+        //shuffle the colours so that a random selection will be chosen
+        Collections.shuffle(coloursAsNumbers);
+
+
+        //find the total of all size values once converted to positive
         int totalSize = 0;
 
         for (Integer size : sizes) {
@@ -187,43 +214,43 @@ public class AbstractShapes extends Painting {
             totalSize+=size;
         }
 
-        ArrayList<Integer> highestSizes = setUniqueValueArrays((ArrayList<Integer>)sizes.clone());
+        //remove duplicate values from the list of sizes and sort array in size order
+        ArrayList<Integer> highestSizes = setUniqueValueSortedArrays((ArrayList<Integer>)sizes.clone());
 
+        //create an average size that is biased towards the highest sizes
         averageSize = (((highestSizes.get(0)+highestSizes.get(1)+highestSizes.get(2)+highestSizes.get(3)) / 4) + (totalSize / numberOfShapes)) / 2;
         averageSize = (500 - averageSize);
 
-        //setting lineWidths
-
+        //used to set lineWidths
         double sizeUpperBounds;
         double sizeLowerBounds;
+        int numberOfColours;
 
         if (numberOfShapes < 80) {
             sizeLowerBounds = (double) averageSize / 220;
             sizeUpperBounds = (double) averageSize / 1.5 - sizeLowerBounds;
-            chooseColours(red);
-            chooseColours(yellow);
+            numberOfColours = 2;
             shapesToBeChosen = 1;
         } else if (numberOfShapes < 200) {
             sizeLowerBounds = (double) averageSize / 64;
             sizeUpperBounds = (double) averageSize / 10 - sizeLowerBounds;
-            chooseColours(darkBlue);
-            chooseColours(yellow);
+            numberOfColours = 4;
             shapesToBeChosen = 2;
         } else if (numberOfShapes < 400) {
             sizeLowerBounds = (double) averageSize / 100;
             sizeUpperBounds = (double) averageSize / 20 - sizeLowerBounds;
-            chooseColours(red);
-            chooseColours(yellow);
-            chooseColours(darkBlue);
+            numberOfColours = 6;
             shapesToBeChosen = 3;
         } else {
             sizeLowerBounds = (double) averageSize / 300;
             sizeUpperBounds = (double) averageSize / 40 - sizeLowerBounds;
-            chooseColours(red);
-            chooseColours(yellow);
-            chooseColours(blue);
-            chooseColours(darkBlue);
+            numberOfColours = 9;
             shapesToBeChosen = 4;
+        }
+
+        //use the choosecolours method with randomly selected colours the number of times dictated by the algorithm
+        for (int i = 0; i<numberOfColours; i++){
+            chooseColours(coloursAsNumbers.get(i));
         }
 
         lineWidths = new int[2000];
@@ -234,7 +261,7 @@ public class AbstractShapes extends Painting {
 
     }
 
-    protected ArrayList<Integer> setUniqueValueArrays(ArrayList<Integer> sortedArray) {
+    protected ArrayList<Integer> setUniqueValueSortedArrays(ArrayList<Integer> sortedArray) {
 
         for (int i = 0; i < sortedArray.size() - 1; i++) {
             while (sortedArray.get(i + 1) == sortedArray.get(i)) {

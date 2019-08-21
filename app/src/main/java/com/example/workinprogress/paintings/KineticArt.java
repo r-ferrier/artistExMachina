@@ -47,7 +47,7 @@ public class KineticArt extends AbstractShapes {
         random = new Random();
     }
 
-    private void setData() {
+    private void setNewData() {
 
 
         ArrayList<Integer> lightValues = (ArrayList<Integer>)((SensorSingularPointDataSet) singularPointDataSets.get(2)).getScaledResults1().clone();
@@ -85,7 +85,7 @@ public class KineticArt extends AbstractShapes {
         highestPositionValues = (ArrayList<Integer>) sizes.clone();
 
         Collections.sort(highestPositionValues, Collections.reverseOrder());
-        highestPositionValues = setUniqueValueArrays(highestPositionValues);
+        highestPositionValues = setUniqueValueSortedArrays(highestPositionValues);
 
         int possibleWidthValues = (int)(width/2);
         int possibleHeightValues = (int)(height/2);
@@ -227,7 +227,7 @@ public class KineticArt extends AbstractShapes {
         width = getBounds().width();
         height = getBounds().height();
 
-        setData();
+        setNewData();
 
         if (paths == null) {
             setUpDrawing();

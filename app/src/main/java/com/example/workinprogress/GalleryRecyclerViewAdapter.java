@@ -7,9 +7,11 @@ import android.widget.ImageView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
+
 public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecyclerViewAdapter.ImageViewHolder> {
 
-    private String[] images;
+    private File[] images;
 
     // class to create temporary holding spaces for each image
     public static class ImageViewHolder extends RecyclerView.ViewHolder {
@@ -21,7 +23,7 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
     }
 
     //constructor simply takes in the array of image sources
-    public GalleryRecyclerViewAdapter(String[] images) {
+    public GalleryRecyclerViewAdapter(File[] images) {
         this.images = images;
     }
 
@@ -38,8 +40,8 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
     // this method takes the empty image holders and inserts the images from images[] into them
     @Override
     public void onBindViewHolder(ImageViewHolder holder, int position) {
-        holder.imageView.setImageBitmap(BitmapFactory.decodeFile(images[position]));
-        holder.imageView.setContentDescription(images[position]);
+        holder.imageView.setImageBitmap(BitmapFactory.decodeFile(images[position].getPath()));
+        holder.imageView.setContentDescription(images[position].getPath());
     }
 
     // returns the dataset size

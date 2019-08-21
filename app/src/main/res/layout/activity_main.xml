@@ -5,7 +5,12 @@
     android:id="@+id/constraintLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:onClick="stopAnimation"
     tools:context=".MainActivity">
+
 
     <FrameLayout
         android:id="@+id/animationPortion"

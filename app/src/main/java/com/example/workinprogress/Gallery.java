@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  * Gallery view will need to display any files it finds in a scrollable panel. Each file is
@@ -21,9 +23,7 @@ import java.io.File;
 public class Gallery extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private LinearLayoutManager linearLayoutManager;
     private GalleryRecyclerViewAdapter galleryRecyclerViewAdapter;
-    private String[] reverseFiles;
     private GridLayoutManager gridLayoutManager;
     private String TAG = "Gallery info: ";
 
@@ -38,10 +38,10 @@ public class Gallery extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
-        File file = new File(Environment.getExternalStoragePublicDirectory(
+        //get a list of all files saved by the app
+        File directory = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), getString(R.string.album_storage_name));
-
-        String[] files = file.list();
+        File[] files = directory.listFiles();
 
         //first check if files exist - if not, instantiate an empty view
         if (files == null) {
@@ -50,16 +50,8 @@ public class Gallery extends AppCompatActivity {
 
         } else {
 
-            //amend all existing found file paths to include their full path
-            for (int i = 0; i < files.length; i++) {
-                files[i] = file.getPath() + "/" + files[i];
-            }
-
-            //reverse the order of the files so the latest appears first
-            reverseFiles = new String[files.length];
-            for (int i = 0; i < files.length; i++) {
-                reverseFiles[files.length - i - 1] = files[i];
-            }
+            //sort the list so that the most recently modified files are shown first
+            Arrays.sort(files, (f1, f2) -> Long.valueOf(f2.lastModified()).compareTo(f1.lastModified()));
 
             //set content view and set up recycler view so that it has three columns and each image
             //has a fixed size
@@ -71,7 +63,7 @@ public class Gallery extends AppCompatActivity {
             recyclerView.setLayoutManager(gridLayoutManager);
 
             //send files to viewadapter to insert into the recyclerView
-            galleryRecyclerViewAdapter = new GalleryRecyclerViewAdapter(reverseFiles);
+            galleryRecyclerViewAdapter = new GalleryRecyclerViewAdapter(files);
             recyclerView.setAdapter(galleryRecyclerViewAdapter);
         }
     }
