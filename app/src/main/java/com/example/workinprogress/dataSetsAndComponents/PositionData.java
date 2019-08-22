@@ -85,8 +85,6 @@ public class PositionData implements DataSetPoint {
         d += newMax;
         d *= scalar;
 
-        System.out.println("d after second amount of rescaling: "+d);
-
         return (float)d;
     }
 

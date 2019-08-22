@@ -41,9 +41,6 @@ import com.google.android.gms.fitness.data.DataSet;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.result.DataReadResult;
-import com.microsoft.appcenter.AppCenter;
-import com.microsoft.appcenter.analytics.Analytics;
-import com.microsoft.appcenter.crashes.Crashes;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -77,36 +74,43 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private ObjectAnimator moveButtons;
 
 
+    /**
+     * On creation the mainActivity will set up content, request any necessary permissions, collect aggregate
+     * data and create an animation for its home screen
+     * @param savedInstanceState
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
-        AppCenter.start(getApplication(), "ab058df6-1a45-4393-9d26-e0e62056f7a2",
-                Analytics.class, Crashes.class);
-
         requestPermissions();
         connectToAPIs(savedInstanceState);
         new ViewWeekStepCountTask().execute();
-
         runAnimations();
     }
 
+    /**
+     * Method to force animation of buttons to end on click so that users do not have to wait for animation
+     * to complete when not opening app for the first time
+     * @param view called by onClick method of the layout
+     */
     public void stopAnimation(View view){
         moveButtons.cancel();
         View buttonsLayout = findViewById(R.id.buttonPanel);
         buttonsLayout.setTranslationY(0);
     }
 
-
-
-
+    /**
+     * Calls on helper methods that are used to generate animations for the home screen
+     */
     private void runAnimations() {
         crossfadeText();
         moveButtonsUpFromBottom();
         drawShapes();
     }
 
+    /**
+     * translates buttons from outside the screen at the bottom to their set position onscreen
+     */
     private void moveButtonsUpFromBottom() {
         View buttonsLayout = findViewById(R.id.buttonPanel);
         moveButtons = ObjectAnimator.ofFloat(buttonsLayout, "translationY", 1000f, 0f, 30f);
@@ -115,10 +119,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         moveButtons.start();
     }
 
-
-
-
-
+    /**
+     * fades title text from black to white
+     */
     private void crossfadeText() {
         TextView titleText = findViewById(R.id.titleText);
         TextView titleText2 = findViewById(R.id.titleText2);
@@ -137,61 +140,53 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         });
     }
 
+    /**
+     * creates animated background from lists of shapes obtained from MainClassAnimation class
+     */
     private void drawShapes() {
 
         FrameLayout animatedShapesDrawing = findViewById(R.id.animationPortion);
         LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         ViewTreeObserver observer = animatedShapesDrawing.getViewTreeObserver();
 
+        //animation cannot be completed until layout has finished so listener added to determine when
         observer.addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
-
+                        //as soon as layout is complete, listener is removed
                         animatedShapesDrawing.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
+                        //animation can now be constructed and run using the width and height of the layout
                         MainClassAnimation mainClassAnimation = new MainClassAnimation(animatedShapesDrawing.getWidth(), animatedShapesDrawing.getHeight());
 
-                        ArrayList<Shape> shapes = mainClassAnimation.getShapes();
-                        ArrayList<Shape> thinShapes = mainClassAnimation.getThinShapes();
-                        ArrayList<Shape> thinnestShapes = mainClassAnimation.getThinnestShapes();
+                        ArrayList<ImageView> shapeImageViews = inflateViewsForAnimation(inflater, mainClassAnimation.getShapes());
+                        ArrayList<ImageView> thinShapeImageViews = inflateViewsForAnimation(inflater, mainClassAnimation.getThinShapes());
+                        ArrayList<ImageView> thinnestShapeImageViews = inflateViewsForAnimation(inflater, mainClassAnimation.getThinnestShapes());
 
-                        ArrayList<ImageView> shapeImageViews = inflateViewsForAnimation(inflater, shapes);
-                        ArrayList<ImageView> thinShapeImageViews = inflateViewsForAnimation(inflater, thinShapes);
-                        ArrayList<ImageView> thinnestShapeImageViews = inflateViewsForAnimation(inflater, thinnestShapes);
-
-                        Thread shapesThread = new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    Thread.sleep(animationPause1);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                                runnableTask(shapes, shapeImageViews, animatedShapesDrawing,animationDuration1);
+                        //three threads created, each one calls helper method with different shape arrays after a small pause
+                        Thread shapesThread = new Thread(() -> {
+                            try {
+                                Thread.sleep(animationPause1);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
                             }
+                            runnableTask(mainClassAnimation.getShapes(), shapeImageViews, animatedShapesDrawing,animationDuration1);
                         });
 
-                        Thread thinShapesThread = new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    Thread.sleep(animationPause2);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                                runnableTask(thinShapes, thinShapeImageViews, animatedShapesDrawing,animationDuration1);
-
+                        Thread thinShapesThread = new Thread(() -> {
+                            try {
+                                Thread.sleep(animationPause2);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
                             }
+                            runnableTask(mainClassAnimation.getThinShapes(), thinShapeImageViews, animatedShapesDrawing,animationDuration1);
+
                         });
 
-                        Thread thinnestShapesThread = new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                runnableTask(thinnestShapes, thinnestShapeImageViews, animatedShapesDrawing, animationDuration2);
-                            }
-                        });
+                        Thread thinnestShapesThread = new Thread(() -> runnableTask(mainClassAnimation.getThinnestShapes(), thinnestShapeImageViews, animatedShapesDrawing, animationDuration2));
 
+                        //run threads
                         shapesThread.start();
                         thinShapesThread.start();
                         thinnestShapesThread.start();
@@ -199,6 +194,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 });
     }
 
+    /**
+     * helper method for drawshapes method, used to place shapes on background one by one. This method
+     * is not called by the main thread so it calls sleep first, before using a handler to post tasks back onto
+     * the main thread in order to update the views
+     * @param shapes list of drawables
+     * @param shapeImageViews list of imageviews into which drawables should be inserted
+     * @param animatedShapesDrawing
+     * @param sleepDuration
+     */
     private void runnableTask(ArrayList<Shape> shapes, ArrayList<ImageView> shapeImageViews, FrameLayout animatedShapesDrawing, int sleepDuration) {
         for (int i = 0; i < shapes.size(); i++) {
 
@@ -208,21 +212,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 e.printStackTrace();
             }
 
+            //get the imageview and shape and declare them as final so they can be accessed by the Handler
             final ImageView imageView = shapeImageViews.get(i);
             final Shape shape = shapes.get(i);
 
             new Handler(Looper.getMainLooper()).post(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            animatedShapesDrawing.addView(imageView);
-                            imageView.setImageDrawable(shape);
-                        }
+                    () -> {
+                        //runnable to add new view to the frameLayout and add the drawable to that view
+                        animatedShapesDrawing.addView(imageView);
+                        imageView.setImageDrawable(shape);
                     }
             );
         }
     }
 
+    /**
+     * helper method for the drawShapes method, creates a new imageview for each shape. Imageview is the size of
+     * the full screen and will be placed into a frame layout so that many can be layed on top of each other
+     * @param inflater LayoutInflater
+     * @param shapes ArrayList of Shapes
+     * @return
+     */
     private ArrayList<ImageView> inflateViewsForAnimation(LayoutInflater inflater, ArrayList<Shape> shapes) {
         ArrayList<ImageView> shapeImageViews = new ArrayList<>();
 

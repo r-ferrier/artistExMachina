@@ -1,9 +1,13 @@
 package com.example.workinprogress.dataSetsAndComponents;
 
 import android.hardware.Sensor;
+import android.util.Log;
+
 import java.util.ArrayList;
 
 public class PositionSensorThreePointsDataSet extends ThreePointsDataSet {
+
+    private String TAG = "PositionSensorThreePointsDataSet";
 
     /**
      * constructor sets range and data type name and will set up arraylists in the super constructor.
@@ -45,6 +49,12 @@ public class PositionSensorThreePointsDataSet extends ThreePointsDataSet {
             scaledResults2.add(applyScaling((float) dataSetPoint.getScaledResults().get(1)));
             scaledResults3.add(applyScaling((float) dataSetPoint.getScaledResults().get(2)));
         }
+
+        for (int i = 0; i< scaledResults1.size(); i++){
+            Log.i(TAG, "scaled results "+i+": x:"+scaledResults1.get(i)+" y:"+scaledResults2.get(i)+" z:"+scaledResults3.get(i)+"\n");
+            Log.i(TAG, "unscaled results "+i+": x:"+getResults().get(i).getResults().get(0)+" y:"+getResults().get(i).getResults().get(1)+" z:"+getResults().get(i).getResults().get(2)+"\n");
+        }
+
     }
 
     private Integer applyScaling(float dataSetPoint){

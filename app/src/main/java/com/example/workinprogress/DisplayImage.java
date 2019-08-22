@@ -29,7 +29,6 @@ import com.example.workinprogress.dataSetsAndComponents.DataSet;
 import com.example.workinprogress.paintings.AbstractShapes;
 import com.example.workinprogress.paintings.AlbersImage;
 import com.example.workinprogress.paintings.AutomaticDrawing;
-import com.example.workinprogress.paintings.ColoursExperiment;
 import com.example.workinprogress.paintings.KineticArt;
 import com.example.workinprogress.paintings.Landscape;
 import com.example.workinprogress.paintings.Painting;

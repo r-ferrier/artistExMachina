@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class SensorSingularPointDataSet extends SingularPointDataSet {
 
-    private String TAG = "light sensor information: ";
+    private String TAG = "light sensor information";
 
     /**
      * constructor sets range and data type name and will set up arraylists in the super constructor.
@@ -39,9 +39,9 @@ public class SensorSingularPointDataSet extends SingularPointDataSet {
         for (DataSetPoint dataSetPoint : getResults()) {
             scaledResults1.add(Math.round((float) dataSetPoint.getScaledResults().get(0)));
         }
-
-        for(Integer i: scaledResults1){
-            Log.i(TAG,"scaled result "+scaledResults1.indexOf(i)+": "+i+"\n");
+        for (int i = 0; i< scaledResults1.size(); i++){
+            Log.i(TAG, "scaled result "+i+": "+scaledResults1.get(i)+"\n");
+            Log.i(TAG, "unscaled result "+i+": "+getResults().get(i)+"\n");
         }
     }
 }

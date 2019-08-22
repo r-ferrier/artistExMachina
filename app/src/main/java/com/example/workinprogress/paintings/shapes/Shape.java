@@ -22,6 +22,12 @@ public abstract class Shape extends Drawable {
     protected Path path;
     protected Paint paint1;
 
+    /**
+     * class that must be extended to create any type of shape to be used in the abstractshapes painting.
+     * Sets the colour in a paint and sets up a path for drawing.
+     * @param aRGBColor
+     *
+     */
     public Shape(int[] aRGBColor){
 
         paint1 = new Paint();
@@ -31,6 +37,10 @@ public abstract class Shape extends Drawable {
 
     }
 
+    /**
+     * calculates starting degree from starting points - if it knows where the previous shape ended
+     * it can use this to tell if the next shape should go left, right, up or down from this position
+     */
     public void setStartingDegree() {
 
         if (y1Start > y2Start) {

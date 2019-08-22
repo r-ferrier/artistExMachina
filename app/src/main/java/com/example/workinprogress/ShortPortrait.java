@@ -25,37 +25,26 @@ import com.example.workinprogress.dataSetsAndComponents.LocationTwoPointsDataSet
 import com.example.workinprogress.dataSetsAndComponents.PositionData;
 import com.example.workinprogress.dataSetsAndComponents.SensorSingularPointDataSet;
 import com.example.workinprogress.dataSetsAndComponents.PositionSensorThreePointsDataSet;
-import com.example.workinprogress.dataSetsAndComponents.UnscaledSingleEntryDataSet;
 
 import java.util.ArrayList;
 
 public class ShortPortrait extends AppCompatActivity implements SensorEventListener, LocationListener {
 
     private SensorManager sensorManager;
-
     private Sensor lightSensor;
     private Sensor positionSensor;
     private boolean recordingData = false;
-    private int positionDataCount = 0;
-
     private String imageType = "Albers Image";
+    private String TAG = "ShortPortraitError";
 
     public TextView lightText;
-//    public TextView locationText;
     private TextView xText;
     private TextView yText;
     private TextView zText;
-//    private TextView distanceText;
-//    private TextView stepsText;
     private boolean nightMode = false;
-
-    private ArrayList<TextView> shortPortraitActivityTextViews = new ArrayList<>();
-
     private ArrayList<DataSet> dataSets = new ArrayList<>();
-
     private LocationManager locationManager;
 //    private android.location.Location location;
-
 //    private boolean GPSExists;
 //    private boolean networkIsEnabled;
 
@@ -71,7 +60,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         setContentView(R.layout.activity_short_portrait);
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        assignSensorTextAndManagers();
+        assignSensorsAndSensorText();
 
         if (getIntent().getExtras() != null) {
             dataSets = (ArrayList<DataSet>)(getIntent().getSerializableExtra("dataSet_Array"));
@@ -87,10 +76,13 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         dataSets.add(new PositionSensorThreePointsDataSet(getString(R.string.data_type_position), positionSensor));
         dataSets.add(locationData);
 
-        updateStaticValues();
+//        updateStaticValues();
 
     }
 
+    /**
+     * listeners and location will be registered
+     */
     @SuppressLint("MissingPermission")
     protected void onResume() {
         super.onResume();
@@ -101,15 +93,12 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                 2000,
                 10, this);
-        recordingData = false;
     }
 
-    private void assignSensorTextAndManagers() {
-
-        for (int i = 0; i<5; i++){
-            String textView = "R.id.textView"+i;
-            shortPortraitActivityTextViews.add((TextView)findViewById( getResources().getIdentifier(textView,"id",getPackageName())));
-        }
+    /**
+     * helper method to insantiate textViews and sensors
+     */
+    private void assignSensorsAndSensorText() {
 
         lightText = findViewById(R.id.lightValues);
 //        locationText = findViewById(R.id.locationValues);
@@ -121,22 +110,32 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
         positionSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-    }
 
-    private void updateStaticValues(){
-
-        for(DataSet dataset: dataSets){
-
-            if(dataset.getDataTypeName().equals(getString(R.string.data_type_steps))){
-      //          stepsText.setText(dataset.toString());
-            }
-            if(dataset.getDataTypeName().equals(getString(R.string.data_type_distance))){
-     //           distanceText.setText(dataset.toString());
-            }
+        if(lightSensor==null||positionSensor==null){
+            Log.e(TAG,"problem locating light or position sensor");
         }
     }
 
+//    private void updateStaticValues(){
+//
+//        for(DataSet dataset: dataSets){
+//
+//            if(dataset.getDataTypeName().equals(getString(R.string.data_type_steps))){
+//      //          stepsText.setText(dataset.toString());
+//            }
+//            if(dataset.getDataTypeName().equals(getString(R.string.data_type_distance))){
+//     //           distanceText.setText(dataset.toString());
+//            }
+//        }
+//    }
 
+
+    /**
+     * onclick method for the start/stop button. If the button is pressed and data is not currently being recorded,
+     * it will start to be recorded and elements of the layout will change to reflect this. If it is being recorded,
+     * it will call the stop method.
+     * @param view start/stop button
+     */
     public void startStopButtonPressed(View view) {
 
         if (!recordingData) {
@@ -161,13 +160,16 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
             ((TextView)findViewById(R.id.yValues)).setTextColor(Color.WHITE);
             ((TextView)findViewById(R.id.zValues)).setTextColor(Color.WHITE);
         } else {
-            stop(view);
+            stop();
         }
 
     }
 
 
-    public void stop(View view) {
+    /**
+     * unregisters listener and begins the display image intent, sending it all of the recorded data
+     */
+    public void stop() {
 
         sensorManager.unregisterListener(this);
 
@@ -180,12 +182,16 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         bundle.putSerializable(getString(R.string.data_sets),dataSets);
         intent.putExtra("createImage",true);
         intent.putExtra("imageType",imageType);
-
         intent.putExtras(bundle);
         startActivity(intent);
     }
 
 
+    /**
+     * checks to see which sensor triggered the event and updates the view. If data is being
+     * recorded, adds result to the appropriate dataset.
+     * @param sensorEvent triggered by sensorlistener
+     */
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 
@@ -200,21 +206,14 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
                 }
             }
         } else if (sensorEvent.sensor == positionSensor) {
-
-            positionDataCount++;
-
-//            System.out.println("number of position data collected-----------"+positionDataCount+"----------------");
-
             String xTextString = getString(R.string.positionX)+"  "+ sensorEvent.values[0];
             String yTextString = getString(R.string.positionY)+"  "+ sensorEvent.values[1];
             String zTextString = getString(R.string.positionZ)+"  "+ sensorEvent.values[2];
-
             xText.setText(xTextString);
             yText.setText(yTextString);
             zText.setText(zTextString);
 
             if (recordingData) {
-
                 for(DataSet dataSet: dataSets){
                     if(dataSet.getDataTypeName()==getString(R.string.data_type_position)){
                         dataSet.addResult(new PositionData(getString(R.string.data_type_position),sensorEvent.values[0],sensorEvent.values[1],sensorEvent.values[2], dataSet.getMax(),dataSet.getMin()));
@@ -224,21 +223,22 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         }
     }
 
-
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
+        //not used
     }
 
-    // is this necessary? MAY JUST BE ABLE TO USE LOCATION INFO SENT TO LISTENER ONLOCATIONCHANGE
+    /**
+     * on location change, add a location to the list of locations if being recorded
+     * @param location
+     */
     @Override
     public void onLocationChanged(android.location.Location location) {
-
 //        location = getLocation();
         String locationTextString = "lat: " + location.getLatitude() + " long: " + location.getLongitude();
 //        Log.i("location", locationTextString);
 //        locationText.setText(locationTextString);
         if (recordingData) {
-
             for(DataSet dataSet: dataSets){
                 if(dataSet.getDataTypeName()==getString(R.string.data_type_location)){
                     dataSet.addResult(new LocationData(getString(R.string.data_type_location),location.getLatitude(),location.getLongitude()));

@@ -35,8 +35,9 @@ public class LightData implements DataSetPoint {
         this.min = min;
         this.nightMode = nightMode;
 
-        scaledDataPoints.add(scale(dataPoint));
         dataPoints.add(dataPoint);
+        scaledDataPoints.add(scale(dataPoint));
+
     }
 
     /**
@@ -46,7 +47,7 @@ public class LightData implements DataSetPoint {
      */
     private Float scale(Float datapoint){
 
-        float range = max - min;
+        float range = (float)(20 * (max / Math.log(max))) - min;
         float scalar = DisplayImage.IMAGE_SIZE_SCALAR / range;
 
         if(nightMode){

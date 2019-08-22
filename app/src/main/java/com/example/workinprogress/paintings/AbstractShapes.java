@@ -16,6 +16,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
+/**
+ * Creates an image composed of a series of drawable objects, Shapes, in a variety of colours. Each Shape
+ * has two ends which join up to other shapes to create long chains of shapes which can then be placed
+ * on the canvas. The ending position and direction of each shape dictates where the next shape will be placed.
+ */
 public class AbstractShapes extends PositionAndLightPainting {
 
 
@@ -35,11 +40,19 @@ public class AbstractShapes extends PositionAndLightPainting {
     private int startingDegreeChoice = random.nextInt(8);
 
     private int[] lineWidths;
+    private int minimumumAlpha;
+    private int maximumAlpha;
 
     public AbstractShapes(Context context, ArrayList<DataSet> dataSets) {
         super(context, dataSets);
     }
 
+    /**
+     * First sets canvas background and height and width, as with all paintings. Then checks to see if
+     * this object has already been created. If it hasn't, it creates the required amount of shapes before
+     * drawing them onto the canvas.
+     * @param canvas
+     */
     public void draw(Canvas canvas) {
 
         this.canvas = canvas;
@@ -49,19 +62,21 @@ public class AbstractShapes extends PositionAndLightPainting {
 
         if (shapes.size() < 1) {
 
+            // helper methods to set up data for creating shapes with
             setFirstStartingPosition();
             getDataForDrawingShapes();
 
+            // if only a few movements, draw fewer shapes
             if (numberOfShapes < 50) {
                 setStartingPositions(0);
-                drawALoadOfShapes();
-                drawALoadOfShapes();
+                createShapes();
+                createShapes();
             } else {
                 setStartingPositions(0);
-                drawALoadOfShapes();
-                drawALoadOfShapes();
-                drawALoadOfShapes();
-                drawALoadOfShapes();
+                createShapes();
+                createShapes();
+                createShapes();
+                createShapes();
             }
         } else {
 
@@ -71,6 +86,11 @@ public class AbstractShapes extends PositionAndLightPainting {
         }
     }
 
+    /**
+     * checks the starting degree that was randomly set for this painting when it was constructed.
+     * Once it knows the starting degree choice, it can set what the starting positions should be
+     * for the x and y coordinates for the first shape to be placed on the canvas.
+     */
     private void setFirstStartingPosition() {
 
         if (startingDegreeChoice == 0 || startingDegreeChoice == 4) {
@@ -84,83 +104,119 @@ public class AbstractShapes extends PositionAndLightPainting {
         }
     }
 
-    private void setStartingPositions(int i) {
+    /**
+     * used to set the starting position for a piece. Takes in the number of lines created so far so that
+     * it can use this and the original starting angle to increment the current starting positions.
+     * @param numberOfLinesSoFar number of lines created so far
+     */
+    private void setStartingPositions(int numberOfLinesSoFar) {
 
+        //needs to know the direction and position of the original piece from startingdegreechoice
         switch (startingDegreeChoice) {
             case 0:
                 startX1 = startX2+10;
                 startY1 = (int) height;
-                startX2 = startX1 + lineWidths[i];
+                startX2 = startX1 + lineWidths[numberOfLinesSoFar];
                 startY2 = (int) height;
                 break;
             case 1:
                 startX1 = 0;
                 startY1 = startY2+10;
                 startX2 = 0;
-                startY2 = startY1 + lineWidths[i];
+                startY2 = startY1 + lineWidths[numberOfLinesSoFar];
                 break;
             case 2:
                 startX2 = startX1-10;
                 startY1 = (int) height;
-                startX1 = startX2 - lineWidths[i];
+                startX1 = startX2 - lineWidths[numberOfLinesSoFar];
                 startY2 = (int) height;
                 break;
             case 3:
                 startX1 = 0;
                 startY2 = startY1-10;
                 startX2 = 0;
-                startY1 = startY2 - lineWidths[i];
+                startY1 = startY2 - lineWidths[numberOfLinesSoFar];
                 break;
             case 4:
                 startX1 = startX2-10;
                 startY1 = 0;
-                startX2 = startX1 - lineWidths[i];
+                startX2 = startX1 - lineWidths[numberOfLinesSoFar];
                 startY2 = 0;
                 break;
             case 5:
                 startX1 = (int) width;
                 startY1 = startY2-10;
                 startX2 = (int) width;
-                startY2 = startY1 - lineWidths[i];
+                startY2 = startY1 - lineWidths[numberOfLinesSoFar];
                 break;
             case 6:
                 startX2 = startX1+10;
                 startY1 = 0;
-                startX1 = startX2 + lineWidths[i];
+                startX1 = startX2 + lineWidths[numberOfLinesSoFar];
                 startY2 = 0;
                 break;
             case 7:
                 startX1 = (int) width;
                 startY2 = startY1+10;
                 startX2 = (int) width;
-                startY1 = startY2 + lineWidths[i];
+                startY1 = startY2 + lineWidths[numberOfLinesSoFar];
                 break;
         }
     }
 
+    /**
+     * takes in a starting colour and then increments one of its channels up and down within a set
+     * range to create different colours.
+     * @param startingColour array of four positions containing ARGB values for the starting colour
+     */
     private void chooseColours(int[] startingColour) {
 
         ArrayList<int[]> temporaryHoldingArray = new ArrayList<>();
         Random random = new Random();
         temporaryHoldingArray.add(startingColour);
+        int multiplier = 1;
+        int alphamultiplier = 1;
+        int channelToChange = random.nextInt(3) + 1;
 
         for (int i = 1; i < lightValues.size(); i++) {
 
+            //get most recently added ARGB values
             int[] colour = temporaryHoldingArray.get(i - 1).clone();
-            int channelToChange = random.nextInt(3) + 1;
-            int multiplier = 1;
+            //decide which channel to change this time
+
             int increment = lightValues.get(i);
 
-            if (colour[channelToChange] > 255 - increment) {
+            //if the increment will push the value over 255, minus it instead. Keep it minus until
+            //it's going to push it under 255
+            if (colour[channelToChange]+increment>255) {
                 multiplier = -1;
+            }else if (colour[channelToChange]-increment<0){
+                multiplier = 1;
             }
-            colour[channelToChange] += increment * multiplier;
+
+            //if the increment will push the value over the maximum allowed, minus it instead. Keep it minus until
+            //it's going to push it under the minimum allowed
+            if (colour[0]+increment>maximumAlpha){
+                alphamultiplier = -1;
+            }else if (colour[0]-increment< minimumumAlpha){
+                alphamultiplier = 1;
+            }
+
+            //increase/decrease the alpha and the chosen colour by the increment
+            colour[channelToChange] += (increment * multiplier);
+            colour[0] += (increment * alphamultiplier);
+
+            //add the new colour to the array
             temporaryHoldingArray.add(colour);
         }
 
         colourValuesArray.addAll(temporaryHoldingArray);
     }
 
+
+    /**
+     * used to transform the data specifically for drawing shapes.
+     */
     private void getDataForDrawingShapes() {
 
         //create new list for sizes
@@ -202,7 +258,6 @@ public class AbstractShapes extends PositionAndLightPainting {
         //shuffle the colours so that a random selection will be chosen
         Collections.shuffle(coloursAsNumbers);
 
-
         //find the total of all size values once converted to positive
         int totalSize = 0;
 
@@ -242,10 +297,28 @@ public class AbstractShapes extends PositionAndLightPainting {
             numberOfColours = 6;
             shapesToBeChosen = 3;
         } else {
+
             sizeLowerBounds = (double) averageSize / 300;
+            if(sizeLowerBounds<1)sizeLowerBounds = 1;
             sizeUpperBounds = (double) averageSize / 40 - sizeLowerBounds;
             numberOfColours = 9;
             shapesToBeChosen = 4;
+        }
+
+        //find the average lightlevel, convert the lightlevels to a scale of 255, and set the alpha values accordingly
+        int lightTotal = 0;
+        int lightCount = lightValues.size();
+        for(int i = 0; i<lightValues.size(); i++){
+            lightValues.set(i,(int)(lightValues.get(i)*0.255));
+            lightTotal+=lightValues.get(i);
+        }
+        minimumumAlpha = lightTotal/lightCount;
+        maximumAlpha = 127+minimumumAlpha;
+
+        //if minimum alpha is greater than 125, set it to 125
+        if (minimumumAlpha>125){
+            minimumumAlpha = 125;
+            maximumAlpha = 255;
         }
 
         //use the choosecolours method with randomly selected colours the number of times dictated by the algorithm
@@ -258,9 +331,14 @@ public class AbstractShapes extends PositionAndLightPainting {
         for (int i = 0; i < lineWidths.length; i++) {
             lineWidths[i] = random.nextInt((int) sizeUpperBounds) + (int) sizeLowerBounds;
         }
-
     }
 
+    /**
+     * takes any sorted array and removes duplicate values from it. If the array is shorter than 10,
+     * adds in 0s until it is at least 10 in length.
+     * @param sortedArray any arraylist of integers but must be in sorted order, ascending or descending
+     * @return arraylist of unique integers in sorted order
+     */
     protected ArrayList<Integer> setUniqueValueSortedArrays(ArrayList<Integer> sortedArray) {
 
         for (int i = 0; i < sortedArray.size() - 1; i++) {
@@ -275,11 +353,20 @@ public class AbstractShapes extends PositionAndLightPainting {
         while (sortedArray.size() < 10) {
             sortedArray.add(0);
         }
-
         return sortedArray;
-
     }
 
+    /**
+     * Method to create a new shape. Generates a random number and then chooses a shape from the
+     * selection allowed set by shapesToBeChosen.
+     * @param loopStartX1 starting point x1
+     * @param loopStartY1 starting point y1
+     * @param loopStartX2 starting point x2
+     * @param loopStartY2 starting point y2
+     * @param widthRestrictedlineLength length of shape
+     * @param coloursForThisLoop colour of shape
+     * @return Shape object to be added to canvas
+     */
     private Shape setShape(int loopStartX1, int loopStartY1, int loopStartX2, int loopStartY2,
                            int widthRestrictedlineLength, int[] coloursForThisLoop) {
 
@@ -306,8 +393,6 @@ public class AbstractShapes extends PositionAndLightPainting {
                 shape = new BumpyShape(loopStartX1, loopStartY1, loopStartX2, loopStartY2, widthRestrictedlineLength, coloursForThisLoop);
             }
         } else if (shapesToBeChosen == 3) {
-//            if (choice <= 3) {
-//                shape = new LineShape(loopStartX1, loopStartY1, loopStartX2, loopStartY2, widthRestrictedlineLength, coloursForThisLoop);
            if(choice<=8){
                 shape = new CurvedShape(loopStartX1, loopStartY1, loopStartX2, loopStartY2, random.nextBoolean(), coloursForThisLoop, (int) (widthRestrictedlineLength * 1.5));
             } else {
@@ -327,54 +412,69 @@ public class AbstractShapes extends PositionAndLightPainting {
         return shape;
     }
 
-    private void drawALoadOfShapes() {
+    /**
+     * Method to create all of the necessary shapes for the canvas
+     */
+    private void createShapes() {
 
+        //begins with new starting positions, a random, and sets the number of lines drawn to 0
         int loopStartX1 = startX1;
         int loopStartY1 = startY1;
         int loopStartX2 = startX2;
         int loopStartY2 = startY2;
-
         Random random = new Random();
+        int numberOfLinesSoFar = 0;
 
-        int lineWidthIndex = 0;
-
+        //loops for the number of shapes
         for (int i = 0; i < numberOfShapes; i++) {
 
             int j = i;
             int[] coloursForThisLoop;
 
+            //sets j to loop over the colourvalues array within this loop and select the colours for the next shape
             while (colourValuesArray.size() <= j) {
                 j -= colourValuesArray.size();
             }
             coloursForThisLoop = colourValuesArray.get(j);
 
-            int widthRestrictedlineLength = (random.nextInt(10000 / numberOfShapes)) + lineWidths[lineWidthIndex];
+            // checks which type of drawing is being made and limits the potential length of each shape accordingly
+            int widthRestrictedlineLength;
+            if (shapesToBeChosen==4) {
+                widthRestrictedlineLength = (random.nextInt(30000 / numberOfShapes)) + lineWidths[numberOfLinesSoFar];
+            }else if(shapesToBeChosen==3){
+                widthRestrictedlineLength = (random.nextInt(5000 / numberOfShapes)) + lineWidths[numberOfLinesSoFar];
+            } else{
+                widthRestrictedlineLength = (random.nextInt(10000 / numberOfShapes)) + lineWidths[numberOfLinesSoFar];
+            }
 
+            //creates new shape using newly set length and colour
             Shape shapeInLoop = setShape(loopStartX1, loopStartY1, loopStartX2, loopStartY2, widthRestrictedlineLength, coloursForThisLoop);
 
+            //draws shape and adds it to list.
+            // *IMPORTANT* Shape MUST be drawn within this loop in order to get back the correct end points for the next shape
             shapeInLoop.draw(canvas);
             shapes.add(shapeInLoop);
 
+            //gets ends from newly drawn shape
             loopStartX1 = shapeInLoop.getX1End();
             loopStartY1 = shapeInLoop.getY1End();
             loopStartX2 = shapeInLoop.getX2End();
             loopStartY2 = shapeInLoop.getY2End();
 
+            //if the ends of the last shape/start of the next are BOTH outside the border, start a new line
             if ((loopStartX1 < 0 && loopStartX2<0)|| (loopStartX1 > width && loopStartX2>width) || (loopStartY1 < 0 && loopStartY2<0)|| (loopStartY1 > height && loopStartY2>height)) {
-
-                lineWidthIndex++;
-
-                setStartingPositions(lineWidthIndex);
-
+               //increment linecounter and start new line with new starting position
+                numberOfLinesSoFar++;
+                setStartingPositions(numberOfLinesSoFar);
                 loopStartX1 = startX1;
                 loopStartY1 = startY1;
                 loopStartX2 = startX2;
                 loopStartY2 = startY2;
 
+                //if the new start is also now offscreen, break and return from these loops.
                 if (startX1 > width || startX1 < 0 || startY1 > height || startY1 < 0 || startX2 > width || startX2 < 0 || startY2 > height || startY2 < 0)
                     break;
             }
-          //  shapes.add(shapeInLoop);
         }
     }
 }

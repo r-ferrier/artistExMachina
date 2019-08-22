@@ -10,16 +10,40 @@ public class CircleShape extends LineShape {
     private int centreY;
 
 
+    /**
+     * class to draw a shape that is a circle. Extends line shape as travelling in only 1 direction.
+     *
+     *    ,---..
+     *  /       \
+     * |         |
+     *  \       /
+     *   `-----'
+     *
+     * constructor finds the centre of the circle
+     * @param x1Start starting coordinates x1
+     * @param y1Start starting coordinates y1
+     * @param x2Start starting coordinates x2
+     * @param y2Start starting coordinates y2
+     * @param size size/length of shape
+     * @param aRGBColor colour of shape
+     */
     public CircleShape(int x1Start, int y1Start, int x2Start, int y2Start, int size, int[] aRGBColor) {
         super(x1Start, y1Start, x2Start, y2Start, size, aRGBColor);
         findCentre();
     }
 
+    /**
+     * draws circle around its centre
+     * @param canvas
+     */
     @Override
     public void draw(Canvas canvas) {
         canvas.drawCircle(centreX,centreY,(float)(size/3),paint1);
     }
 
+    /**
+     * helper method to find centre, using centre of starting positions
+     */
     private void findCentre() {
         if (x1Start > x2Start) {
             centreX = ((x1Start - x2Start) / 2) + x2Start;

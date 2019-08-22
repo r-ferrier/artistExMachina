@@ -10,6 +10,21 @@ public class LineShape extends Shape {
 
     protected int size;
 
+    /**
+     * class to draw a shape that forms a straight line
+     *  __________    __
+     * |__________|  |  |
+     *               |  |
+     *               |  |
+     *               |__|
+     *
+     * @param x1Start starting coordinates x1
+     * @param y1Start starting coordinates y1
+     * @param x2Start starting coordinates x2
+     * @param y2Start starting coordinates y2
+     * @param size size/length of shape
+     * @param aRGBColor colour of shape
+     */
     public LineShape(int x1Start, int y1Start, int x2Start, int y2Start, int size, int[] aRGBColor){
 
         super(aRGBColor);
@@ -25,6 +40,10 @@ public class LineShape extends Shape {
     }
 
 
+    /**
+     * draws path between predefined coords
+     * @param canvas passed by view
+     */
     @Override
     public void draw(Canvas canvas) {
         path.moveTo(x1Start, y1Start);
@@ -35,6 +54,9 @@ public class LineShape extends Shape {
         canvas.drawPath(path, paint1);
     }
 
+    /**
+     * using the starting degree, the start coords and the size, works out where the ends will be
+     */
     private void setEnds(){
         switch (startingDegree){
             case 0:

@@ -9,11 +9,29 @@ public class SquiggleShape extends LineShape {
     private int[] firstLine;
     private int[] secondLine;
 
-
+    /**
+     * class to draw a shape that forms a squiggle
+     *
+     *       ,-.     ,-.
+     * |`._ /   `._ /   `.
+     * |     ,-.     ,-. |
+     *  `._ /   `._ /   `|
+     *
+     * @param x1Start starting coordinates x1
+     * @param y1Start starting coordinates y1
+     * @param x2Start starting coordinates x2
+     * @param y2Start starting coordinates y2
+     * @param size size/length of shape
+     * @param aRGBColor colour of shape
+     */
     public SquiggleShape(int x1Start, int y1Start, int x2Start, int y2Start, int size, int[] aRGBColor) {
-        super(x1Start, y1Start, x2Start, y2Start, 200, aRGBColor);
+        super(x1Start, y1Start, x2Start, y2Start, size, aRGBColor);
     }
 
+    /**
+     * draws curves between coordinates defined in setfirstline()
+     * @param canvas passed by view
+     */
     public void draw(Canvas canvas) {
         setFirstLine();
 
@@ -28,6 +46,9 @@ public class SquiggleShape extends LineShape {
         canvas.drawPath(path, paint1);
     }
 
+    /**
+     * sets up the two lines to be drawn and the points at which they need to be moved to
+     */
     private void setFirstLine() {
 
         firstLine = new int[]{x2Start, y2Start, x2Start, y2Start, x2Start, y2Start, x2End, y2End, x2End, y2End, x2End, y2End};

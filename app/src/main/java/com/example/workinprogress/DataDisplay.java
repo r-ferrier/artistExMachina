@@ -25,8 +25,8 @@ public class DataDisplay extends AppCompatActivity {
             data = getIntent().getStringExtra("data");
 
             data = data.replaceAll("\\?","\n");
-            System.out.println(data);
 
+            Log.i(TAG,data);
         }
 
         if(newImageCreated){
