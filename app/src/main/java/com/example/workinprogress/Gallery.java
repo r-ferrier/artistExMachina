@@ -46,7 +46,7 @@ public class Gallery extends AppCompatActivity {
         //first check if files exist - if not, instantiate an empty view
         if (files == null) {
             setContentView(R.layout.activity_gallery);
-            Log.e(TAG, "no files found at this location");
+            Log.e(TAG, "no files found at this location: "+directory);
 
         } else {
 
