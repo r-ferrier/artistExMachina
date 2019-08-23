@@ -51,7 +51,7 @@ public class AbstractShapes extends PositionAndLightPainting {
      * First sets canvas background and height and width, as with all paintings. Then checks to see if
      * this object has already been created. If it hasn't, it creates the required amount of shapes before
      * drawing them onto the canvas.
-     * @param canvas
+     * @param canvas passed by view
      */
     public void draw(Canvas canvas) {
 
@@ -339,17 +339,16 @@ public class AbstractShapes extends PositionAndLightPainting {
      * @param sortedArray any arraylist of integers but must be in sorted order, ascending or descending
      * @return arraylist of unique integers in sorted order
      */
-    protected ArrayList<Integer> setUniqueValueSortedArrays(ArrayList<Integer> sortedArray) {
+    ArrayList<Integer> setUniqueValueSortedArrays(ArrayList<Integer> sortedArray) {
 
         for (int i = 0; i < sortedArray.size() - 1; i++) {
-            while (sortedArray.get(i + 1) == sortedArray.get(i)) {
+            while (sortedArray.get(i + 1).equals(sortedArray.get(i))) {
                 sortedArray.remove(i + 1);
                 if(sortedArray.size()-1==i){
                     break;
                 }
             }
         }
-
         while (sortedArray.size() < 10) {
             sortedArray.add(0);
         }

@@ -13,7 +13,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
-public class AlbersImage extends Painting {
+/**
+ * AlbersImage class draws a series of squares in different colours and opacities on top of one another
+ */
+public class AlbersImage extends PositionAndLightPainting {
 
     private Paint paint1;
     private Canvas canvas;
@@ -28,19 +31,27 @@ public class AlbersImage extends Painting {
     private int numberOfSquares;
     private ArrayList<Integer> newShapeSize;
 
+    /**
+     * constructor sets colour values and the number of squares to be created (8 times the number of movements)
+     * @param context
+     * @param dataSets
+     */
     public AlbersImage(Context context, ArrayList<DataSet> dataSets) {
         super(context, dataSets);
 
         paint1 = new Paint();
-
-        paint1.setARGB(10, 255, 200, 90);
+        //this colour has been chosen as the starting point
+        paint1.setARGB(10, 0, 0, 0);
 
         setColoursValues();
-        numberOfSquares = threePointsDataSets.get(0).getScaledResults1().size()*8;
-
+        numberOfSquares = positionValues1.size()*8;
     }
-
-
+    
+    /**
+     * First sets canvas background and height and width, as with all paintings.
+     * Checks if drawing has been made before. If not, sets up drawing. Then draws.
+     * @param canvas
+     */
     public void draw(Canvas canvas) {
 
         this.canvas = canvas;
@@ -52,19 +63,20 @@ public class AlbersImage extends Painting {
             setCanvasPositions();
             setSquareSizes();
         }
-
-        firstEverythingExperiment();
+        drawImage(canvasPositions, coloursValues, newShapeSize);
     }
 
-    private void firstEverythingExperiment() {
-
-        drawImage(newCanvasPositions, coloursValues, newShapeSize);
-
-    }
-
+    /**
+     * method to actually do the drawing. Takes in an arraylist of x,y coordinates, colours, and sizes.
+     * Uses these to generate the squares for the drawing.
+     * @param canvasPositions x,y coordinates for position of each square
+     * @param coloursValues colours for each square
+     * @param shapeSize size for each square
+     */
     private void drawImage(int[][] canvasPositions, int[][] coloursValues, ArrayList<Integer> shapeSize) {
+
+        //for each position, set paint to the next available colour, draw square of the next size at the next position
         for (int i = 0; i < canvasPositions.length; i++) {
-//
             int j = i;
             while (j >= coloursValues.length) {
                 j -= coloursValues.length;
@@ -82,8 +94,9 @@ public class AlbersImage extends Painting {
         }
     }
 
-
-
+    /**
+     * method to set up the array of square sizes
+     */
     private void setSquareSizes() {
         shapeSize = new ArrayList<>();
 
@@ -93,15 +106,12 @@ public class AlbersImage extends Painting {
             shapeSize.add(Math.round(zSize));
         }
 
-//        set results to be >0, <500
+        //set results to be >0, <500
         for (int i = 0; i < shapeSize.size(); i++) {
-
             shapeSize.set(i, shapeSize.get(i) - 500);
-
             if (shapeSize.get(i) < 0) {
                 shapeSize.set(i, shapeSize.get(i) * -1);
             }
-
             if (shapeSize.get(i) > positionsSquareSizeRange) {
                 positionsSquareSizeRange = i;
             }
@@ -124,8 +134,6 @@ public class AlbersImage extends Painting {
 
         float scalar = currentRange / newRange;
 
-//        System.out.println("scalar: "+scalar);
-
         //multiply sizes by scalar
         for (int i = 0; i < shapeSize.size(); i++) {
             shapeSize.set(i, (int)((shapeSize.get(i) * scalar) - smallestShape));
@@ -138,23 +146,20 @@ public class AlbersImage extends Painting {
         }
 
         Collections.sort(shapeSize, Collections.reverseOrder());
-//        Collections.shuffle(shapeSize);
-
         newShapeSize = (ArrayList<Integer>) shapeSize.clone();
 
         for (int i = 0; i < numberOfSquares; i++) {
-
             int j;
             for (j = 0; j < shapeSize.size(); j++) {
                 newShapeSize.add(shapeSize.get(j));
             }
             i += j - 1;
         }
-
-
-
     }
 
+    /**
+     * method to set up the array of possible colours
+     */
     private void setColoursValues() {
 
         //create new random + minimum colour value
@@ -176,7 +181,6 @@ public class AlbersImage extends Painting {
                     coloursValues[i][0] = dataSet.getScaledResults1().get(i);
                     coloursValues[i][0] = (int) ((coloursValues[i][0] * colourScalar) + minimumValue);
                 }
-//                System.out.println("length of colours"+coloursValues.length);
 
                 //populate all four position with colours found at previous position and one channel changed at random
                 for (int i = 1; i < coloursValues.length; i++) {
@@ -187,14 +191,12 @@ public class AlbersImage extends Painting {
                     // create new array using array found at last position and insert value into one of its slots at random
                     int[] colourArray = coloursValues[i - 1].clone();
                     colourArray[random.nextInt(4)] = newValue;
-
                     colourArray[0] -= minimumValue;
 
                     // ensure alpha channel is visible
                     if (colourArray[0] < 20) {
                         colourArray[0] = 20;
                     }
-
                     colourArray = invisibleColours(colourArray.clone());
 
                     //store array again at position i
@@ -205,14 +207,22 @@ public class AlbersImage extends Painting {
         }
     }
 
+    /**
+     * helper method to check for and adjust any invisible colours
+     * @param colourArray array of colours to check
+     * @return modified colour array with any invisible colours changed
+     */
     private int[] invisibleColours(int[] colourArray) {
         int numberOfInvisibleChannels = 0;
-
+        //check how many channels are at less than 20
         for (int j = 1; j < 4; j++) {
             if (colourArray[j] < 20) {
                 numberOfInvisibleChannels++;
             }
         }
+        //if more than 2 channels are less than 20, the colour may be invisible. find the highest
+        //value out of RGB and increase this by 70 to prevent this. Reset the alpha to 20 to offset
+        //the sudden jump in colour
         if (numberOfInvisibleChannels > 2) {
             int highestValueChannel = 1;
             for (int j = 1; j < 4; j++) {
@@ -226,39 +236,44 @@ public class AlbersImage extends Painting {
         return colourArray;
     }
 
+    /**
+     * method to set the position for each square, using the accelerometer data
+     */
     private void setCanvasPositions() {
 
         Random random = new Random();
 
-        canvasPositions = new int[threePointsDataSets.get(0).getScaledResults1().size()*8][2];
+        canvasPositions = new int[numberOfSquares][2];
 
         float xScalar = width / range;
         float yScalar = height / range;
         int j = 0;
 
+        //creates a list of position integers for each accelerometer reading. Each takes the x as its
+        //x coord, the y as its y coord, and then then adds in 6 positions placed around this randomly
+        //to create some noise
         for (int i = 0; i < canvasPositions.length; i+=8) {
 
-            float xSize = (threePointsDataSets.get(0).getScaledResults1().get(j) * xScalar);
-            float ySize = (threePointsDataSets.get(0).getScaledResults2().get(j) * yScalar);
+            float xSize = (positionValues1.get(j) * xScalar);
+            float ySize = (positionValues2.get(j) * yScalar);
             j++;
 
             int a1 = Math.round(xSize);
             int a2 = Math.round(ySize);
-            int b1 = a1+random.nextInt(50);
-            int b2 = a2+random.nextInt(50);
-            int c1 = a1-random.nextInt(50);
-            int c2 = a2-random.nextInt(50);
-            int d1 = b1+random.nextInt(50);
-            int d2 = b2+random.nextInt(50);
-            int e1 = c1-random.nextInt(100);
-            int e2 = c2-random.nextInt(100);
-            int f1 = d1+random.nextInt(100);
-            int f2 = d2+random.nextInt(100);
-            int g1 = e1-random.nextInt(150);
-            int g2 = e2-random.nextInt(150);
-            int h1 = f1+random.nextInt(200);
-            int h2 = f2+random.nextInt(200);
-
+            int b1 = (a1-50)+random.nextInt(100);
+            int b2 = (a2-50)+random.nextInt(100);
+            int c1 = (a1-50)+random.nextInt(100);
+            int c2 = (a2-50)+random.nextInt(100);
+            int d1 = (b1-50)+random.nextInt(100);
+            int d2 = (b2-50)+random.nextInt(100);
+            int e1 = (c1-100)+random.nextInt(200);
+            int e2 = (c2-100)+random.nextInt(200);
+            int f1 = (d1-100)+random.nextInt(200);
+            int f2 = (d2-100)+random.nextInt(200);
+            int g1 = (e1-150)+random.nextInt(300);
+            int g2 = (e2-150)+random.nextInt(300);
+            int h1 = (f1-200)+random.nextInt(400);
+            int h2 = (f2-200)+random.nextInt(400);
 
             canvasPositions[i][0] = h1;
             canvasPositions[i][1] = h2;
@@ -276,83 +291,6 @@ public class AlbersImage extends Painting {
             canvasPositions[i+6][1] =  b2;
             canvasPositions[i+7][0] =  a1;
             canvasPositions[i+7][1] =  a2;
-
         }
-
-        setNewCanvasPositions();
     }
-
-
-
-    private void setNewCanvasPositions() {
-        newCanvasPositions = new int[numberOfSquares][2];
-        int loopNumber = 0;
-
-        for (int i = 0; i < numberOfSquares; i++) {
-
-            if (loopNumber == 0) {
-
-                //add in the existing array on the first loop
-                int j;
-                for (j = 0; j < canvasPositions.length; j++) {
-                    newCanvasPositions[j][0] = canvasPositions[j][0];
-                    newCanvasPositions[j][1] = canvasPositions[j][1];
-
-                }
-                i += j - 1;
-                loopNumber++;
-
-                //on the second loop increase x values by 1.5
-            } else if (loopNumber == 1) {
-
-                int j;
-                for (j = 0; j < canvasPositions.length; j++) {
-                    if (j + i < newCanvasPositions.length) {
-                        newCanvasPositions[j + i][0] = canvasPositions[j][0] + (canvasPositions[j][0] + 1) / 2;
-                        newCanvasPositions[j + i][1] = canvasPositions[j][1];
-                    }
-                }
-                i += j - 1;
-                loopNumber++;
-
-                // on the third loop increase y values by 1.5
-            } else if (loopNumber == 2) {
-                int j;
-                for (j = 0; j < canvasPositions.length; j++) {
-                    if (j + i < newCanvasPositions.length) {
-                        newCanvasPositions[j + i][1] = canvasPositions[j][1] + (canvasPositions[j][1] + 1) / 2;
-                        newCanvasPositions[j + i][0] = canvasPositions[j][0];
-                    }
-                }
-                i += j - 1;
-                loopNumber++;
-                //on the fourth loop decrease x values by 1.5
-            } else if (loopNumber == 3) {
-                int j;
-                for (j = 0; j < canvasPositions.length; j++) {
-                    if (j + i < newCanvasPositions.length) {
-                        newCanvasPositions[j + i][0] = canvasPositions[j][0] - (canvasPositions[j][0] + 1) / 2;
-                        newCanvasPositions[j + i][1] = canvasPositions[j][1];
-                    }
-                }
-                i += j - 1;
-                loopNumber++;
-                // on the fifth loop decrease y values by 1.5 then return loop counter to 1 to begin again at 2nd loop
-            } else if (loopNumber == 4) {
-                int j;
-                for (j = 0; j < canvasPositions.length; j++) {
-                    if (j + i < newCanvasPositions.length) {
-                        newCanvasPositions[j + i][1] = canvasPositions[j][1] - (canvasPositions[j][1] + 1) / 2;
-                        newCanvasPositions[j + i][0] = canvasPositions[j][0];
-                    }
-                }
-                i += j - 1;
-                loopNumber = 1;
-            }
-
-        }
-
-    }
-
-
 }
