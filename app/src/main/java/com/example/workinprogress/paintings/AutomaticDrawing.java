@@ -5,14 +5,15 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.util.Log;
-
-import com.example.workinprogress.DisplayImage;
 import com.example.workinprogress.dataSetsAndComponents.DataSet;
 
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * AutomaticDrawing creates a series of bezier curves and shapes, inspired by Surrealist automatic drawings
+ * and alexander calder
+ */
 public class AutomaticDrawing extends PositionAndLightPainting {
 
     private Canvas canvas;
@@ -23,17 +24,17 @@ public class AutomaticDrawing extends PositionAndLightPainting {
     private ArrayList<float[]>shapesInformation;
     private ArrayList<Paint>shapesPaints;
 
-    /**
-     * AutomaticDrawing creates a series of bezier curves and shapes, inspired by Surrealist automatic drawings
-     * and alexander calder
-     * @param context
-     * @param dataSets
-     */
+
     public AutomaticDrawing(Context context, ArrayList<DataSet> dataSets) {
         super(context, dataSets);
     }
 
 
+    /**
+     * draw method begins by setting canvas colour and width and height. Creates a Paint object for
+     * drawing lines with and then sets up required data and line drawing, before drawing shapes.
+     * @param canvas defined by view
+     */
     @Override
     public void draw(Canvas canvas) {
         this.canvas = canvas;
@@ -49,16 +50,23 @@ public class AutomaticDrawing extends PositionAndLightPainting {
         convertPositionsToXYValues();
         drawStepsFluidLine();
 
+        //shapes use random parameters so should only be created if not yet instantiated
         if(shapesInformation==null){
             drawShapes();
         }
 
+        //draw a circle for every shape
         for(int i = 0; i<shapesInformation.size(); i++){
             canvas.drawCircle(shapesInformation.get(i)[0],shapesInformation.get(i)[1],shapesInformation.get(i)[2],shapesPaints.get(i));
         }
     }
 
 
+    /**
+     * method to draw the single line that forms the abstract drawing. Takes data converted from the accelerometer
+     * and uses this to create a series of bezier curves. Analyses the last line before deciding where to place
+     * the controls for the next one to keep the joins rounded.
+     */
     private void drawStepsFluidLine() {
 
         path = new Path();
@@ -127,6 +135,10 @@ public class AutomaticDrawing extends PositionAndLightPainting {
 
     }
 
+    /**
+     * method used to add coloured transparent shapes to the image. Presently just adds circles.
+     * Quantity, size and colour of shapes all depend on light levels.
+     */
     private void drawShapes() {
 
         int totalValue = 0;
@@ -134,7 +146,7 @@ public class AutomaticDrawing extends PositionAndLightPainting {
         int average;
         int newColour;
         Random random = new Random();
-        int numberOfShapes = random.nextInt(6);
+        int numberOfShapes;
         shapesInformation = new ArrayList<>();
         shapesPaints = new ArrayList<>();
         int paintAlpha;
@@ -146,34 +158,40 @@ public class AutomaticDrawing extends PositionAndLightPainting {
         totalValue -= lightValues.get(0);
         average = totalValue / totalNumberofValues;
 
-        newColour = (int) (average * (255.0 / DisplayImage.IMAGE_SIZE_SCALAR));
+        newColour = (int) (average * 0.255);
+
+        System.out.println("average: "+newColour);
 
 
-        if (newColour < 30) {
+        if (newColour < 50) {
             paintAlpha = 50;
-        } else if (newColour < 60) {
+            numberOfShapes = random.nextInt(5)+1;
+        } else if (newColour < 100) {
             paintAlpha = 100;
-        } else if(newColour < 120){
+            numberOfShapes = random.nextInt(4)+1;
+        } else if(newColour < 200){
             paintAlpha = 150;
+            numberOfShapes = random.nextInt(3)+1;
         }else{
             paintAlpha = 200;
+            numberOfShapes = random.nextInt(2)+1;
         }
 
         for(int i = 0; i<numberOfShapes;i++) {
 
             //set the paint colour
             int[] colours = new int[]{0,0,0};
-            colours[random.nextInt(3)]=(random.nextInt(newColour));
+            colours[random.nextInt(3)]=(newColour);
             colours[random.nextInt(3)]=(random.nextInt(newColour));
             Paint paint = new Paint();
             paint.setARGB(paintAlpha,colours[0],colours[1],colours[2]);
 
             //set the shape size
-            float shapeSize = random.nextInt(newColour-10)+10;
+            float shapeSize = random.nextInt(newColour)+((newColour+1)/4);
 
             //set the coordinates so that the shape will be inside the border
-            float x = random.nextInt((int)((width-shapeSize)-20))+10;
-            float y = random.nextInt((int)((height-shapeSize)-20))+10;
+            float x = random.nextInt((int)((width-shapeSize*2)-20))+(10+(shapeSize));
+            float y = random.nextInt((int)((height-shapeSize*2)-20))+(10+(shapeSize));
 
             //add the new shape information to lists for drawing from
             shapesInformation.add(new float[]{x,y,shapeSize});
@@ -182,6 +200,11 @@ public class AutomaticDrawing extends PositionAndLightPainting {
 
     }
 
+    /**
+     * takes in the accelerometer data and converts one array to angles and uses one array as line lengths.
+     * Once the line length, starting point, and angle is known, this can be used in conjuntion with basic trigonometry
+     * to work out where the ending point will be. The starting and ending point for each line is then saved in an array.
+     */
     private void convertPositionsToXYValues() {
 
         anglesAndDirections = new int[positionValues1.size()][2];
@@ -201,12 +224,12 @@ public class AutomaticDrawing extends PositionAndLightPainting {
             if (anglesAndDirections[i][0] < 0) {
                 anglesAndDirections[i][0] *= -1;
             }
-
             anglesAndDirections[i][1] = (positionValues2.get(i)) % 360;
         }
 
+        //starting point is at the intersection of the golden mean
         int startX = (int) (Math.round(width / 1.61803398875));
-        int startY = startX;
+        int startY = (int) (Math.round(height / 1.61803398875));
 
         for (int i = 0; i < anglesAndDirections.length; i++) {
             int length = anglesAndDirections[i][0];
@@ -234,6 +257,7 @@ public class AutomaticDrawing extends PositionAndLightPainting {
 
             double angleB = 180 - (angle + 90);
 
+            //work out x and y positions using sine
             double lengthOfstopY = (length * Math.sin(Math.toRadians(angle))) / Math.sin(Math.toRadians(90));
             double lengthOfstopX = (length * Math.sin(Math.toRadians(angleB))) / Math.sin(Math.toRadians(90));
 
@@ -246,7 +270,7 @@ public class AutomaticDrawing extends PositionAndLightPainting {
             stopX = Math.round((float) stopX) + startX;
             stopY = Math.round((float) stopY) + startY;
 
-
+            //check if any coordinates go too close to the edge - if they do, reverse them, and if they still do, set them to stop at the edge
             if (stopX > width - 30) {
                 stopX = stopX - startX - startX - lengthOfstopX;
                 if (stopX < 30) {
@@ -271,11 +295,13 @@ public class AutomaticDrawing extends PositionAndLightPainting {
                 }
             }
 
+            //save line as series of coordinates
             positionsToBeDrawn[i][0] = startX;
             positionsToBeDrawn[i][1] = startY;
             positionsToBeDrawn[i][2] = (int) stopX;
             positionsToBeDrawn[i][3] = (int) stopY;
 
+            //reset the start for the next line to the end of this line
             startX = (int) stopX;
             startY = (int) stopY;
 

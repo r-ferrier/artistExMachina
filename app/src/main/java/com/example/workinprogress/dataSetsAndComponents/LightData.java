@@ -47,16 +47,26 @@ public class LightData implements DataSetPoint {
      */
     private Float scale(Float datapoint){
 
-        float range = (float)(20 * (max / Math.log(max))) - min;
+        float range = (float)(20 * (max / Math.log(max)));
+//        range*=(float) (Math.log(range));
+//        range*=(float) (Math.log(range));
+        range-=min;
         float scalar = DisplayImage.IMAGE_SIZE_SCALAR / range;
 
         if(nightMode){
             datapoint = (float) (100 * (datapoint / Math.log(datapoint)));
+            datapoint *= scalar*5;
         }else {
             datapoint = (float) (20 * (datapoint / Math.log(datapoint)));
             datapoint *= (float) (Math.log(datapoint));
+//            datapoint *= (float) (Math.log(datapoint));
             datapoint *= scalar;
         }
+
+        if(datapoint>1000){
+            datapoint = 1000f;
+        }
+
         return datapoint;
     }
 

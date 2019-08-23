@@ -47,9 +47,6 @@ public class ColoursExperiment extends PositionAndLightPainting {
 
     }
 
-
-
-
     public void draw(Canvas canvas) {
 
         canvas.drawColor(Color.WHITE);

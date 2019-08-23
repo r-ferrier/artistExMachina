@@ -15,25 +15,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
-
-public class Landscape extends PositionAndLightPainting {
+/**
+ * creates a drawing in an abstract landscape style, using some of the techniques explored in kineticArt
+ */
+public class Landscape extends KineticArt {
 
     private Canvas canvas;
     private ArrayList<Path> paths;
     private ArrayList<Paint> paints;
     private ArrayList<int[]> controls;
     private Random random;
-    private ArrayList<Paint> paintsOptions;
-    private int numberOfLoops;
     private int numberOfPaintOptions = 9;
-    private ArrayList<Integer> sizes;
     private int sizeRange = 500;
     private int sizeCounter = 0;
     private String TAG = "Landscape class info";
 
-
-    private int averageLightValue;
-    private int averageSize;
     private int canvasColor;
 
 
@@ -41,82 +37,21 @@ public class Landscape extends PositionAndLightPainting {
         super(context, dataSets);
 
         random = new Random();
-        manipulateData();
+        setNewData();
         setPaints();
+        choosePaints();
     }
 
     /**
-     * manipulates and reformats the existing datasets for this image
+     * decides how many and then which paints to choose from the options. Removes paints at random
+     * from chosen selection and then adds in one opaque black or white paint object.
      */
-    private void manipulateData() {
-        sizes = (ArrayList<Integer>)positionValues1.clone();
-        sizes.addAll((ArrayList<Integer>)positionValues2.clone());
-        sizes.addAll((ArrayList<Integer>)positionValues3.clone());
-
-        for(int i = 0; i<sizes.size();i++){
-            sizes.set(i,sizes.get(i)-500);
-            if(sizes.get(i)<0){
-                sizes.set(i,sizes.get(i)*-1);
-            }
-        }
-
-        averageLightValue = getAverage(lightValues);
-        averageSize = getAverage(sizes);
-
-        if(sizes.size()<=20) {
-            numberOfLoops = 3;
-        }else if(sizes.size()<=50){
-            numberOfLoops = 5;
-        }else if(sizes.size()<=100){
-            numberOfLoops = 24;
-        }else if(sizes.size()<=200){
-            numberOfLoops = 32;
-        }else{
-            numberOfLoops = 64;
-        }
-    }
-
-    //helper method to return average of any array of Integers
-    private int getAverage(ArrayList<Integer> values) {
-        int total = 0;
-
-        for (int i = 0; i < values.size(); i++) {
-            total += values.get(i);
-        }
-
-        return total / values.size();
-    }
-
-    // method to create all the available paint options and set their transparencies nominally to 100.
-    // Calls on a second method to build final array of paint colours.
-    private void setPaints() {
-
-        paintsOptions = new ArrayList<>();
-
-        for(int i = 0; i<numberOfPaintOptions; i++){
-            paintsOptions.add(new Paint());
-        }
-
-        paintsOptions.get(0).setColor(context.getResources().getColor(R.color.yellowOchre));
-        paintsOptions.get(1).setColor(context.getResources().getColor(R.color.coralRed));
-        paintsOptions.get(2).setColor(context.getResources().getColor(R.color.metallicSeaweed));
-        paintsOptions.get(3).setColor(context.getResources().getColor(R.color.imperialBlue));
-        paintsOptions.get(4).setColor(context.getResources().getColor(R.color.juneBudYellow));
-        paintsOptions.get(5).setColor(context.getResources().getColor(R.color.iguanaGreen));
-        paintsOptions.get(6).setColor(context.getResources().getColor(R.color.rosyBrown));
-        paintsOptions.get(7).setColor(context.getResources().getColor(R.color.purpleNavy));
-        paintsOptions.get(8).setColor(context.getResources().getColor(R.color.purplePineapple));
+    private void choosePaints() {
 
         for (Paint paint: paintsOptions) {
             paint.setStyle(Paint.Style.FILL);
             paint.setAlpha(100);
         }
-
-        choosePaints();
-    }
-
-    // method to decide which and how many colours to use from the available options
-    private void choosePaints() {
 
         Paint opaquePaint = new Paint();
         int numberOfOptions;
@@ -143,7 +78,11 @@ public class Landscape extends PositionAndLightPainting {
         removePaintsFromOptions(opaquePaint,numberOfOptions);
     }
 
-    // helper method to remove paints from choices and set one colour opaque
+    /**
+     * helper method to remove paints from choices and set one colour opaque
+     * @param opaquePaint black or white Paint object
+     * @param numberOfOptions total number of paints drawing should have
+     */
     private void removePaintsFromOptions(Paint opaquePaint, int numberOfOptions){
         for(int i = numberOfPaintOptions; i>numberOfOptions; i--){
             paintsOptions.remove(random.nextInt(i));
@@ -151,6 +90,11 @@ public class Landscape extends PositionAndLightPainting {
         paintsOptions.add(opaquePaint);
     }
 
+    /**
+     * sets canvas colour, width and height. Checks if drawing has been created yet, if not, sets
+     * up drawing. Then draws every path.
+     * @param canvas passed by view
+     */
     @Override
     public void draw(Canvas canvas) {
         this.canvas = canvas;
@@ -173,6 +117,10 @@ public class Landscape extends PositionAndLightPainting {
         }
     }
 
+    /**
+     * creates a path and one of each colour paint for every control array, then shuffle ths order of
+     * the paints, and uses the draw ribbon method to modify and save each path
+     */
     private void setUpDrawing() {
 
         for(int[] control: controls){
@@ -186,12 +134,24 @@ public class Landscape extends PositionAndLightPainting {
         }
     }
 
+    /**
+     * draws a ribbon for each path
+     * @param controls bezier curve controls
+     * @param path path to draw to
+     * @return drawn path
+     */
     private Path drawRibbon(int[] controls, Path path) {
         path.moveTo(controls[0], controls[1]);
         path.cubicTo(controls[2], controls[3], controls[4], controls[5], controls[6], controls[7]);
         return path;
     }
 
+    /**
+     * takes in an arraylist of controls and returns it with many more controls added to create a mountain range
+     * @param controls controls for each bezier curve 'mountain'
+     * @param heightLimit limit to the height of each mountain
+     * @return returns a list of controls that will enable a line representing a range of mountains to be drawn
+     */
     private ArrayList<int[]> fillOutNewMountainRange(ArrayList<int[]> controls, int heightLimit) {
 
         Random random = new Random();
@@ -217,13 +177,18 @@ public class Landscape extends PositionAndLightPainting {
             int controlY2 = y1 - (getHeightLimitedSizeForMountain(heightLimit));
             int controlX2 = random.nextInt(potentialLength) + x1;
 
-
             controls.add(new int[]{x1, y1, controlX1, controlY1, controlX2, controlY2, x3, y1});
         }
 
         return controls;
     }
 
+    /**
+     * helper method to get the end of each line. ensures end is visible onscreen.
+     * @param start x coordinate for beginning of line
+     * @param heightLimit maximum height for each curve
+     * @return end point for this line
+     */
     private int getEnd(int start, int heightLimit) {
         int end = random.nextInt(heightLimit) + start;
         if (end < 1) {
@@ -232,6 +197,11 @@ public class Landscape extends PositionAndLightPainting {
         return end;
     }
 
+    /**
+     * helper method to create an individual height limit for a mountain within the limit imposed
+     * @param heightLimit maximum height for each curve
+     * @return size to use for this mountain
+     */
     private int getHeightLimitedSizeForMountain(int heightLimit){
 
         int sizeToUse = (int)((sizes.get(sizeCounter++))*((float)heightLimit/sizeRange));
@@ -243,13 +213,9 @@ public class Landscape extends PositionAndLightPainting {
         return sizeToUse;
     }
 
-    private void addMountainRange(int start, int centre, int end, int heightLimit) {
-        controls.add(new int[]{start, centre, start + random.nextInt(end),
-                centre - getHeightLimitedSizeForMountain(heightLimit), start + random.nextInt(end),
-                centre - getHeightLimitedSizeForMountain(heightLimit), end, centre});
-        fillOutNewMountainRange(controls, heightLimit);
-    }
-
+    /**
+     * set up method to add a mountain range for each number of loops
+     */
     private void setUpForLandscape() {
         int start;
         int end;
@@ -262,7 +228,10 @@ public class Landscape extends PositionAndLightPainting {
                 end = getEnd(start, heightLimit);
 
                 for(int j = 0; j<4;j++) {
-                    addMountainRange(start, centre, end, heightLimit);
+                    controls.add(new int[]{start, centre, start + random.nextInt(end),
+                            centre - getHeightLimitedSizeForMountain(heightLimit), start + random.nextInt(end),
+                            centre - getHeightLimitedSizeForMountain(heightLimit), end, centre});
+                    fillOutNewMountainRange(controls, heightLimit);
                 }
         }
     }
