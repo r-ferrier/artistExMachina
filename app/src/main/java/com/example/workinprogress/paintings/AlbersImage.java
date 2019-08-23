@@ -14,7 +14,8 @@ import java.util.Collections;
 import java.util.Random;
 
 /**
- * AlbersImage class draws a series of squares in different colours and opacities on top of one another
+ * AlbersImage class draws a series of squares in different colours and opacities on top of one another,
+ * inspired by the work of Josef Albers
  */
 public class AlbersImage extends PositionAndLightPainting {
 
@@ -46,7 +47,7 @@ public class AlbersImage extends PositionAndLightPainting {
         setColoursValues();
         numberOfSquares = positionValues1.size()*8;
     }
-    
+
     /**
      * First sets canvas background and height and width, as with all paintings.
      * Checks if drawing has been made before. If not, sets up drawing. Then draws.
