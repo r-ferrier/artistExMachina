@@ -170,6 +170,9 @@ public class AlbersImage extends PositionAndLightPainting {
         //create colour range
         float colourScalar = (colourRange - minimumValue) / DisplayImage.IMAGE_SIZE_SCALAR;
 
+        //I don't know why but everything just somehow looks better and more accurately reflects the light multiplied by 10 here
+        colourScalar*=10;
+
         //get correct array
         for (SingularPointDataSet dataSet : singularPointDataSets) {
             if (dataSet.getScaledResults1().size() > 1) {

@@ -283,27 +283,28 @@ public class AbstractShapes extends PositionAndLightPainting {
 
         if (numberOfShapes < 80) {
             sizeLowerBounds = (double) averageSize / 220;
-            sizeUpperBounds = (double) averageSize / 1.5 - sizeLowerBounds;
+            sizeUpperBounds = (double) (averageSize / 1.5) - sizeLowerBounds;
             numberOfColours = 2;
             shapesToBeChosen = 1;
         } else if (numberOfShapes < 200) {
             sizeLowerBounds = (double) averageSize / 64;
-            sizeUpperBounds = (double) averageSize / 10 - sizeLowerBounds;
+            sizeUpperBounds = (double) (averageSize / 10) - sizeLowerBounds;
             numberOfColours = 4;
             shapesToBeChosen = 2;
         } else if (numberOfShapes < 400) {
             sizeLowerBounds = (double) averageSize / 100;
-            sizeUpperBounds = (double) averageSize / 20 - sizeLowerBounds;
+            sizeUpperBounds = (double) (averageSize / 20) - sizeLowerBounds;
             numberOfColours = 6;
             shapesToBeChosen = 3;
         } else {
 
             sizeLowerBounds = (double) averageSize / 300;
-            if(sizeLowerBounds<1)sizeLowerBounds = 1;
             sizeUpperBounds = (double) averageSize / 40 - sizeLowerBounds;
             numberOfColours = 9;
             shapesToBeChosen = 4;
         }
+
+        if(sizeUpperBounds<1)sizeUpperBounds = 1;
 
         //find the average lightlevel, convert the lightlevels to a scale of 255, and set the alpha values accordingly
         int lightTotal = 0;
@@ -331,28 +332,6 @@ public class AbstractShapes extends PositionAndLightPainting {
         for (int i = 0; i < lineWidths.length; i++) {
             lineWidths[i] = random.nextInt((int) sizeUpperBounds) + (int) sizeLowerBounds;
         }
-    }
-
-    /**
-     * takes any sorted array and removes duplicate values from it. If the array is shorter than 10,
-     * adds in 0s until it is at least 10 in length.
-     * @param sortedArray any arraylist of integers but must be in sorted order, ascending or descending
-     * @return arraylist of unique integers in sorted order
-     */
-    ArrayList<Integer> setUniqueValueSortedArrays(ArrayList<Integer> sortedArray) {
-
-        for (int i = 0; i < sortedArray.size() - 1; i++) {
-            while (sortedArray.get(i + 1).equals(sortedArray.get(i))) {
-                sortedArray.remove(i + 1);
-                if(sortedArray.size()-1==i){
-                    break;
-                }
-            }
-        }
-        while (sortedArray.size() < 10) {
-            sortedArray.add(0);
-        }
-        return sortedArray;
     }
 
     /**

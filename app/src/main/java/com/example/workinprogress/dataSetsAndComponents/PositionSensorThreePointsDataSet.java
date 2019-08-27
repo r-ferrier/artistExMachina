@@ -52,12 +52,46 @@ public class PositionSensorThreePointsDataSet extends ThreePointsDataSet {
 
         for (int i = 0; i< scaledResults1.size(); i++){
             Log.i(TAG, "scaled results "+i+": x:"+scaledResults1.get(i)+" y:"+scaledResults2.get(i)+" z:"+scaledResults3.get(i)+"\n");
-            Log.i(TAG, "unscaled results "+i+": x:"+getResults().get(i).getResults().get(0)+" y:"+getResults().get(i).getResults().get(1)+" z:"+getResults().get(i).getResults().get(2)+"\n");
-        }
+            if(i<getResults().size()) {
+                Log.i(TAG, "unscaled results " + i + ": x:" + getResults().get(i).getResults().get(0) + " y:" + getResults().get(i).getResults().get(1) + " z:" + getResults().get(i).getResults().get(2) + "\n");
+            }
+            }
 
     }
 
     private Integer applyScaling(float dataSetPoint){
         return Math.round(dataSetPoint);
+    }
+
+    public String getAverageString(){
+
+        float totalX = 0;
+        float totalY = 0;
+        float totalZ = 0;
+
+        int count = 0;
+
+        for (DataSetPoint dataSetPoint:getResults()){
+            count++;
+            float x = (Float)dataSetPoint.getResults().get(0);
+            float y = (Float)dataSetPoint.getResults().get(1);
+            float z = (Float)dataSetPoint.getResults().get(2);
+            if(x<0){
+               totalX-=x;
+            }else{
+                totalX+=x;
+            }
+            if(y<0){
+                totalY-=y;
+            }else{
+                totalY+=y;
+            }
+            if(z<0){
+                totalZ-=z;
+            }else{
+                totalZ+=z;
+            }
+        }
+        return " x: "+totalX/count+" y: "+totalY/count+" z: "+totalZ/count;
     }
 }

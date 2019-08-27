@@ -46,4 +46,8 @@ public class UnscaledSingleEntryDataSet<e extends Number> extends SingularPointD
         return getDataTypeName()+"\n"+scaledResults1.get(0).toString()+"\n";
     }
 
+    @Override
+    public String getAverageString() {
+        return "N/A";
+    }
 }

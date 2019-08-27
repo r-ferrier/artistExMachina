@@ -24,14 +24,12 @@ public abstract class DataSet implements Serializable {
      */
     public void addResult(DataSetPoint dataSetPoint){
 
-        if (dataSetPoint.getNumberOfDataPointsInSet()==numberOfDataPointsInEachSet&&dataSetPoint.getDataTypeName()==dataTypeName) {
+        if (dataSetPoint.getNumberOfDataPointsInSet()==numberOfDataPointsInEachSet&&dataSetPoint.getDataTypeName().equals(dataTypeName)) {
             results.add(dataSetPoint);
         }
     }
 
     public abstract void setScaledResults();
-
-    //
 
     /**
      * @return string for every dataset includes its name and the full dataset printed as a string
@@ -39,12 +37,14 @@ public abstract class DataSet implements Serializable {
      */
     public String toString() {
 
-        String string = getDataTypeName()+"\n";
+        String string = getDataTypeName()+"\ntotal: "+getResults().size()+"\naverage: "+getAverageString()+"\n\n";
         for (DataSetPoint dataSetPoint : getResults()){
             string += dataSetPoint.toString()+"\n";
         }
         return string;
     }
+
+    public abstract String getAverageString();
 
     public String getDataTypeName(){
         return dataTypeName;

@@ -32,11 +32,11 @@ public class DataDisplay extends AppCompatActivity {
         if(newImageCreated){
 
             String dataString = "";
-
             for(String dataSet: dataStrings){
                 dataString+=dataSet;
-                dataString+="\n";
+                dataString+="\n\n";
             }
+
             ((TextView)findViewById(R.id.dataTextView)).setText(dataString);
         }else {
             ((TextView) findViewById(R.id.dataTextView)).setText(data);

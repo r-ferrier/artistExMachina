@@ -55,4 +55,19 @@ public class LocationTwoPointsDataSet extends TwoPointsDataSet {
         }
         return (int)(dataSetPoint * scalar);
     }
+
+    public String getAverageString(){
+
+        float totalLat = 0;
+        float totalLong = 0;
+
+        int count = 0;
+
+        for (DataSetPoint dataSetPoint:getResults()){
+            count++;
+            totalLat+= (Float)dataSetPoint.getResults().get(0);
+            totalLong+= (Float)dataSetPoint.getResults().get(1);
+        }
+        return "Lat: "+totalLat/count+"Long: "+totalLong/count;
+    }
 }

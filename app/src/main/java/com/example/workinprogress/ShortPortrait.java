@@ -59,7 +59,10 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         }
 
         SensorSingularPointDataSet lightData = new SensorSingularPointDataSet(getString(R.string.data_type_light), lightSensor);
+        //need to add two results o lightdata or images will crash
         lightData.addResult(new LightData(getString(R.string.data_type_light),(float)1000,lightData.getMax(),lightData.getMin(),nightMode));
+        lightData.addResult(new LightData(getString(R.string.data_type_light),(float)0,lightData.getMax(),lightData.getMin(),nightMode));
+
 
         dataSets.add(lightData);
         dataSets.add(new PositionSensorThreePointsDataSet(getString(R.string.data_type_position), positionSensor));

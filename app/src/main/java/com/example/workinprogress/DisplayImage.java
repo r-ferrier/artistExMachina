@@ -25,6 +25,7 @@ import androidx.core.content.FileProvider;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.example.workinprogress.classesForTestingOutputs.TestingBrightImage;
 import com.example.workinprogress.dataSetsAndComponents.DataSet;
 import com.example.workinprogress.paintings.AbstractShapes;
 import com.example.workinprogress.paintings.AlbersImage;
@@ -310,7 +311,14 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
         });
         thready.start();
 
+        //special class that can be used to insert dummy inputs into images
+//        testImages();
+
+
+
+
         createDrawables();
+
         createdSaveAndDeleteddStatusArrays();
     }
 
@@ -560,6 +568,17 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
 
         // begin the sharingintent
         startActivity(Intent.createChooser(sharingIntent, "Share via"));
+
+    }
+
+    private void testImages(){
+
+        TestingBrightImage testingBrightImage = new TestingBrightImage(getString(R.string.data_type_light),this);
+        dataSets = testingBrightImage.getDataSets();
+        dataStrings = new ArrayList<>();
+        for (DataSet dataSet : dataSets) {
+            dataStrings.add(dataSet.toString());
+        }
 
     }
 
