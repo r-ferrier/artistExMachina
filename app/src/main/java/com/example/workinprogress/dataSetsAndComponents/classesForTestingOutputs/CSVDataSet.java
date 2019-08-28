@@ -1,7 +1,8 @@
-package com.example.workinprogress.classesForTestingOutputs;
+package com.example.workinprogress.dataSetsAndComponents.classesForTestingOutputs;
 
 import android.content.Context;
 
+import com.example.workinprogress.R;
 import com.example.workinprogress.dataSetsAndComponents.DataSet;
 import com.example.workinprogress.dataSetsAndComponents.DataSetPoint;
 import com.example.workinprogress.dataSetsAndComponents.LightData;
@@ -10,10 +11,6 @@ import com.example.workinprogress.dataSetsAndComponents.SingularPointDataSet;
 import com.example.workinprogress.dataSetsAndComponents.ThreePointsDataSet;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,9 +19,9 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * This class canbe used in conjunction with the displayimage class to specifically create false data sets to test images with
+ * This class can be used in conjunction with the displayimage class to specifically create false data sets to test images with
  */
-public class TestingBrightImage {
+public class CSVDataSet {
 
     private ArrayList<DataSet> dataSets;
     private SingularPointDataSet singularPointDataSet;
@@ -44,22 +41,26 @@ public class TestingBrightImage {
     private int movementMax = 150;
     private int movementMin = -150;
     private String dataType;
-    private String fileName = "dataToUpload.csv";
+    private String fileName;
     private Context context;
 
 
-
-    public TestingBrightImage(String dataType, Context context){
+    public CSVDataSet(Context context, boolean CSVData, String fileName){
 
         dataSets = new ArrayList<>();
-        this.dataType = dataType;
         this.context = context;
+        this.dataType = context.getString(R.string.data_type_light);
+        this.fileName = fileName;
 
         setSingularPointDataSet();
         setThreePointsDataSet();
 
-//        addRandomlyGeneratedData();
-        addDataFromCsv();
+        //chooses whether to use data from a CSV or a randomly generated method
+        if(CSVData){
+            addDataFromCsv();
+        }else{
+            addRandomlyGeneratedData();
+        }
 
         dataSets.add(singularPointDataSet);
         dataSets.add(threePointsDataSet);
@@ -222,7 +223,6 @@ public class TestingBrightImage {
             //read in line by line and add lines to a list of strings
             while ((thisLine = br.readLine()) != null) {
                 csvList.add(thisLine);
-                System.out.println(thisLine);
             }
 
             //remove first line

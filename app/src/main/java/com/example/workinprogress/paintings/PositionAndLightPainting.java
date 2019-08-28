@@ -93,13 +93,10 @@ public class PositionAndLightPainting extends Painting {
 
         for(int i = 0; i<countAllValues; i++){
             totalAllValues+=reverseSortedArray.get(i);
-            System.out.println(reverseSortedArray.get(i));
         }
 
         float averageOfFourHighestValues = (totalHighestValues/countOfHighestValues);
-        System.out.println(averageOfFourHighestValues);
         int averageOfAllValues = (int)(totalAllValues/countAllValues);
-        System.out.println(averageOfAllValues);
 
         Log.i(TAG,"new average "+dataType+" created: "+(averageOfAllValues+averageOfFourHighestValues)/2);
 

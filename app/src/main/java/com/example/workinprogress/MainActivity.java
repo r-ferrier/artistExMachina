@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private int animationPause2 = 2000;
     private ObjectAnimator moveButtons;
     private static final int REQUEST_OAUTH = 1;
+    private boolean allPermissionsGranted = false;
 
     /**
      * On creation the mainActivity will set up content, request any necessary permissions, collect aggregate
@@ -56,15 +57,10 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case REQUEST_OAUTH: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
+                    allPermissionsGranted = true;
                 } else {
-                    Toast.makeText(MainActivity.this, "You must accept permissions, please uninstall app and start again if you would like to continue", Toast.LENGTH_LONG).show();
-
-                    ActivityCompat.requestPermissions
-                            (this, new String[]{
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                    Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-
+                    allPermissionsGranted = false;
+                    Toast.makeText(MainActivity.this, "You must accept permissions to use this app.", Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -79,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
                     (this, new String[]{
                             Manifest.permission.WRITE_EXTERNAL_STORAGE,
                             Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+        }else{
+            allPermissionsGranted=true;
         }
 
     }
@@ -240,18 +238,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void beginShortPortraitActivity(View view) {
-        Intent intent = new Intent(this, ShortPortrait.class);
-        startActivity(intent);
+        if(allPermissionsGranted) {
+            Intent intent = new Intent(this, ShortPortrait.class);
+            startActivity(intent);
+        }else{
+            requestPermissions();
+        }
     }
 
     public void beginGalleryActivity(View view) {
-        Intent intent = new Intent(this, Gallery.class);
-        startActivity(intent);
+        if(allPermissionsGranted) {
+            Intent intent = new Intent(this, Gallery.class);
+            startActivity(intent);
+        }else{
+            requestPermissions();
+        }
     }
 
     public void beginAboutActivity(View view) {
-        Intent intent = new Intent(this, About.class);
-        startActivity(intent);
+        if(allPermissionsGranted) {
+            Intent intent = new Intent(this, About.class);
+            startActivity(intent);
+        }else{
+            requestPermissions();
+        }
     }
 
 

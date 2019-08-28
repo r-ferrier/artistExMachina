@@ -161,8 +161,6 @@ public class AutomaticDrawing extends PositionAndLightPainting {
 
         newColour = (int) (average * 0.255);
 
-        System.out.println("average: "+newColour);
-
 
         if (newColour < 50) {
             paintAlpha = 50;
