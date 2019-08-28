@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private int animationPause1 = 3000;
     private int animationPause2 = 2000;
     private ObjectAnimator moveButtons;
+    private boolean allPermissionsGranted = false;
 
 
     /**
@@ -244,28 +245,40 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     public void beginShortPortraitActivity(View view) {
 
-        ArrayList<Float> distanceCovered = new ArrayList<>();
-        distanceCovered.add(distance);
+        if(allPermissionsGranted) {
+            ArrayList<Float> distanceCovered = new ArrayList<>();
+            distanceCovered.add(distance);
 
-        ArrayList<com.example.workinprogress.dataSetsAndComponents.DataSet> dataSets = new ArrayList<>();
-        dataSets.add(new UnscaledSingleEntryDataSet<>(steps, getString(R.string.data_type_steps)));
-        dataSets.add(new UnscaledSingleEntryDataSet<>(distance, getString(R.string.data_type_distance)));
+            ArrayList<com.example.workinprogress.dataSetsAndComponents.DataSet> dataSets = new ArrayList<>();
+            dataSets.add(new UnscaledSingleEntryDataSet<>(steps, getString(R.string.data_type_steps)));
+            dataSets.add(new UnscaledSingleEntryDataSet<>(distance, getString(R.string.data_type_distance)));
 
-        Intent intent = new Intent(this, ShortPortrait.class);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("dataSet_Array",dataSets);
-        intent.putExtras(bundle);
-        startActivity(intent);
+            Intent intent = new Intent(this, ShortPortrait.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("dataSet_Array", dataSets);
+            intent.putExtras(bundle);
+            startActivity(intent);
+        }else{
+            requestPermissions();
+        }
     }
 
     public void beginGalleryActivity(View view) {
-        Intent intent = new Intent(this, Gallery.class);
-        startActivity(intent);
+        if(allPermissionsGranted) {
+            Intent intent = new Intent(this, Gallery.class);
+            startActivity(intent);
+        }else{
+            requestPermissions();
+        }
     }
 
     public void beginAboutActivity(View view) {
-        Intent intent = new Intent(this, About.class);
-        startActivity(intent);
+        if(allPermissionsGranted) {
+            Intent intent = new Intent(this, About.class);
+            startActivity(intent);
+        }else{
+            requestPermissions();
+        }
     }
 
 
@@ -385,15 +398,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     private void initCallbacks() {
 
-        mSubscribeResultCallback = new ResultCallback<Status>() {
-            @Override
-            public void onResult(@NonNull Status status) {
-                if (status.isSuccess()) {
-                    if (status.getStatusCode() == FitnessStatusCodes.SUCCESS_ALREADY_SUBSCRIBED) {
-                        Log.e("RecordingAPI", "Already subscribed to the Recording API");
-                    } else {
-                        Log.e("RecordingAPI", "Subscribed to the Recording API");
-                    }
+        mSubscribeResultCallback = status -> {
+            if (status.isSuccess()) {
+                if (status.getStatusCode() == FitnessStatusCodes.SUCCESS_ALREADY_SUBSCRIBED) {
+                    Log.e("RecordingAPI", "Already subscribed to the Recording API");
+                } else {
+                    Log.e("RecordingAPI", "Subscribed to the Recording API");
                 }
             }
         };
@@ -419,9 +429,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         switch (requestCode) {
             case REQUEST_OAUTH: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
+                    allPermissionsGranted = true;
                 } else {
-                    Toast.makeText(MainActivity.this, "You must accept permissions.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "You must accept permissions to use this app.", Toast.LENGTH_LONG).show();
+                    allPermissionsGranted = false;
                 }
             }
         }

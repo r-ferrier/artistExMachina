@@ -44,9 +44,9 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
     private boolean nightMode = false;
     private ArrayList<DataSet> dataSets = new ArrayList<>();
     private LocationManager locationManager;
-//    private android.location.Location location;
-//    private boolean GPSExists;
-//    private boolean networkIsEnabled;
+    private android.location.Location location;
+    private boolean GPSExists;
+    private boolean networkIsEnabled;
 
     /**
      * sets short portrait activity as the view and then sets up sensors and sensor managers.
@@ -263,60 +263,47 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
 
     }
 
-//    @SuppressLint("MissingPermission")
-//    public android.location.Location getLocation() {
-//
-//        try {
-//            networkIsEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER); // check if it is network enabled
-//            GPSExists = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER); //check if it is GPS enabled
-//
-//            if (!GPSExists && !networkIsEnabled) {
-//                return null;
-//            } else if (!GPSExists) {
-//                location = null;
-//                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, this);
-//
-//                if (locationManager != null) {
-//                    location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-//                    if (location != null) {
-//                        return location;
-//                    }
-//                }
-//            } else {
-//                location = null;
-//                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1, this);
-//
-//                if (locationManager != null) {
-//                    location = locationManager
-//                            .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//                    if (location != null) {
-//                        return location;
-//                    }
-//                }
-//            }
-//
-//
-//        } catch (
-//                Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        return location;
-//
-//    }
+    @SuppressLint("MissingPermission")
+    public android.location.Location getLocation() {
 
-//    public void changeImage(View view){
-//        if(((TextView)view).getText()==getString(R.string.albers_image)){
-//            ((TextView)view).setText(R.string.automatic_drawing);
-//            imageType = getString(R.string.automatic_drawing);
-//        }else if(((TextView)view).getText()==getString(R.string.automatic_drawing)){
-//            ((TextView)view).setText(R.string.abstract_shapes);
-//            imageType = getString(R.string.abstract_shapes);
-//        }else{
-//            ((TextView)view).setText(R.string.albers_image);
-//            imageType = getString(R.string.albers_image);
-//        }
-//    }
+        try {
+            networkIsEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER); // check if it is network enabled
+            GPSExists = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER); //check if it is GPS enabled
+
+            if (!GPSExists && !networkIsEnabled) {
+                return null;
+            } else if (!GPSExists) {
+                location = null;
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1, 1, this);
+
+                if (locationManager != null) {
+                    location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    if (location != null) {
+                        return location;
+                    }
+                }
+            } else {
+                location = null;
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1, this);
+
+                if (locationManager != null) {
+                    location = locationManager
+                            .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    if (location != null) {
+                        return location;
+                    }
+                }
+            }
+
+
+        } catch (
+                Exception e) {
+            e.printStackTrace();
+        }
+
+        return location;
+
+    }
 
 
 }
