@@ -89,7 +89,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         zText = findViewById(R.id.zValues);
 
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-        positionSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        positionSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
         if(lightSensor==null||positionSensor==null){
             Log.e(TAG,"problem locating light or position sensor");

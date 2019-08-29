@@ -21,6 +21,9 @@ public class PositionSensorThreePointsDataSet extends ThreePointsDataSet {
         max = sensor.getMaximumRange();
         min = max + 1;
         min *= -1;
+
+        Log.i(TAG,"max range: "+max);
+        Log.i(TAG, "min range: "+min);
     }
 
     @Override

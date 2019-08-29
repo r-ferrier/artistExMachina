@@ -20,7 +20,7 @@
     <string name="album_storage_name">artist_ex_machina</string>
     <string name="data_type_steps">data_type_steps</string>
     <string name="data_type_location">data_type_location</string>
-    <string name="data_type_position">data_type_position</string>
+    <string name="data_type_position">data_type_linear_acceleration</string>
     <string name="data_type_distance">data_type_distance</string>
     <string name="data_type_light">data_type_light</string>
     <string name="data_sets">data sets</string>

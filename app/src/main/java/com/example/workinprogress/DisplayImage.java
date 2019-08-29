@@ -222,41 +222,21 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
         try {
             Thread.sleep(200);
             new Handler(Looper.getMainLooper()).post(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            animationText.setText(R.string.artistBusy2);
-                        }
-                    }
+                    () -> animationText.setText(R.string.artistBusy2)
             );
             Thread.sleep(200);
             new Handler(Looper.getMainLooper()).post(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            animationText.setText(R.string.artistBusy3);
-                        }
-                    }
+                    () -> animationText.setText(R.string.artistBusy3)
             );
 
             Thread.sleep(200);
             new Handler(Looper.getMainLooper()).post(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            animationText.setText(R.string.artistBusy4);
-                        }
-                    }
+                    () -> animationText.setText(R.string.artistBusy4)
             );
 
             Thread.sleep(200);
             new Handler(Looper.getMainLooper()).post(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            animationText.setText(R.string.artistBusy1);
-                        }
-                    }
+                    () -> animationText.setText(R.string.artistBusy1)
             );
 
         } catch (InterruptedException e) {
@@ -358,6 +338,8 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
         drawables.add(new AlbersImage(this, dataSets));
         drawables.add(new Landscape(this, dataSets));
         drawables.add(new KineticArt(this, dataSets));
+
+        Log.i(TAG,drawables.size()+" image styles to be created");
 
     }
 
@@ -519,9 +501,7 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
                 Log.e(TAG,"file not deleted");
             }
         }
-
         if (imageCreated) {
-
             findViewById(R.id.discardButton).setVisibility(View.INVISIBLE);
             findViewById(R.id.keepButton).setVisibility(View.VISIBLE);
             deleted[viewPager.getCurrentItem()] = true;
