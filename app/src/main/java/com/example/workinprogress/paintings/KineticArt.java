@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 
+
 import com.example.workinprogress.R;
 import com.example.workinprogress.dataSetsAndComponents.DataSet;
 import com.example.workinprogress.dataSetsAndComponents.SensorSingularPointDataSet;
@@ -157,16 +158,15 @@ public class KineticArt extends AbstractShapes {
         for (int i = 0; i < numberOfPaintOptions; i++) {
             paintsOptions.add(new Paint());
         }
-        paintsOptions.get(0).setColor(context.getResources().getColor(R.color.yellowOchre));
-        paintsOptions.get(1).setColor(context.getResources().getColor(R.color.coralRed));
-        paintsOptions.get(2).setColor(context.getResources().getColor(R.color.metallicSeaweed));
-        paintsOptions.get(3).setColor(context.getResources().getColor(R.color.imperialBlue));
-        paintsOptions.get(4).setColor(context.getResources().getColor(R.color.juneBudYellow));
-        paintsOptions.get(5).setColor(context.getResources().getColor(R.color.iguanaGreen));
-        paintsOptions.get(6).setColor(context.getResources().getColor(R.color.rosyBrown));
-        paintsOptions.get(7).setColor(context.getResources().getColor(R.color.purpleNavy));
-        paintsOptions.get(8).setColor(context.getResources().getColor(R.color.purplePineapple));
-
+        paintsOptions.get(0).setColor(context.getColor(R.color.yellowOchre));
+        paintsOptions.get(1).setColor(context.getColor(R.color.coralRed));
+        paintsOptions.get(2).setColor(context.getColor(R.color.metallicSeaweed));
+        paintsOptions.get(3).setColor(context.getColor(R.color.imperialBlue));
+        paintsOptions.get(4).setColor(context.getColor(R.color.juneBudYellow));
+        paintsOptions.get(5).setColor(context.getColor(R.color.iguanaGreen));
+        paintsOptions.get(6).setColor(context.getColor(R.color.rosyBrown));
+        paintsOptions.get(7).setColor(context.getColor(R.color.purpleNavy));
+        paintsOptions.get(8).setColor(context.getColor(R.color.purplePineapple));
     }
 
 

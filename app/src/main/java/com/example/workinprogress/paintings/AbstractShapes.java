@@ -172,7 +172,6 @@ public class AbstractShapes extends PositionAndLightPainting {
     private void chooseColours(int[] startingColour) {
 
         ArrayList<int[]> temporaryHoldingArray = new ArrayList<>();
-        Random random = new Random();
         temporaryHoldingArray.add(startingColour);
         int multiplier = 1;
         int alphamultiplier = 1;
@@ -222,8 +221,7 @@ public class AbstractShapes extends PositionAndLightPainting {
         //create new list for sizes
         ArrayList<Integer> sizes = (ArrayList<Integer>)positionValues1.clone();
 
-        //create a new random and set the number of shapes
-        Random random = new Random();
+        //set the number of shapes
         numberOfShapes = (sizes.size());
 
         //shuffle lightvalues
@@ -231,16 +229,16 @@ public class AbstractShapes extends PositionAndLightPainting {
 
         //create Arraylist of possible colours
         ArrayList<Integer> colours = new ArrayList<>();
-        colours.add(context.getResources().getColor(R.color.juneBudYellow));
-        colours.add(context.getResources().getColor(R.color.yellowOchre));
-        colours.add(context.getResources().getColor(R.color.iguanaGreen));
-        colours.add(context.getResources().getColor(R.color.imperialBlue));
-        colours.add(context.getResources().getColor(R.color.dustyBlue));
-        colours.add(context.getResources().getColor(R.color.coralRed));
-        colours.add(context.getResources().getColor(R.color.metallicSeaweed));
-        colours.add(context.getResources().getColor(R.color.purplePineapple));
-        colours.add(context.getResources().getColor(R.color.rosyBrown));
-        colours.add(context.getResources().getColor(R.color.purpleNavy));
+        colours.add(context.getColor(R.color.juneBudYellow));
+        colours.add(context.getColor(R.color.yellowOchre));
+        colours.add(context.getColor(R.color.iguanaGreen));
+        colours.add(context.getColor(R.color.imperialBlue));
+        colours.add(context.getColor(R.color.dustyBlue));
+        colours.add(context.getColor(R.color.coralRed));
+        colours.add(context.getColor(R.color.metallicSeaweed));
+        colours.add(context.getColor(R.color.purplePineapple));
+        colours.add(context.getColor(R.color.rosyBrown));
+        colours.add(context.getColor(R.color.purpleNavy));
 
         //create Arraylist of int[] containing colours broken down into their numbers
         ArrayList<int[]> coloursAsNumbers = new ArrayList<>();
@@ -297,7 +295,6 @@ public class AbstractShapes extends PositionAndLightPainting {
             numberOfColours = 6;
             shapesToBeChosen = 3;
         } else {
-
             sizeLowerBounds = (double) averageSize / 300;
             sizeUpperBounds = (double) averageSize / 40 - sizeLowerBounds;
             numberOfColours = 9;
@@ -400,7 +397,6 @@ public class AbstractShapes extends PositionAndLightPainting {
         int loopStartY1 = startY1;
         int loopStartX2 = startX2;
         int loopStartY2 = startY2;
-        Random random = new Random();
         int numberOfLinesSoFar = 0;
 
         //loops for the number of shapes
