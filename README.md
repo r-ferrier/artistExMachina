@@ -24,6 +24,7 @@ Version 1.2 just contains code to enable:
 - light levels
 - accelerometer readings
 
-##Running this Application
+## Running this Application
 This application can be built and run through android studio, or the following file can be run directly on any android device:
+
 artist_ex_machina_debug.apk
