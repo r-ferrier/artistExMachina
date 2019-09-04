@@ -70,11 +70,16 @@ public class DataSetTest {
     @Test
     public void getMax() {
         assertTrue("dataset is not storing maximum value accurately",dataSet.getMax()==max);
+        max = Float.MAX_VALUE;
+        dataSet.max = max;
+        assertTrue("dataset is not storing maximum value accurately when maximum is largest possible float",dataSet.getMax()==max);
     }
 
     @Test
     public void getMin() {
         assertTrue("dataset is not storing minimum value accurately",dataSet.getMin()==min);
-
+        min = Float.MIN_VALUE;
+        dataSet.min = min;
+        assertTrue("dataset is not storing minimum value accurately when minimum is smallest possible float",dataSet.getMin()==min);
     }
 }

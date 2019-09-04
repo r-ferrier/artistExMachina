@@ -31,6 +31,7 @@ public class AlbersImage extends PositionAndLightPainting {
     private int[][] newCanvasPositions;
     private int numberOfSquares;
     private ArrayList<Integer> newShapeSize;
+    private float multiplier = 1.5f;
 
     /**
      * constructor sets colour values and the number of squares to be created (8 times the number of movements)
@@ -133,7 +134,7 @@ public class AlbersImage extends PositionAndLightPainting {
         float currentRange = biggestShape - smallestShape;
         float newRange = biggestShape;
 
-        float scalar = currentRange / newRange;
+        float scalar = (currentRange / newRange)*multiplier;
 
         //multiply sizes by scalar
         for (int i = 0; i < shapeSize.size(); i++) {
@@ -246,8 +247,8 @@ public class AlbersImage extends PositionAndLightPainting {
 
         canvasPositions = new int[numberOfSquares][2];
 
-        float xScalar = width / range;
-        float yScalar = height / range;
+        float xScalar = (width / range)*2;
+        float yScalar = (height / range)*2;
         int j = 0;
 
         //creates a list of position integers for each accelerometer reading. Each takes the x as its
@@ -255,8 +256,8 @@ public class AlbersImage extends PositionAndLightPainting {
         //to create some noise
         for (int i = 0; i < canvasPositions.length; i+=8) {
 
-            float xSize = (positionValues1.get(j) * xScalar);
-            float ySize = (positionValues2.get(j) * yScalar);
+            float xSize = (positionValues1.get(j) * xScalar)-(width/2);
+            float ySize = (positionValues2.get(j) * yScalar)-(height/2);
             j++;
 
             int a1 = Math.round(xSize);

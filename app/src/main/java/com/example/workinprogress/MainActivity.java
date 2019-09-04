@@ -441,11 +441,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private void requestPermissions() {
         if (ContextCompat.checkSelfPermission
                 (this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission
+                || ContextCompat.checkSelfPermission
                 (this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission
+                || ContextCompat.checkSelfPermission
                 (this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission
+                || ContextCompat.checkSelfPermission
                 (this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions
                     (this, new String[]{
@@ -453,6 +453,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                             Manifest.permission.ACCESS_FINE_LOCATION,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE,
                             Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+        }else{
+            allPermissionsGranted = true;
         }
 
         initCallbacks();
