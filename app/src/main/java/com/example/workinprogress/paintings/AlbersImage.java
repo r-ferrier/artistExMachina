@@ -254,9 +254,9 @@ public class AlbersImage extends PositionAndLightPainting {
         float yScalar = ((height / range)*2);
         int j = 0;
 
-        //creates a list of position integers for each accelerometer reading. Each takes the x as its
-        //x coord, the y as its y coord, and then then adds in 6 positions placed around this randomly
-        //to create some noise
+        /* creates a list of position integers for each accelerometer reading. Each takes the x as its
+        x coord, the y as its y coord, and then then adds in 6 positions placed around this randomly
+        to create some noise */
         for (int i = 0; i < canvasPositions.length; i+=8) {
 
             float xSize = ((positionValues1.get(j) * xScalar))-(width/2);

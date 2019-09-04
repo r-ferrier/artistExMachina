@@ -40,8 +40,6 @@ public class About extends AppCompatActivity {
 
         tabLayout.getTabAt(0).setText(getString(R.string.about));
         tabLayout.getTabAt(1).setText(getString(R.string.instructions));
-
-
     }
 
 
