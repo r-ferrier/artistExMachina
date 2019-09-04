@@ -10,6 +10,7 @@ git clone https://github.com/r-ferrier/artistExMachina.git
 
 ## Versions
 This application currently has two versions: v1.1 and v1.2
+
 Version 1.1 contains code to enable the storage and use of the following data:
 - steps aggregate
 - distance aggregate
