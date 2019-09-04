@@ -59,7 +59,10 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         }
 
         SensorSingularPointDataSet lightData = new SensorSingularPointDataSet(getString(R.string.data_type_light), lightSensor);
+        //need to add two results to lightdata or images will crash
         lightData.addResult(new LightData(getString(R.string.data_type_light),(float)1000,lightData.getMax(),lightData.getMin(),nightMode));
+        lightData.addResult(new LightData(getString(R.string.data_type_light),(float)0,lightData.getMax(),lightData.getMin(),nightMode));
+
 
         dataSets.add(lightData);
         dataSets.add(new PositionSensorThreePointsDataSet(getString(R.string.data_type_position), positionSensor));
@@ -86,7 +89,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
         zText = findViewById(R.id.zValues);
 
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-        positionSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        positionSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
         if(lightSensor==null||positionSensor==null){
             Log.e(TAG,"problem locating light or position sensor");
@@ -102,6 +105,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
      */
     public void startStopButtonPressed(View view) {
         if (!recordingData) {
+            Log.i(TAG,"Now recording data");
             recordingData = true;
             ((Button) view).setText(R.string.stop);
             view.setBackground(getResources().getDrawable(R.drawable.white_button));
@@ -123,6 +127,7 @@ public class ShortPortrait extends AppCompatActivity implements SensorEventListe
     public void stop() {
 
         sensorManager.unregisterListener(this);
+        Log.i(TAG,"Stopped recording data");
 
         for(DataSet dataSet:dataSets){
             dataSet.setScaledResults();

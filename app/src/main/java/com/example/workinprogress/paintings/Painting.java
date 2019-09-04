@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import com.example.workinprogress.dataSetsAndComponents.DataSet;
 import com.example.workinprogress.dataSetsAndComponents.SingularPointDataSet;
@@ -26,6 +27,8 @@ public abstract class Painting extends Drawable {
     protected ArrayList<TwoPointsDataSet> twoPointsDataSets = new ArrayList<>();
     protected ArrayList<ThreePointsDataSet> threePointsDataSets = new ArrayList<>();
     protected Context context;
+    private String TAG = "Painting class";
+    public static boolean firstInstanceOfPainting = true;
 
     protected float width;
     protected float height;
@@ -45,6 +48,12 @@ public abstract class Painting extends Drawable {
                 twoPointsDataSets.add((TwoPointsDataSet)dataSet);
             }else if(dataSet.getNumberOfDataPointsInEachSet()==3){
                 threePointsDataSets.add((ThreePointsDataSet)dataSet);
+            }
+        }
+
+        if(firstInstanceOfPainting) {
+            for (DataSet dataSet : dataSets) {
+                Log.i(TAG, dataSet.getDataTypeName() + " dataset received and stored");
             }
         }
 

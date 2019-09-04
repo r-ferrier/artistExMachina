@@ -39,9 +39,23 @@ public class SensorSingularPointDataSet extends SingularPointDataSet {
         for (DataSetPoint dataSetPoint : getResults()) {
             scaledResults1.add(Math.round((float) dataSetPoint.getScaledResults().get(0)));
         }
+
         for (int i = 0; i< scaledResults1.size(); i++){
             Log.i(TAG, "scaled result "+i+": "+scaledResults1.get(i)+"\n");
             Log.i(TAG, "unscaled result "+i+": "+getResults().get(i)+"\n");
         }
+    }
+
+    @Override
+    public String getAverageString(){
+
+        float total = 0;
+        int count = 0;
+
+        for (DataSetPoint dataSetPoint:getResults()){
+            count++;
+            total+= (Float)dataSetPoint.getResults().get(0);
+        }
+        return ""+total/count;
     }
 }

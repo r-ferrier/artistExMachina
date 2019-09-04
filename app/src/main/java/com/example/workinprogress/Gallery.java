@@ -50,6 +50,8 @@ public class Gallery extends AppCompatActivity {
 
         } else {
 
+            Log.i(TAG, files.length+" files found at this location: "+directory);
+
             //sort the list so that the most recently modified files are shown first
             Arrays.sort(files, (f1, f2) -> Long.valueOf(f2.lastModified()).compareTo(f1.lastModified()));
 

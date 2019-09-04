@@ -8,6 +8,7 @@ import android.graphics.Path;
 import com.example.workinprogress.dataSetsAndComponents.DataSet;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 /**
@@ -160,12 +161,13 @@ public class AutomaticDrawing extends PositionAndLightPainting {
 
         newColour = (int) (average * 0.255);
 
-        System.out.println("average: "+newColour);
-
 
         if (newColour < 50) {
             paintAlpha = 50;
             numberOfShapes = random.nextInt(5)+1;
+            if(newColour<1){
+                newColour=1;
+            }
         } else if (newColour < 100) {
             paintAlpha = 100;
             numberOfShapes = random.nextInt(4)+1;
@@ -182,16 +184,29 @@ public class AutomaticDrawing extends PositionAndLightPainting {
             //set the paint colour
             int[] colours = new int[]{0,0,0};
             colours[random.nextInt(3)]=(newColour);
-            colours[random.nextInt(3)]=(random.nextInt(newColour));
+            colours[random.nextInt(3)]=(newColour);
             Paint paint = new Paint();
             paint.setARGB(paintAlpha,colours[0],colours[1],colours[2]);
 
             //set the shape size
             float shapeSize = random.nextInt(newColour)+((newColour+1)/4);
 
+            int xBound = (int)((width-shapeSize*2)-20);
+            int yBound = (int)((height-shapeSize*2)-20);
+
+            //if shapesize is bigger than canvas, set bounds to 1 and size to half of width -20
+            if(xBound<0) {
+                xBound = 1;
+                shapeSize = (width/2)-20;
+            }
+            if (yBound<0) {
+                yBound=1;
+                shapeSize = (width/2)-20;
+            }
+
             //set the coordinates so that the shape will be inside the border
-            float x = random.nextInt((int)((width-shapeSize*2)-20))+(10+(shapeSize));
-            float y = random.nextInt((int)((height-shapeSize*2)-20))+(10+(shapeSize));
+            float x = random.nextInt(xBound)+(10+(shapeSize));
+            float y = random.nextInt(yBound)+(10+(shapeSize));
 
             //add the new shape information to lists for drawing from
             shapesInformation.add(new float[]{x,y,shapeSize});
@@ -212,18 +227,30 @@ public class AutomaticDrawing extends PositionAndLightPainting {
         // this is where we will store all the x/y coordinates, as x1, y1, x2, y2
         positionsToBeDrawn = new int[anglesAndDirections.length][4];
 
-        for (int i = 0; i < anglesAndDirections.length; i++) {
-
-            // multiply position by 0.1 to get the length of the line and %360 to get the angle
-            anglesAndDirections[i][0] = (int) ((positionValues1.get(i)) * 0.5);
-
-            // normalise line lengths by removing 50 from values larger than 50 and converting subsequently negative
-            //values back to positives
-
-            anglesAndDirections[i][0] -= 50;
-            if (anglesAndDirections[i][0] < 0) {
-                anglesAndDirections[i][0] *= -1;
+        //find the average size
+        ArrayList<Integer> sizesOfLines = (ArrayList<Integer>)positionValues1.clone();
+        for(int i = 0; i<sizesOfLines.size();i++){
+            sizesOfLines.set(i,sizesOfLines.get(i)-500);
+            if(sizesOfLines.get(i)<0){
+                sizesOfLines.set(i,sizesOfLines.get(i)*-1);
             }
+        }
+        Collections.sort(sizesOfLines,Collections.reverseOrder());
+        int average = findLargestMovementBiasedAverage(sizesOfLines,"accelerometer");
+
+        //decide what the line multiplier will be
+        float multiplier;
+        if(average<100){
+            multiplier = 0.1f;
+        }else if(average<200){
+            multiplier = 0.3f;
+        }else{
+            multiplier = 0.5f;
+        }
+
+        for (int i = 0; i < anglesAndDirections.length; i++) {
+            // multiply position by multiplier to get the length of the line and %360 to get the angle
+            anglesAndDirections[i][0] = (int) ((positionValues1.get(i)) * multiplier);
             anglesAndDirections[i][1] = (positionValues2.get(i)) % 360;
         }
 

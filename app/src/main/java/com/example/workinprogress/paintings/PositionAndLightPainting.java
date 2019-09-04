@@ -1,6 +1,7 @@
 package com.example.workinprogress.paintings;
 
 import android.content.Context;
+import android.location.Location;
 import android.util.Log;
 
 import com.example.workinprogress.R;
@@ -51,4 +52,56 @@ public class PositionAndLightPainting extends Painting {
             Log.e(TAG,"No position data has been received, check data types");
         }
     }
+
+    /**
+     * takes any sorted array and removes duplicate values from it. If the array is shorter than 10,
+     * adds in 0s until it is at least 10 in length.
+     * @param sortedArray any arraylist of integers but must be in sorted order, ascending or descending
+     * @return arraylist of unique integers in sorted order
+     */
+    ArrayList<Integer> setUniqueValueSortedArrays(ArrayList<Integer> sortedArray) {
+
+        for (int i = 0; i < sortedArray.size() - 1; i++) {
+            while (sortedArray.get(i + 1).equals(sortedArray.get(i))) {
+                sortedArray.remove(i + 1);
+                if(sortedArray.size()-1==i){
+                    break;
+                }
+            }
+        }
+        while (sortedArray.size() < 10) {
+            sortedArray.add(0);
+        }
+        return sortedArray;
+    }
+
+    int findLargestMovementBiasedAverage(ArrayList<Integer> reverseSortedArray,String dataType){
+
+        float totalHighestValues = 0;
+        int countOfHighestValues = 0;
+        float totalAllValues = 0;
+        int countAllValues = reverseSortedArray.size();
+
+        for(int i = 0; i<4;i++){
+            if(i<countAllValues){
+                totalHighestValues+=reverseSortedArray.get(i);
+                countOfHighestValues++;
+            }else{
+                break;
+            }
+        }
+
+        for(int i = 0; i<countAllValues; i++){
+            totalAllValues+=reverseSortedArray.get(i);
+        }
+
+        float averageOfFourHighestValues = (totalHighestValues/countOfHighestValues);
+        int averageOfAllValues = (int)(totalAllValues/countAllValues);
+
+        Log.i(TAG,"new average "+dataType+" created: "+(averageOfAllValues+averageOfFourHighestValues)/2);
+
+        return (int)(averageOfAllValues+averageOfFourHighestValues)/2;
+
+    }
+
 }

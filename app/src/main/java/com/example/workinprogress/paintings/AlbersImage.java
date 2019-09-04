@@ -31,6 +31,7 @@ public class AlbersImage extends PositionAndLightPainting {
     private int[][] newCanvasPositions;
     private int numberOfSquares;
     private ArrayList<Integer> newShapeSize;
+    private float multiplier = 1.5f;
 
     /**
      * constructor sets colour values and the number of squares to be created (8 times the number of movements)
@@ -133,7 +134,7 @@ public class AlbersImage extends PositionAndLightPainting {
         float currentRange = biggestShape - smallestShape;
         float newRange = biggestShape;
 
-        float scalar = currentRange / newRange;
+        float scalar = (currentRange / newRange)*multiplier;
 
         //multiply sizes by scalar
         for (int i = 0; i < shapeSize.size(); i++) {
@@ -169,6 +170,9 @@ public class AlbersImage extends PositionAndLightPainting {
 
         //create colour range
         float colourScalar = (colourRange - minimumValue) / DisplayImage.IMAGE_SIZE_SCALAR;
+
+        //I don't know why but everything just somehow looks better and more accurately reflects the light multiplied by 10 here
+        colourScalar*=10;
 
         //get correct array
         for (SingularPointDataSet dataSet : singularPointDataSets) {
@@ -246,17 +250,17 @@ public class AlbersImage extends PositionAndLightPainting {
 
         canvasPositions = new int[numberOfSquares][2];
 
-        float xScalar = width / range;
-        float yScalar = height / range;
+        float xScalar = ((width / range)*2);
+        float yScalar = ((height / range)*2);
         int j = 0;
 
-        //creates a list of position integers for each accelerometer reading. Each takes the x as its
-        //x coord, the y as its y coord, and then then adds in 6 positions placed around this randomly
-        //to create some noise
+        /* creates a list of position integers for each accelerometer reading. Each takes the x as its
+        x coord, the y as its y coord, and then then adds in 6 positions placed around this randomly
+        to create some noise */
         for (int i = 0; i < canvasPositions.length; i+=8) {
 
-            float xSize = (positionValues1.get(j) * xScalar);
-            float ySize = (positionValues2.get(j) * yScalar);
+            float xSize = ((positionValues1.get(j) * xScalar))-(width/2);
+            float ySize = ((positionValues2.get(j) * yScalar))-(height/2);
             j++;
 
             int a1 = Math.round(xSize);

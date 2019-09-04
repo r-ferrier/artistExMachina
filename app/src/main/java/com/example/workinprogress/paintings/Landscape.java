@@ -55,12 +55,12 @@ public class Landscape extends KineticArt {
 
         Paint opaquePaint = new Paint();
         int numberOfOptions;
-        if (averageLightValue < 2500) {
+        if (averageLightValue < 300) {
 
             canvasColor = Color.BLACK;
             opaquePaint.setColor(canvasColor);
 
-            if (averageLightValue < 1000) {
+            if (averageLightValue < 150) {
                 numberOfOptions = 2;
             } else {
                 numberOfOptions = 4;
@@ -69,7 +69,7 @@ public class Landscape extends KineticArt {
             canvasColor = Color.WHITE;
             opaquePaint.setColor(canvasColor);
 
-            if (averageLightValue < 10000) {
+            if (averageLightValue < 500) {
               numberOfOptions = 6;
             } else {
                numberOfOptions = 8;

@@ -25,6 +25,7 @@ import androidx.core.content.FileProvider;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.example.workinprogress.dataSetsAndComponents.classesForTestingOutputs.CSVDataSet;
 import com.example.workinprogress.dataSetsAndComponents.DataSet;
 import com.example.workinprogress.paintings.AbstractShapes;
 import com.example.workinprogress.paintings.AlbersImage;
@@ -57,6 +58,7 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
     private ViewPager viewPager;
     private ArrayList<Drawable> drawables;
     private String TAG = "display image info";
+
 
 
     /**
@@ -220,41 +222,21 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
         try {
             Thread.sleep(200);
             new Handler(Looper.getMainLooper()).post(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            animationText.setText(R.string.artistBusy2);
-                        }
-                    }
+                    () -> animationText.setText(R.string.artistBusy2)
             );
             Thread.sleep(200);
             new Handler(Looper.getMainLooper()).post(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            animationText.setText(R.string.artistBusy3);
-                        }
-                    }
+                    () -> animationText.setText(R.string.artistBusy3)
             );
 
             Thread.sleep(200);
             new Handler(Looper.getMainLooper()).post(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            animationText.setText(R.string.artistBusy4);
-                        }
-                    }
+                    () -> animationText.setText(R.string.artistBusy4)
             );
 
             Thread.sleep(200);
             new Handler(Looper.getMainLooper()).post(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            animationText.setText(R.string.artistBusy1);
-                        }
-                    }
+                    () -> animationText.setText(R.string.artistBusy1)
             );
 
         } catch (InterruptedException e) {
@@ -266,6 +248,11 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
      * called to set up the view if it is displaying a saved image from the gallery
      */
     public void displayExistingImage() {
+
+        if(createNewImage){
+            Log.e(TAG,"Should not be displaying existing image, should be creating new images");
+        }
+
         findViewById(R.id.artistBusyView).setVisibility(View.INVISIBLE);
         findViewById(R.id.pager).setVisibility(View.INVISIBLE);
 
@@ -281,6 +268,12 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
      */
     public void createAndDisplayImages() {
 
+        if(!createNewImage){
+            Log.e(TAG,"Should not be creating new images, should be displaying currently stored image");
+        }
+
+        //enables log in painting class to log out which datasets are being used
+        Painting.firstInstanceOfPainting = true;
         imageCreated = false;
         dataStrings = new ArrayList<>();
 
@@ -310,6 +303,11 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
         });
         thready.start();
 
+        /*special method that can be used to insert csv inputs into images*/
+        /*----------------------------------------*/
+//        testImages();
+        /*----------------------------------------*/
+
         createDrawables();
         createdSaveAndDeleteddStatusArrays();
     }
@@ -318,13 +316,11 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
         saved = new boolean[drawables.size()];
         deleted = new boolean[drawables.size()];
 
-        for (boolean savedStatus : saved) {
-            savedStatus = false;
+        for(int i = 0; i<saved.length;i++){
+            saved[i] = false;
+            deleted[i] = false;
         }
 
-        for (boolean deletedStatus : deleted) {
-            deletedStatus = false;
-        }
     }
 
     /**
@@ -333,12 +329,17 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
      */
     private void createDrawables() {
         drawables = new ArrayList<>();
-
         drawables.add(new AbstractShapes(this, dataSets));
+
+      //this is to prevent log from logging out information for every drawable, just needs calling after first one is created
+        Painting.firstInstanceOfPainting = false;
+
         drawables.add(new AutomaticDrawing(this, dataSets));
         drawables.add(new AlbersImage(this, dataSets));
         drawables.add(new Landscape(this, dataSets));
         drawables.add(new KineticArt(this, dataSets));
+
+        Log.i(TAG,drawables.size()+" image styles to be created");
 
     }
 
@@ -388,13 +389,12 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
 
                     // create new Exifinterface to enable changes to be made to image's metadata
                     final ExifInterface exif = new ExifInterface(currentImagePath);
-
                     // create string containing data information to be saved as image description
                     String exifString = "";
                     for(String dataString: dataStrings){
                         exifString+= dataString;
-                        exifString+="\n";}
-
+                        exifString+="\n";
+                    }
                     //set string as image description and save to image
                     exif.setAttribute(ExifInterface.TAG_IMAGE_DESCRIPTION, exifString);
                     exif.saveAttributes();
@@ -489,7 +489,7 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
      * they change their mind. If not, they are returned to the gallery view.
      * @param view called by the onclick method from the delete button
      */
-    public void discard(View view) {
+    public void delete(View view) {
 
         File file = new File(currentImagePath);
 
@@ -497,10 +497,11 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
             if (file.delete()) {
                 Toast.makeText(getApplicationContext(), "Deleted successfully", Toast.LENGTH_SHORT).show();
             }
+            if(file.exists()){
+                Log.e(TAG,"file not deleted");
+            }
         }
-
         if (imageCreated) {
-
             findViewById(R.id.discardButton).setVisibility(View.INVISIBLE);
             findViewById(R.id.keepButton).setVisibility(View.VISIBLE);
             deleted[viewPager.getCurrentItem()] = true;
@@ -508,7 +509,6 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
             viewPager.getAdapter().notifyDataSetChanged();
 
         } else {
-
             goToGallery(view);
         }
 
@@ -549,19 +549,32 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
         // find file at current image path
         File file = new File(currentImagePath);
 
-        // create uri using file and provider specified in manifest
-        Uri uri = FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".provider", file);
+        if(file.exists()) {
+            // create uri using file and provider specified in manifest
+            Uri uri = FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".provider", file);
 
-        // grant read and write permission to the sharing intent and then add the uri and datatype
-        sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        sharingIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-        sharingIntent.setDataAndType(uri,"image/*");
-        sharingIntent.putExtra(Intent.EXTRA_STREAM,uri);
+            // grant read and write permission to the sharing intent and then add the uri and datatype
+            sharingIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            sharingIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            sharingIntent.setDataAndType(uri, "image/*");
+            sharingIntent.putExtra(Intent.EXTRA_STREAM, uri);
 
-        // begin the sharingintent
-        startActivity(Intent.createChooser(sharingIntent, "Share via"));
+            // begin the sharingintent
+            startActivity(Intent.createChooser(sharingIntent, "Share via"));
+        }else{
+            Toast.makeText(getApplicationContext(), "Unable to share image", Toast.LENGTH_SHORT).show();
+            Log.e(TAG,"file not found at this location: "+currentImagePath);
+        }
 
     }
 
-
+    private void testImages(){
+        //creates a new CSVDataSet which will replace existing data, to allow visual testing of images
+        CSVDataSet CSVDataSet = new CSVDataSet(this,true,"dataToUpload.csv");
+        dataSets = CSVDataSet.getDataSets();
+        dataStrings = new ArrayList<>();
+        for (DataSet dataSet : dataSets) {
+            dataStrings.add(dataSet.toString());
+        }
+    }
 }
