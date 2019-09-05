@@ -38,8 +38,8 @@ public class CSVDataSet {
     //following variables used for all data
     private int lightMax = 40000;
     private int lightMin = 0;
-    private int movementMax = 150;
-    private int movementMin = -150;
+    private int movementMax = 158;
+    private int movementMin = -158;
     private String dataType;
     private String fileName;
     private Context context;
@@ -123,7 +123,7 @@ public class CSVDataSet {
 
                 for (DataSetPoint dataSetPoint:getResults()){
                     count++;
-                    total+= (Float)dataSetPoint.getScaledResults().get(2);
+                    total+= (Float)dataSetPoint.getScaledResults().get(0);
                 }
                 return total/count+"";
             }

@@ -23,7 +23,13 @@ public class DataDisplay extends AppCompatActivity {
             dataStrings = getIntent().getStringArrayListExtra("dataStrings");
             data = getIntent().getStringExtra("data");
 
-            data = data.replaceAll("\\?","\n");
+            if(data!=null){
+                data = data.replaceAll("\\?","\n");
+            }else{
+                data = "There was a problem storing this data.";
+            }
+
+
 
             Log.i(TAG,data);
         }else{

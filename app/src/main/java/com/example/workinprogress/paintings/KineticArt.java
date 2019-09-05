@@ -9,7 +9,6 @@ import android.graphics.Path;
 
 import com.example.workinprogress.R;
 import com.example.workinprogress.dataSetsAndComponents.DataSet;
-import com.example.workinprogress.dataSetsAndComponents.SensorSingularPointDataSet;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -294,8 +293,8 @@ public class KineticArt extends AbstractShapes {
 
         for (int i = 0; i < loopSize; i++) {
             int numberOfLines = random.nextInt(numberOfLoops);
-            if(numberOfLines>40){
-                numberOfLines = 40;
+            if(numberOfLines>38){
+                numberOfLines = 38;
             }
 
             paths.add(drawRibbon(controls.get(i).clone(), increment, numberOfLines, new Path()));

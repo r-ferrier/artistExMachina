@@ -569,8 +569,12 @@ public class DisplayImage extends AppCompatActivity implements ViewPager.OnPageC
     }
 
     private void testImages(){
+
+        String csvName1 = "five_thousand_values_and_max_values.csv";
+        String csvName2 = "small_movements_bright_light.csv";
+
         //creates a new CSVDataSet which will replace existing data, to allow visual testing of images
-        CSVDataSet CSVDataSet = new CSVDataSet(this,true,"dataToUpload.csv");
+        CSVDataSet CSVDataSet = new CSVDataSet(this,true,csvName2);
         dataSets = CSVDataSet.getDataSets();
         dataStrings = new ArrayList<>();
         for (DataSet dataSet : dataSets) {
